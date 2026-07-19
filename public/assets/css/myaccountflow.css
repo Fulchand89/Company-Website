@@ -1,0 +1,122 @@
+
+/* my account css start*/
+.my-account-side.active,
+.my-account-top.my-account-side.active {
+  background-color: #143347;
+  color: white;
+}
+
+.my-account-side:hover {
+  background-color: #143347;
+  color: white;
+}
+.myaccount-nav.active img,
+.myaccount-nav:focus img {
+  filter: brightness(0) invert(1) !important;
+  transition: filter 0.2s ease;
+}
+.faq-contact-underline.active {
+  border-bottom: 4px solid var(--bs-primary) !important;
+  border-radius: 0;
+}
+
+.my-account-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  transform: rotate(45deg);
+  z-index: 10;
+}
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border: 2px solid transparent;
+}
+.step-line {
+  height: 2px;
+  background-color: #dee2e6;
+  border-radius: 1px;
+  transition: background-color 0.3s ease;
+}
+.booking-page {
+  display: none;
+}
+
+.booking-page.active {
+  display: block !important;
+}
+
+.step-line.active {
+  background: #143347;
+}
+@media (max-width: 450px) {
+  .booking-img {
+    width: 100% !important;
+    height: 200px !important;
+    object-fit: cover !important;
+  }
+}
+
+@media (min-width: 451px) and (max-width: 768px) {
+  .booking-img {
+    width: 100% !important;
+    height: 300px !important;
+    object-fit: cover !important;
+  }
+}
+
+@media (max-width: 364px) {
+  .rating-row {
+    flex-wrap: wrap !important;
+    row-gap: 4px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .rating-row i {
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .step-circle {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+  }
+  .step-line {
+    margin-bottom: 20px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .my-account-sidebar {
+    flex: 0 0 240px !important;
+    max-width: 240px !important;
+    font-size: 14.5px !important;
+  }
+}
+@media (max-width: 991px) {
+
+  .my-account-dropdown-menu::before {
+    left: auto !important;
+    right: 16px !important;
+    transform: rotate(45deg) !important;
+  }
+  .payment-icons-group img {
+    width: 32px !important;
+    height: auto;
+  }
+
+  .payment-icons-group {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+  }
+}

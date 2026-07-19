@@ -1,0 +1,414 @@
+body {
+  background-color: $bg-color;
+  color: $primary;
+
+}
+
+.top-picks-section {
+  background-color: #142f49;
+
+  .card {
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 15px;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-img-top {
+
+      transition: opacity 0.2s ease;
+
+      .card:hover & {
+        opacity: 0.9;
+      }
+    }
+
+    .rating-stars {
+
+      i {
+        font-size: 0.75rem;
+      }
+    }
+
+    .card-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 1rem;
+      font-weight: 800;
+      color: $primary;
+    }
+
+    .image-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* badge bottom center */
+    .badge-over-image {
+      position: absolute;
+      width: 80%;
+      margin: auto;
+      text-align: center;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #DC6555;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    // small {
+    //   line-height: 1.2;
+    // }
+  }
+
+  @media (max-width: 767.98px) {
+    .card-body {
+      padding: 1.5rem !important;
+    }
+  }
+}
+
+/* ===============================
+   Section Wrapper
+================================*/
+.luxor-slider-section {
+  margin-top: 40px;
+  padding-inline: 10px;
+
+  .slider-nav {
+    display: flex;
+    gap: 25px;
+
+    .luxor-prev,
+    .luxor-next {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .luxor-prev::after,
+    .luxor-next::after {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #333;
+    }
+  }
+}
+
+/* ===============================
+   Section Title with underline
+================================*/
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $primary;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 90px;
+    height: 3px;
+    background: $primary;
+    border-radius: 5px;
+  }
+}
+
+// /* ===============================
+//    Slider Nav Buttons
+// ================================*/
+// .slider-nav {
+//   display: flex;
+//   gap: 10px;
+
+//   .nav-btn {
+//     width: 36px;
+//     height: 36px;
+//     background: #fff;
+//     border: 1px solid #ddd;
+//     border-radius: 50%;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     cursor: pointer;
+//     transition: .2s ease;
+
+//     i {
+//       color: $primary;
+//       font-size: 14px;
+//     }
+
+//     &:hover {
+//       background: $primary;
+//       border-color: $primary;
+
+//       i {
+//         color: white;
+//       }
+//     }
+//   }
+// }
+
+/* ===============================
+   Place Card
+================================*/
+.place-card {
+  text-align: left;
+
+  img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  h5 {
+    font-size: .95rem;
+    font-weight: bold;
+    margin-top: 8px;
+    color: $primary;
+  }
+}
+
+// explore cards 
+
+.explore-section {
+  .section-title {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .swiper-nav {
+    display: flex;
+    gap: 25px;
+
+    .custom-prev,
+    .custom-next {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .custom-prev::after,
+    .custom-next::after {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #333;
+    }
+  }
+
+  .hotel-card {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    // box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    transition: 0.3s;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-box {
+      position: relative;
+
+      .hotel-img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+      }
+
+      .wishlist-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+      }
+    }
+
+    .hotel-content {
+      padding: 12px 15px;
+
+      .tag,
+      .tag-1 {
+        display: inline-block;
+        margin-bottom: 6px;
+        color: #fff;
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+
+      .tag {
+        background: #1C6798;
+      }
+
+      .tag-1 {
+        background: #DC6555;
+      }
+
+      h5 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      .rating {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 8px;
+      }
+
+      .price-title {
+        font-size: 13px;
+        color: #555;
+      }
+
+      .price {
+        font-size: 17px;
+        font-weight: 700;
+        color: #000;
+      }
+    }
+  }
+}
+.hero-trend-section {
+
+  .trend-bg {
+    background-image: url('/assets/images/bottom-card.png');
+    background-size: cover;
+    background-position: center;
+    height: 380px;
+    border-radius: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+
+    @media (max-width: 768px) {
+      height: 320px;
+      padding-left: 20px;
+    }
+
+    /* 👉 MOBILE CENTER FIX */
+    @media (max-width: 600px) {
+      justify-content: center;    // horizontal center
+      padding-left: 0;            // remove left padding
+      padding-right: 0;
+    }
+  }
+
+  .trend-content-card {
+    max-width: 340px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #111;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .find-btn {
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-weight: 600;
+      background-color: #113B5F;
+    }
+  }
+}
+
+
+.badge-danger {
+  background: #DC6555;
+  margin-bottom: 6px;
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+
+
+// footer css start
+
+.footer-section {
+  background: #000000; // your theme primary dark blue
+  padding: 50px 0;
+  color: #fff;
+
+  .footer-logo img {
+    width: 140px;
+  }
+
+  .footer-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 6px;
+
+      a {
+        color: #cfdbe6;
+        font-size: 14px;
+        text-decoration: none;
+        transition: 0.2s;
+
+        &:hover {
+          color: #fff;
+          padding-left: 2px;
+        }
+      }
+    }
+  }
+
+  .footer-divider {
+    border-color: $white;
+    margin: 30px 0;
+  }
+
+  .footer-copy {
+    font-size: 13px;
+    color: #c9d4df;
+  }
+}

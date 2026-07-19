@@ -1,0 +1,61 @@
+.main-row {
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Viewport fill minus nav/footer, but allows auto if content shorter. */
+        .section-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-fill {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .cards-content {
+            height: auto !important;
+            flex-grow: 0;
+        }
+
+        .cards-section {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+
+        .cards-section.collapsed {
+            max-width: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            opacity: 0;
+            overflow: hidden;
+            border: none !important;
+        }
+
+
+      
+
+        /* Full fill. */
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Full fill. */
+        /* Mobile: Stack cards below filters (always visible, no toggle). */
+        @media (max-width: 991.98px) {
+            .cards-section {
+                order: 1;
+                max-width: none !important;
+            }
+
+            .mapview {
+                order: 2;
+            }
+        }

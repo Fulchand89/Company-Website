@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+@source "../../src/app/**/*.{js,jsx,ts,tsx}";
+@source "../../src/components/**/*.{js,jsx,ts,tsx}";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  --color-primary: #0d6efd;
+  --color-accent: #b30d29;
+  --color-accent-red: #e11d2e;
+  --color-card-bg-start: #232324;
+  --color-card-bg-end: #1b1b1b;
+  --color-dark-bg: #111111;
+  --color-slate-text: #6c757d;
+  --color-gold: #d4af37;
+  --color-section-bg: #f4f4f6;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes moveDot {
+  0% { top: 0; }
+  50% { top: calc(100% - 14px); }
+  100% { top: 0; }
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.navbar .dropdown-toggle::after {
+  display: none;
+}
+
+.navbar .dropdown-toggle {
+  position: relative;
+  padding-right: 20px;
+}
+
+.navbar .dropdown-toggle::before {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: url("/assets/images/arrow-down.png") no-repeat center/contain;
+}
+
+@media (max-width: 991px) {
+  .dropdown-menu {
+    position: static !important;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+}

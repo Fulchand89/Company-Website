@@ -1,0 +1,129 @@
+/* ===========================
+   FORM
+   =========================== */
+
+/* Global input and select styling */
+@import "variables";
+.form-control,
+.form-select {
+  border: 1px solid $border-color;
+  border-radius:0.5rem;
+  background-color: #1C1C1C;
+  color: white;
+  font-size: 0.95rem;
+  height:2.2rem; 
+  padding: 0.25rem 0.75rem;
+  transition: all 0.2s ease;
+
+  &::placeholder {
+    color: $white ;
+  }
+
+  &:focus {
+    border-color: 1px solid $border-color;
+    box-shadow: 0 0 0 0.15rem rgba($border-color, 0.25);
+    outline: none;
+    color: #ffffff;
+    background-color: #1C1C1C;
+  }
+
+  &:disabled {
+    background-color: rgba($bg-color, 0.6);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+/* Label styling */
+.form-label {
+  color: $text-color;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Checkbox & radio */
+.form-check-input {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid rgba($primary, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:checked {
+    background-color: $primary;
+    border-color: $primary;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.15rem rgba($primary, 0.25);
+  }
+}
+
+.form-check-label {
+  color: $text-color;
+  font-size: 0.9rem;
+}
+
+/* Select2 main box */
+.select2-container--default .select2-selection--single {
+  background-color: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: 0.5rem;
+  height:2.3rem;
+  padding-left: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Text inside select */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: $text-color;
+  line-height: 38px;
+  padding-left: 0;
+}
+
+/* Dropdown arrow container */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  pointer-events: none;
+}
+
+/* Arrow icon */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-width: 5px 4px 0 4px;
+  border-style: solid;
+  border-color: $text-color transparent transparent transparent;
+}
+
+/* Dropdown list items */
+.select2-container .select2-results__option {
+  background-color: $bg-color;
+  color: $text-color;
+  padding: 8px 12px;
+  font-size: 15px;
+  transition: 0.2s ease;
+}
+
+/* Hover */
+.select2-container .select2-results__option:hover {
+  background-color: $light;
+  color: $text-color;
+}
+
+/* Highlighted with keyboard */
+.select2-container .select2-results__option--highlighted {
+  background-color: $light !important;
+  color: $text-color !important;
+}
+
+/* Selected option */
+.select2-container .select2-results__option[aria-selected="true"] {
+  background-color: $primary !important;
+  color: #fff !important;
+}
+

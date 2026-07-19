@@ -1,0 +1,23 @@
+// ============================
+//  GLOBAL THEME VARIABLES
+// ============================
+
+// Bootstrap SCSS color values (real colors)
+$primary: #B30D29;
+$secondary: #6D758F;
+$border-color:#FFFFFF;
+$text-color: #FFFFFF;
+$bg-color: #000000;
+
+// CSS variables synced with these SCSS colors
+:root {
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --text-color: #{$text-color};
+  --bg-color: #{$bg-color};
+  --border-color:#{$border-color};
+}
+
+.btn{
+  border-radius: 37px;
+}
