@@ -1,58 +1,55 @@
 import fs from "fs";
 import path from "path";
-import mysql from "mysql2/promise";
 
-// Manually load .env.local for standalone Node.js verification script
-const envPath = path.resolve(process.cwd(), ".env.local");
-if (fs.existsSync(envPath)) {
-  const envConfig = fs.readFileSync(envPath, "utf-8");
-  envConfig.split("\n").forEach((line) => {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
-      const [key, ...valueParts] = trimmed.split("=");
-      const val = valueParts.join("=").trim();
-      if (key && !process.env[key.trim()]) {
-        process.env[key.trim()] = val;
-      }
+// Helper to load environment variables for standalone Node.js script execution
+function loadEnvironmentVariables() {
+  const envFiles = [".env.local", ".env"];
+  for (const file of envFiles) {
+    const envPath = path.resolve(process.cwd(), file);
+    if (fs.existsSync(envPath)) {
+      const envConfig = fs.readFileSync(envPath, "utf-8");
+      envConfig.split("\n").forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
+          const [key, ...valueParts] = trimmed.split("=");
+          const val = valueParts.join("=").trim().replace(/^['"]|['"]$/g, "");
+          if (key && !process.env[key.trim()]) {
+            process.env[key.trim()] = val;
+          }
+        }
+      });
     }
-  });
+  }
 }
+
+loadEnvironmentVariables();
 
 import { getDbPool, executeQuery, testDbConnection } from "../src/lib/db.js";
 
 async function runVerification() {
+  const dbHost = process.env.DB_HOST || "srv1823.hstgr.io";
+  const dbPort = process.env.DB_PORT || "3306";
+  const dbName = process.env.DB_NAME || "u879279162_gtwwebsite";
+  const dbUser = process.env.DB_USER || "u879279162_gtwwebsite";
+
   console.log("==========================================");
   console.log("Hostinger MySQL Database Connection Test");
   console.log("==========================================");
-  console.log(`Target DB_HOST: ${process.env.DB_HOST || "localhost"}`);
-  console.log(`Target DB_PORT: ${process.env.DB_PORT || "3306"}`);
-  console.log(`Target DB_NAME: ${process.env.DB_NAME || "u879279162_gtwwebsite"}`);
-  console.log(`Target DB_USER: ${process.env.DB_USER || "root"}`);
+  console.log(`Target DB_HOST: ${dbHost}`);
+  console.log(`Target DB_PORT: ${dbPort}`);
+  console.log(`Target DB_NAME: ${dbName}`);
+  console.log(`Target DB_USER: ${dbUser}`);
   console.log("==========================================");
-
-  // If local MySQL server is running, automatically create local u879279162_gtwwebsite for local verification
-  try {
-    const rootConn = await mysql.createConnection({
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT || "3306", 10),
-      user: process.env.DB_USER || "root",
-      password: process.env.DB_PASSWORD || "",
-    });
-    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || "u879279162_gtwwebsite"}\`;`);
-    await rootConn.end();
-  } catch (setupErr) {
-    // Remote hostinger DB won't allow root DB creation without database pre-created, which is expected
-  }
 
   try {
     // Step 1: Test Pool Initialization & Ping
-    console.log("[1/3] Testing database ping & pool creation...");
+    console.log("\n[1/3] Testing database ping & pool creation...");
     const pingResult = await testDbConnection();
     console.log("Ping Result:", pingResult);
 
     if (!pingResult.success) {
-      console.log("\n[Note] Database connection failed. Please ensure active Hostinger MySQL credentials in .env.local.");
-      process.exit(0);
+      console.log("\n[Note] Database connection failed. Please ensure active Hostinger MySQL credentials in .env or .env.local.");
+      process.exit(1);
     }
 
     // Step 2: Test Table Auto-Verification & Schema Check

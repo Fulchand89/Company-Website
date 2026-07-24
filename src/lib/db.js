@@ -3,12 +3,14 @@ import mysql from "mysql2/promise";
 /**
  * Hostinger MySQL Database Connection Module
  * 
- * Requirements:
+ * Features:
  * - Uses mysql2/promise for async/await database operations.
  * - Reuses a single connection pool across requests.
  * - Caches pool instance globally in development to prevent duplication during Next.js Hot Module Replacement (HMR).
- * - Reads all connection parameters strictly from process.env (.env.local).
- * - Provides graceful error handling and query execution helper.
+ * - Reads all connection parameters strictly from process.env with Hostinger defaults.
+ * - Trims and cleans environment variable inputs.
+ * - Provides connection logging (Host, Port, Database, User) without exposing password.
+ * - Graceful error handling and query execution helper.
  */
 
 // Global pool reference for development caching
@@ -16,17 +18,30 @@ let pool;
 
 /**
  * Returns or initializes the singleton MySQL connection pool.
- * Uses environment variables configured in .env.local.
+ * Uses environment variables configured in .env / .env.local with Hostinger defaults.
  */
 export function getDbPool() {
   if (!pool) {
-    // Configuration object reading credentials from environment variables
+    const rawHost = process.env.DB_HOST || "srv1823.hstgr.io";
+    const rawPort = process.env.DB_PORT || "3306";
+    const rawDatabase = process.env.DB_NAME || "u879279162_gtwwebsite";
+    const rawUser = process.env.DB_USER || "u879279162_gtwwebsite";
+    const rawPassword = process.env.DB_PASSWORD || "Gtwwebsite@123";
+
+    // Clean and trim environment values to prevent quotation or space issues
+    const host = rawHost.trim().replace(/^['"]|['"]$/g, "");
+    const port = parseInt(rawPort.toString().trim(), 10) || 3306;
+    const database = rawDatabase.trim().replace(/^['"]|['"]$/g, "");
+    const user = rawUser.trim().replace(/^['"]|['"]$/g, "");
+    const password = rawPassword.trim().replace(/^['"]|['"]$/g, "");
+
+    // Configuration object for Hostinger MySQL connection pool
     const poolConfig = {
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT || "3306", 10),
-      database: process.env.DB_NAME || "u879279162_gtwwebsite",
-      user: process.env.DB_USER || "root",
-      password: process.env.DB_PASSWORD || "",
+      host,
+      port,
+      database,
+      user,
+      password,
       waitForConnections: true,
       connectionLimit: 10,
       maxIdle: 10,
@@ -34,8 +49,15 @@ export function getDbPool() {
       queueLimit: 0,
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
-      connectTimeout: 10000, // 10s connection timeout for remote databases
+      connectTimeout: 15000, // 15s connection timeout for remote databases
     };
+
+    // Connection logging (Host, Port, Database, User) without exposing password
+    console.log("[MySQL Pool] Initializing Hostinger Database Connection Pool:");
+    console.log(`  - Host: ${poolConfig.host}`);
+    console.log(`  - Port: ${poolConfig.port}`);
+    console.log(`  - Database: ${poolConfig.database}`);
+    console.log(`  - User: ${poolConfig.user}`);
 
     if (process.env.NODE_ENV === "production") {
       // Direct pool initialization in production
@@ -91,7 +113,7 @@ export async function testDbConnection() {
     const connection = await dbPool.getConnection();
     await connection.ping();
     connection.release();
-    return { success: true, message: "Database connection established successfully." };
+    return { success: true, message: "Hostinger Database connection established successfully." };
   } catch (error) {
     console.error("Database Connection Test Failed:", error.message);
     return { success: false, message: error.message };
