@@ -1,5 +1,15 @@
 import { executeQuery } from "@/lib/db";
 
+/**
+ * Job Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Uses mysql2/promise connection pool via executeQuery from @/lib/db.
+ * - Safely verifies jobs table using CREATE TABLE IF NOT EXISTS.
+ * - Preserves pre-existing job listings and schema structures.
+ * - Supports full CRUD operations (Create, Read, Update, Delete) for career openings.
+ */
+
 let schemaChecked = false;
 
 // Ensure jobs table exists dynamically

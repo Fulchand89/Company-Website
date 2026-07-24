@@ -1,6 +1,16 @@
 import { executeQuery } from "@/lib/db";
 
-// Helper to slugify a string
+/**
+ * Blog Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Uses mysql2/promise reusable connection pool via executeQuery from @/lib/db.
+ * - Safely auto-verifies blogs, tags, and blog_tags tables using CREATE TABLE IF NOT EXISTS.
+ * - Preserves pre-existing tables and content without deleting or modifying current schema.
+ * - Supports complete CRUD operations (Create, Read, Update, Delete) for blog articles and SEO metadata.
+ */
+
+// Helper to slugify a string for clean SEO URLs
 export function slugify(text) {
   if (!text) return "";
   return text
@@ -16,7 +26,7 @@ export function slugify(text) {
 
 let schemaInitialized = false;
 
-// Ensure database schema matches target requirements dynamically
+// Ensure database schema matches target requirements dynamically without overwriting existing data
 export async function ensureSchema() {
   if (schemaInitialized) return;
   try {

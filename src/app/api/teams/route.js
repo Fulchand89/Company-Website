@@ -16,14 +16,14 @@ export async function GET() {
       // Skip schema check for public reads — just query directly
       const { executeQuery } = await import("@/lib/db");
       const teamMembers = await executeQuery(
-        "SELECT * FROM teams WHERE is_active = 1 ORDER BY display_order ASC, created_at DESC"
+        "SELECT * FROM team_members WHERE status = 'active' ORDER BY display_order ASC, created_at DESC"
       );
 
       const formattedMembers = teamMembers.map(t => {
         let parsedSocials = {};
         try {
           if (t.social_links) parsedSocials = JSON.parse(t.social_links);
-        } catch (_) {}
+        } catch (_) { }
 
         return {
           id: t.id,

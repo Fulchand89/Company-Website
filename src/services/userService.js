@@ -1,5 +1,15 @@
 import { executeQuery } from "@/lib/db";
 
+/**
+ * User Management Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Queries Hostinger MySQL database using mysql2/promise connection pool.
+ * - Safely verifies users table using CREATE TABLE IF NOT EXISTS.
+ * - Dynamically adapts to existing user tables without data loss.
+ * - Supports full CRUD operations (Create, Read, Update, Delete) for admin/user accounts.
+ */
+
 let schemaChecked = false;
 
 // Ensure users table and required columns exist

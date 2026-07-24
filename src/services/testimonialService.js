@@ -1,5 +1,15 @@
 import { executeQuery } from "@/lib/db";
 
+/**
+ * Testimonial Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Executes queries through mysql2/promise single connection pool.
+ * - Safely verifies testimonials table using CREATE TABLE IF NOT EXISTS.
+ * - Automatically preserves existing table structures and records.
+ * - Supports full CRUD operations (Create, Read, Update, Delete) for client reviews.
+ */
+
 let schemaInitialized = false;
 
 // Default initial seed testimonials if table is empty

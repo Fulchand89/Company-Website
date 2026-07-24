@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ─────────────────────────────────────────────
    How SEO Work Steps (7 items grid: 4 top + 3 bottom)

@@ -87,6 +87,7 @@ export async function GET(request) {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "3", 10);
     const tag = searchParams.get("tag"); // Tag slug or name
+    const category = searchParams.get("category"); // Category name
 
     const offset = (page - 1) * limit;
 
@@ -117,6 +118,21 @@ export async function GET(request) {
            ORDER BY b.published_at DESC
            LIMIT ? OFFSET ?`,
           [tag, tag, limit, offset]
+        );
+      } else if (category) {
+        // Query database filtering by category and published status
+        const countResult = await executeQuery(
+          `SELECT COUNT(*) as count FROM blogs WHERE status = 'published' AND LOWER(category) = LOWER(?)`,
+          [category]
+        );
+        total = countResult[0]?.count || 0;
+
+        blogs = await executeQuery(
+          `SELECT * FROM blogs
+           WHERE status = 'published' AND LOWER(category) = LOWER(?)
+           ORDER BY published_at DESC
+           LIMIT ? OFFSET ?`,
+          [category, limit, offset]
         );
       } else {
         // Query all published blogs from database
@@ -177,10 +193,16 @@ export async function GET(request) {
     } catch (dbError) {
       console.warn("Database error, falling back to static blogs:", dbError);
 
-      // Filter static blogs by tag if requested
+      // Filter static blogs by category or tag if requested
       let filteredBlogs = ALL_BLOG_POSTS;
+      if (category) {
+        filteredBlogs = filteredBlogs.filter(post =>
+          post.category?.toLowerCase() === category.toLowerCase() ||
+          (category.toLowerCase().includes("marketing") && post.category?.toLowerCase().includes("marketing"))
+        );
+      }
       if (tag) {
-        filteredBlogs = ALL_BLOG_POSTS.filter(post =>
+        filteredBlogs = filteredBlogs.filter(post =>
           post.tags?.some(t => t.slug.toLowerCase() === tag.toLowerCase() || t.name.toLowerCase() === tag.toLowerCase())
         );
       }

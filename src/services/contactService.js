@@ -1,11 +1,16 @@
 import { executeQuery } from "@/lib/db";
 
+// Flag to prevent redundant database schema checks across requests
 let schemaChecked = false;
 
-// Ensure contacts table exists dynamically
+/**
+ * Automatically ensures that the 'contacts' table exists in Hostinger MySQL.
+ * Uses CREATE TABLE IF NOT EXISTS to leave existing tables and data completely untouched.
+ */
 export async function ensureContactsSchema() {
   if (schemaChecked) return;
   try {
+    // Execute DDL query using reusable database connection pool
     await executeQuery(`
       CREATE TABLE IF NOT EXISTS contacts (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,8 +29,11 @@ export async function ensureContactsSchema() {
   }
 }
 
+/**
+ * Contact Service handling CRUD operations for contact submissions
+ */
 export const contactService = {
-  // Create contact submission
+  // CREATE: Insert new contact form submission into MySQL
   async createContact({ name, email, phone, message }) {
     await ensureContactsSchema();
     const result = await executeQuery(
@@ -35,7 +43,7 @@ export const contactService = {
     return { id: result.insertId, name, email, phone, message };
   },
 
-  // Get all contact messages (for admin dashboard view)
+  // READ: Fetch all contact submissions sorted by creation date
   async getAllContacts() {
     await ensureContactsSchema();
     return await executeQuery(
@@ -43,7 +51,7 @@ export const contactService = {
     );
   },
 
-  // Get paginated contact messages
+  // READ: Get paginated contact submissions for admin management
   async getPaginatedContacts(page = 1, limit = 10) {
     await ensureContactsSchema();
     const offset = (page - 1) * limit;
@@ -57,7 +65,7 @@ export const contactService = {
     return { data, pagination: { total, page, limit, totalPages } };
   },
 
-  // Delete contact submission
+  // DELETE: Remove contact submission by ID
   async deleteContact(id) {
     await ensureContactsSchema();
     return await executeQuery("DELETE FROM contacts WHERE id = ?", [id]);

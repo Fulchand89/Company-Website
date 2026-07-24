@@ -1,5 +1,15 @@
 import { executeQuery } from "@/lib/db";
 
+/**
+ * Team Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Queries Hostinger MySQL database using mysql2/promise connection pool.
+ * - Safely verifies team_members table using CREATE TABLE IF NOT EXISTS.
+ * - Preserves pre-existing team member records and column configurations.
+ * - Supports full CRUD operations (Create, Read, Update, Delete) for company team profiles.
+ */
+
 let schemaInitialized = false;
 
 // Default initial seed team members if table is empty

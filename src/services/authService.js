@@ -1,6 +1,15 @@
 import bcrypt from "bcryptjs";
 import { userService } from "./userService";
 
+/**
+ * Authentication Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Authenticates admin and user accounts stored in Hostinger MySQL users table.
+ * - Performs bcrypt & PBKDF2 hash comparisons securely.
+ * - Prevents sensitive password hash leakage in returned objects.
+ */
+
 // bcryptjs password hashing
 export function hashPassword(password) {
   const salt = bcrypt.genSaltSync(10);

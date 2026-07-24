@@ -1,5 +1,15 @@
 import { executeQuery } from "@/lib/db";
 
+/**
+ * Job Application Service for Hostinger MySQL Database
+ * 
+ * Features:
+ * - Uses mysql2/promise reusable connection pool via executeQuery from @/lib/db.
+ * - Safely verifies applications table using CREATE TABLE IF NOT EXISTS.
+ * - Automatically checks existing columns without dropping or modifying data.
+ * - Supports complete CRUD operations (Create, Read, Update, Delete) for career applications.
+ */
+
 let schemaChecked = false;
 
 // Ensure applications table exists dynamically

@@ -90,7 +90,7 @@ export default function TeamManagementPage() {
     const delayDebounceFn = setTimeout(() => {
       setPage(1);
       fetchTeamMembers();
-    }, 500);
+    }, 200);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
@@ -234,7 +234,7 @@ export default function TeamManagementPage() {
 
       setDeletingId(null);
       setSuccessMessage("Team member deleted successfully!");
-      setTimeout(() => setSuccessMessage(""), 4000);
+      setTimeout(() => setSuccessMessage(""), 2000);
       fetchTeamMembers();
     } catch (err) {
       alert(err.message || "Failed to delete team member.");
