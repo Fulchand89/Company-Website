@@ -95,8 +95,29 @@ const eventImages = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
 
 function TeamSwiper() {
   const swiperRef = useRef(null);
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
+    async function fetchTeam() {
+      try {
+        const res = await fetch("/api/teams");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.length > 0) {
+            setMembers(json.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch team members:", err);
+      }
+    }
+    fetchTeam();
+  }, []);
+
+  const displayList = members.length > 0 ? members : teamMembers;
+
+  useEffect(() => {
+    if (displayList.length === 0) return;
     let swiperInstance = null;
 
     async function initSwiper() {
@@ -107,11 +128,13 @@ function TeamSwiper() {
         modules: [Autoplay],
         slidesPerView: 4,
         spaceBetween: 25,
-        loop: true,
+        loop: displayList.length > 1,
         autoplay: {
-          delay: 500,
+          delay: 2000,
           disableOnInteraction: false,
         },
+        observer: true,
+        observeParents: true,
         breakpoints: {
           0: { slidesPerView: 1 },
           576: { slidesPerView: 2 },
@@ -126,24 +149,24 @@ function TeamSwiper() {
     return () => {
       if (swiperInstance) swiperInstance.destroy(true, true);
     };
-  }, []);
+  }, [displayList]);
 
   return (
     <div className="swiper overflow-hidden" ref={swiperRef}>
       <div className="swiper-wrapper">
-        {teamMembers.map((member, i) => (
-          <div className="swiper-slide" key={i}>
+        {displayList.map((member, i) => (
+          <div className="swiper-slide" key={member.id || i}>
             <div className="text-center">
               <Image
-                src="/assets/images/hero/team-demo.png"
-                className="w-full h-auto rounded-lg mb-3"
+                src={member.img || "/assets/images/hero/team-demo.png"}
+                className="w-full h-[280px] object-cover rounded-lg mb-3"
                 width={300}
                 height={280}
-                alt={member.name}
+                alt={member.name || "Team Member"}
               />
               <div className="rounded-[1.5rem] p-2 bg-[#212529]">
                 <h6 className="mb-0 text-white font-semibold">{member.name}</h6>
-                <small className="text-white">{member.role}</small>
+                <small className="text-white">{member.designation || member.role}</small>
               </div>
             </div>
           </div>
@@ -316,17 +339,17 @@ export default function AboutPage() {
       </section>
 
       {/* ── HOW WE WORK ── */}
-      <section className="rounded-[2rem] bg-white text-[#0f172a] p-5">
-        <div className="flex flex-wrap items-center gap-5">
+      <section className="rounded-[2rem] bg-white p-8 text-[#0f172a] lg:p-12">
+        <div className="grid min-h-[424px] grid-cols-1 items-center gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-12">
 
           {/* Left Content */}
-          <div className="w-full lg:w-5/12">
-            <p className="text-[#B30D29] font-semibold mb-2">How We Work</p>
-            <h2 className="font-bold mb-3 text-3xl leading-snug">
+          <div className="max-w-[510px]">
+            <p className="mb-3 text-base font-semibold text-[#b30d29]">How We Work</p>
+            <h2 className="mb-5 text-3xl font-bold leading-[1.2] lg:text-[32px]">
               Gupta Tech Web: <span className="text-[#B30D29]">Crafting Success</span><br />
               Through Collaboration.
             </h2>
-            <p className="text-gray-500">
+            <p className="text-base leading-6 text-[#525b6b]">
               Lorem Ipsum is simply dummy text of the printing and typesetting industry.
               Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s,
               when an unknown printer took a galley of type and scrambled it to make a type specimen book.
@@ -334,16 +357,16 @@ export default function AboutPage() {
           </div>
 
           {/* Right Cards */}
-          <div className="w-full lg:w-7/12">
-            <div className="flex flex-wrap gap-4">
+          <div className="w-full">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {workCards.map((card, i) => (
-                <div key={i} className="w-full md:w-[calc(50%-8px)]">
-                  <div className="shadow-sm rounded-[0.75rem] p-4 h-full border border-gray-100">
-                    <div className="relative inline-block mb-3">
-                      <Image src={card.img} alt={card.title} width={50} height={50} />
+                <div key={i}>
+                  <div className="min-h-[196px] rounded-lg border border-[#f1f1f1] bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+                    <div className="relative mb-5 inline-block">
+                      <Image src={card.img} alt={card.title} width={36} height={36} />
                     </div>
-                    <h5 className="font-bold">{card.title}</h5>
-                    <p className="text-gray-500 text-sm mb-0">{card.text}</p>
+                    <h5 className="mb-2 text-xl font-bold leading-6">{card.title}</h5>
+                    <p className="mb-0 text-[14px] leading-[21px] text-[#525b6b]">{card.text}</p>
                   </div>
                 </div>
               ))}
@@ -384,7 +407,7 @@ export default function AboutPage() {
               </p>
               <Link
                 href="/contact"
-                className="inline-block border border-white text-white hover:bg-white hover:text-[#0f172a] transition-colors duration-200 mb-3 rounded-[0.75rem] px-4 py-2 no-underline"
+                className="inline-block mt-5 mb-3 rounded-[0.75rem] border border-white px-4 py-2 text-white no-underline transition-colors duration-200 hover:bg-white hover:text-[#0f172a]"
               >
                 Contact Us →
               </Link>

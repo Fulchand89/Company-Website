@@ -20,7 +20,7 @@ export async function GET(request) {
   } catch (error) {
     console.error("GET Jobs API Error:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve job listings" },
+      { error: "Failed to retrieve job listings", details: error.message },
       { status: 500 }
     );
   }
@@ -29,7 +29,14 @@ export async function GET(request) {
 // POST /api/jobs - Create a new job opening
 export async function POST(request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON request payload" },
+        { status: 400 }
+      );
+    }
+
     const { title, department, location, type, experience, description } = body;
 
     if (!title || !department || !location || !type || !experience || !description) {
@@ -55,7 +62,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("POST Jobs API Error:", error);
     return NextResponse.json(
-      { error: "Failed to create job opening" },
+      { error: "Failed to create job opening", details: error.message },
       { status: 500 }
     );
   }

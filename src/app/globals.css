@@ -42,15 +42,46 @@ body {
   display: none;
 }
 
+/* Testimonial carousel: the centered card is emphasized while side cards shrink. */
+.myTestimonialSwiper {
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+
+.myTestimonialSwiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  transform: scale(0.85);
+  transition: transform 0.4s ease;
+}
+
+.myTestimonialSwiper .swiper-slide-active {
+  transform: scale(1.05);
+  z-index: 2;
+}
+
 @keyframes moveDot {
-  0% { top: 0; }
-  50% { top: calc(100% - 14px); }
-  100% { top: 0; }
+  0% {
+    top: 0;
+  }
+
+  50% {
+    top: calc(100% - 14px);
+  }
+
+  100% {
+    top: 0;
+  }
 }
 
 @keyframes slide {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .navbar .dropdown-toggle::after {

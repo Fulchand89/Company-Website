@@ -9,7 +9,10 @@ import {
   UserCheck,
   Mail,
   User,
-  LogOut
+  LogOut,
+  FileText,
+  Quote,
+  Users
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -18,6 +21,9 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+    { name: "Blogs", href: "/admin/blogs", icon: <FileText className="w-5 h-5" /> },
+    { name: "Testimonials", href: "/admin/testimonials", icon: <Quote className="w-5 h-5" /> },
+    { name: "Our Teams", href: "/admin/teams", icon: <Users className="w-5 h-5" /> },
     { name: "Jobs", href: "/admin/jobs", icon: <Briefcase className="w-5 h-5" /> },
     { name: "Applications", href: "/admin/applications", icon: <UserCheck className="w-5 h-5" /> },
     { name: "Contacts", href: "/admin/contacts", icon: <Mail className="w-5 h-5" /> },

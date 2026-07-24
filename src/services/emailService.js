@@ -23,6 +23,44 @@ function getTransporter() {
   });
 }
 
+/**
+ * EMAIL FIX: Validate email address format before sending.
+ *
+ * Root cause of the Gmail "550 5.1.1 The email account does not exist" bounce:
+ * Gmail SMTP accepts messages via sendMail() without verifying the recipient exists.
+ * The call succeeds and returns a messageId, but Gmail's delivery subsystem later
+ * discovers the recipient doesn't exist and sends an asynchronous bounce-back to
+ * the sender. This happens when a visitor/candidate submits a form with a typo or
+ * invalid email address (e.g., "user@gmial.com" instead of "user@gmail.com").
+ *
+ * This validation catches obviously malformed addresses before sendMail() is called,
+ * preventing the bounce. It also trims whitespace that could corrupt an otherwise
+ * valid address.
+ */
+function isValidEmail(email) {
+  if (!email || typeof email !== "string") return false;
+  const trimmed = email.trim();
+  // RFC 5322 simplified: local@domain.tld, no spaces, valid characters
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(trimmed);
+}
+
+/**
+ * EMAIL FIX: Debug logger for sendMail() calls.
+ * Logs From, To, Reply-To, and Subject before every email send so the exact
+ * recipient causing a bounce can be identified from terminal output.
+ */
+function logMailDetails(label, mailOptions) {
+  console.log(`\n--- [EMAIL DEBUG] ${label} ---`);
+  console.log(`  From:     ${mailOptions.from}`);
+  console.log(`  To:       ${mailOptions.to}`);
+  console.log(`  Reply-To: ${mailOptions.replyTo || "(not set)"}`);
+  console.log(`  Subject:  ${mailOptions.subject}`);
+  if (mailOptions.cc)  console.log(`  CC:       ${mailOptions.cc}`);
+  if (mailOptions.bcc) console.log(`  BCC:      ${mailOptions.bcc}`);
+  console.log(`--- [END EMAIL DEBUG] ---\n`);
+}
+
 export const emailService = {
   /**
    * Send contact form emails
@@ -35,9 +73,12 @@ export const emailService = {
       return { success: false, error: "SMTP is not configured" };
     }
 
-    const fromEmail = process.env.SMTP_USER || process.env.SMTP_FROM_EMAIL || "no-reply@company.com";
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "no-reply@company.com";
     const fromName = process.env.SMTP_FROM_NAME || "Company Notifications";
     const companyEmail = process.env.COMPANY_NOTIFICATION_EMAIL || "info@company.com";
+
+    // EMAIL FIX: Trim whitespace from user-provided email to prevent corrupted addresses
+    const sanitizedUserEmail = email ? email.trim() : email;
 
     // 1. Parse additional details from message body if they exist
     let cleanMessage = message;
@@ -73,7 +114,7 @@ export const emailService = {
     const adminMailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
       to: companyEmail,
-      replyTo: email, // Direct replies go to the user/visitor
+      replyTo: sanitizedUserEmail, // Direct replies go to the user/visitor
       subject: `✉️ New Contact Submission: ${service} from ${name}`,
       html: `
         <!DOCTYPE html>
@@ -128,9 +169,10 @@ export const emailService = {
     };
 
     // 3. Auto-reply Confirmation to the User
+    const currentYear = new Date().getFullYear();
     const userMailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
-      to: email,
+      to: sanitizedUserEmail, // EMAIL FIX: use trimmed email to prevent whitespace-corrupted addresses
       replyTo: companyEmail, // Replies go to the company mailbox
       subject: `Inquiry Received - Thank you for contacting us`,
       html: `
@@ -141,27 +183,50 @@ export const emailService = {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Thank You for Contacting Us</title>
         </head>
-        <body style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; margin: 0; padding: 0; -webkit-font-smoothing: antialiased;">
-          <div style="width: 100%; background-color: #f8fafc; padding: 40px 0;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
-              <div style="background-color: #0f172a; padding: 32px; text-align: center; border-bottom: 3px solid #0d6efd;">
-                <a href="https://guptatechweb.com" style="font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; text-decoration: none;">GUPTA TECH<span style="color: #0d6efd;"> WEB</span></a>
+        <body style="font-family: 'Times New Roman', Times, Georgia, Arial, sans-serif; background-color: #ffffff; color: #1f2937; margin: 0; padding: 0; -webkit-font-smoothing: antialiased;">
+          <div style="width: 100%; background-color: #ffffff; padding: 0; margin: 0;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-top: 4px solid #E30613; padding: 40px 24px 0 24px;">
+              
+              <!-- Logo Header -->
+              <div style="margin-bottom: 32px;">
+                <a href="https://guptatechweb.com" style="font-size: 24px; font-weight: 700; color: #000000; letter-spacing: -0.5px; text-decoration: none; font-family: 'Times New Roman', Times, Georgia, serif;">GUPTA TECH WEB</a>
               </div>
-              <div style="padding: 40px 32px;">
-                <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px;">Thank you for reaching out!</h2>
-                <p style="font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 16px;">Hello ${name},</p>
-                <p style="font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 24px;">We have successfully received your inquiry submitted via our website contact form. Thank you for connecting with us.</p>
-                <p style="font-size: 15px; line-height: 1.6; color: #475569; margin-bottom: 24px;">Our team is reviewing your message and will get back to you shortly (typically within 24 business hours) with the information you requested.</p>
+
+              <!-- Main Content Body -->
+              <div style="font-size: 15px; line-height: 1.6; color: #334155; font-family: Arial, Helvetica, sans-serif;">
+                <p style="margin-bottom: 24px;">Hello ${name},</p>
+                <p style="margin-bottom: 16px;">Thank you for reaching out to Gupta Tech Web!</p>
                 
-                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; font-size: 13px; color: #64748b; line-height: 1.6;">
-                  <strong>Gupta Tech Web Support Team</strong><br>
-                  📧 Sales@guptatechweb.com &nbsp;|&nbsp; 📞 +91 7400554294<br>
-                  📍 410 Shagun Tower, Vijay Nagar, Indore (M.P)
+                <p style="margin-bottom: 16px;">We have successfully received your inquiry submitted via our website contact form. Thank you for connecting with us.</p>
+                
+                <p style="margin-bottom: 24px;">Our team is reviewing your message and will get back to you shortly (typically within 24 business hours) with the information you requested.</p>
+                
+                <p style="margin-bottom: 0;">Warm regards,</p>
+                <p style="margin-top: 4px; font-weight: bold; color: #000000; margin-bottom: 32px;">Gupta Tech Web Support Team</p>
+
+                <!-- Disclaimer segment -->
+                <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-bottom: 40px; font-size: 12px; color: #6b7280; line-height: 1.5; font-family: Arial, Helvetica, sans-serif;">
+                  <p style="margin: 0; font-style: italic;">This is an automatically generated email sent from an unmonitored mailbox. Please do not reply.</p>
+                  <p style="margin: 4px 0 0 0;">Visit our <a href="https://guptatechweb.com/contact" style="color: #E30613; text-decoration: underline;">contact page</a> for more information.</p>
                 </div>
               </div>
-              <div style="background-color: #f8fafc; padding: 32px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 13px; color: #94a3b8;">
-                <p style="margin: 0;">&copy; ${new Date().getFullYear()} Gupta Tech Web. All rights reserved.</p>
+
+              <!-- Branded Tinted Footer -->
+              <div style="background-color: #F8FAFC; border-top: 3px solid #E30613; padding: 32px 24px; text-align: center; font-family: Arial, Helvetica, sans-serif; color: #4b5563; font-size: 12px; margin-top: 20px;">
+                <p style="margin: 0 0 12px 0;">
+                  <a href="https://guptatechweb.com" target="_blank" style="color: #E30613; text-decoration: underline; font-weight: bold;">guptatechweb.com</a>
+                </p>
+                
+                <p style="margin: 0 0 16px 0; line-height: 1.6; color: #6b7280;">
+                  &copy; ${currentYear} Gupta Tech Web. All rights reserved.
+                </p>
+                
+                <div style="border-top: 1px solid #e5e7eb; padding-top: 12px; font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                  📍 410 Shagun Tower, Vijay Nagar, Indore (M.P)<br>
+                  📧 Sales@guptatechweb.com &nbsp;|&nbsp; 📞 +91 7400554294
+                </div>
               </div>
+
             </div>
           </div>
         </body>
@@ -175,7 +240,7 @@ export const emailService = {
     const errors = [];
 
     try {
-      console.log(`Sending contact email notification to Admin (${companyEmail})...`);
+      logMailDetails("Contact → Admin Notification", adminMailOptions);
       adminResult = await transporter.sendMail(adminMailOptions);
       console.log("Admin contact notification email sent successfully.");
     } catch (error) {
@@ -183,13 +248,20 @@ export const emailService = {
       errors.push(`Admin Email: ${error.message}`);
     }
 
-    try {
-      console.log(`Sending contact auto-reply to User (${email})...`);
-      userResult = await transporter.sendMail(userMailOptions);
-      console.log("User contact confirmation email sent successfully.");
-    } catch (error) {
-      console.error("Error sending User contact confirmation email:", error);
-      errors.push(`User Email: ${error.message}`);
+    // EMAIL FIX: Validate user-provided email before sending confirmation.
+    // If invalid, skip the send entirely to prevent Gmail async bounce.
+    if (!isValidEmail(sanitizedUserEmail)) {
+      console.warn(`[EMAIL FIX] Skipping user confirmation — invalid email address: "${sanitizedUserEmail}"`);
+      errors.push(`User Email: Invalid recipient address "${sanitizedUserEmail}"`);
+    } else {
+      try {
+        logMailDetails("Contact → User Confirmation", userMailOptions);
+        userResult = await transporter.sendMail(userMailOptions);
+        console.log("User contact confirmation email sent successfully.");
+      } catch (error) {
+        console.error("Error sending User contact confirmation email:", error);
+        errors.push(`User Email: ${error.message}`);
+      }
     }
 
     if (errors.length > 0) {
@@ -214,9 +286,12 @@ export const emailService = {
       return { success: false, error: "SMTP is not configured" };
     }
 
-    const fromEmail = process.env.SMTP_USER || process.env.SMTP_FROM_EMAIL || "no-reply@company.com";
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "no-reply@company.com";
     const fromName = process.env.SMTP_FROM_NAME || "Company Notifications";
     const hrEmail = process.env.HR_NOTIFICATION_EMAIL || "hr@company.com";
+
+    // EMAIL FIX: Trim whitespace from candidate-provided email to prevent corrupted addresses
+    const sanitizedCandidateEmail = email ? email.trim() : email;
 
     const timeString = new Date().toLocaleString("en-US", {
       timeZone: "Asia/Kolkata",
@@ -245,7 +320,7 @@ export const emailService = {
     const hrMailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
       to: hrEmail,
-      replyTo: email, // Direct replies go to the candidate
+      replyTo: sanitizedCandidateEmail, // Direct replies go to the candidate
       subject: `💼 New Job Application: ${position} - ${name}`,
       html: `
         <!DOCTYPE html>
@@ -436,7 +511,7 @@ export const emailService = {
     // 2. Auto-reply Confirmation to the Candidate
     const candidateMailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
-      to: email,
+      to: sanitizedCandidateEmail, // EMAIL FIX: use trimmed email to prevent whitespace-corrupted addresses
       replyTo: hrEmail, // Replies go to the HR department
       subject: `Application Received: ${position} at Gupta Tech Web`,
       html: `
@@ -510,7 +585,7 @@ export const emailService = {
     const errors = [];
 
     try {
-      console.log(`Sending job application email notification to HR (${hrEmail})...`);
+      logMailDetails("Career → HR Notification", hrMailOptions);
       hrResult = await transporter.sendMail(hrMailOptions);
       console.log("HR notification email sent successfully.");
     } catch (error) {
@@ -518,13 +593,20 @@ export const emailService = {
       errors.push(`HR Email: ${error.message}`);
     }
 
-    try {
-      console.log(`Sending job application confirmation to Candidate (${email})...`);
-      candidateResult = await transporter.sendMail(candidateMailOptions);
-      console.log("Candidate confirmation email sent successfully.");
-    } catch (error) {
-      console.error("Error sending Candidate confirmation email:", error);
-      errors.push(`Candidate Email: ${error.message}`);
+    // EMAIL FIX: Validate candidate-provided email before sending confirmation.
+    // If invalid, skip the send entirely to prevent Gmail async bounce.
+    if (!isValidEmail(sanitizedCandidateEmail)) {
+      console.warn(`[EMAIL FIX] Skipping candidate confirmation — invalid email address: "${sanitizedCandidateEmail}"`);
+      errors.push(`Candidate Email: Invalid recipient address "${sanitizedCandidateEmail}"`);
+    } else {
+      try {
+        logMailDetails("Career → Candidate Confirmation", candidateMailOptions);
+        candidateResult = await transporter.sendMail(candidateMailOptions);
+        console.log("Candidate confirmation email sent successfully.");
+      } catch (error) {
+        console.error("Error sending Candidate confirmation email:", error);
+        errors.push(`Candidate Email: ${error.message}`);
+      }
     }
 
     if (errors.length > 0) {

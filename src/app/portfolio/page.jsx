@@ -62,7 +62,7 @@ const techLogos = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
 
 function PortfolioCard({ num, title, img, text, href }) {
   const inner = (
-    <div className="bg-[#212529] text-white rounded-[0.75rem] mb-4 overflow-hidden">
+    <div className="bg-[#212529] text-white rounded-2xl mb-8 overflow-hidden p-4 min-h-[380px]">
       <div className="flex flex-wrap items-center">
         {/* Image */}
         <div className="w-full md:w-1/3 p-3 text-center">

@@ -10,7 +10,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET Users API Error:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve users list" },
+      { error: "Failed to retrieve users list", details: error.message },
       { status: 500 }
     );
   }
@@ -19,17 +19,50 @@ export async function GET() {
 // POST /api/users - Create a new user (Registration)
 export async function POST(request) {
   try {
-    const { name, email, password, role } = await request.json();
+    const body = await request.json().catch(() => null);
 
-    if (!name || !email || !password) {
+    if (!body) {
       return NextResponse.json(
-        { error: "Name, email, and password are required fields" },
+        { error: "Invalid JSON request payload" },
         { status: 400 }
       );
     }
 
+    const { name, email, password, role } = body;
+
+    if (!name || !name.trim()) {
+      return NextResponse.json(
+        { error: "Name is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!email || !email.trim()) {
+      return NextResponse.json(
+        { error: "Email address is required" },
+        { status: 400 }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return NextResponse.json(
+        { error: "Please enter a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    if (!password || password.length < 6) {
+      return NextResponse.json(
+        { error: "Password must be at least 6 characters long" },
+        { status: 400 }
+      );
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
     // Check if email already exists
-    const existingUser = await userService.getUserByEmail(email);
+    const existingUser = await userService.getUserByEmail(cleanEmail);
     if (existingUser) {
       return NextResponse.json(
         { error: "A user with this email address already exists" },
@@ -37,12 +70,12 @@ export async function POST(request) {
       );
     }
 
-    // Securely hash the password using PBKDF2
+    // Securely hash the password using bcrypt
     const passwordHash = hashPassword(password);
 
     const newUser = await userService.createUser({
-      name,
-      email,
+      name: name.trim(),
+      email: cleanEmail,
       passwordHash,
       role: role || "user"
     });
@@ -54,7 +87,10 @@ export async function POST(request) {
   } catch (error) {
     console.error("POST Users API Error:", error);
     return NextResponse.json(
-      { error: "Failed to register user" },
+      { 
+        error: "Failed to register user", 
+        details: error.message 
+      },
       { status: 500 }
     );
   }

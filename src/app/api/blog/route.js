@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { executeQuery } from "@/lib/db";
+import { ensureSchema } from "@/services/blogService";
 
 const ALL_BLOG_POSTS = [
   {
@@ -90,17 +91,19 @@ export async function GET(request) {
     const offset = (page - 1) * limit;
 
     try {
+      await ensureSchema();
+
       let blogs = [];
       let total = 0;
 
       if (tag) {
-        // Query database filtering by tag slug/name
+        // Query database filtering by tag slug/name and published status
         const countResult = await executeQuery(
           `SELECT COUNT(DISTINCT b.id) as count
            FROM blogs b
            JOIN blog_tags bt ON b.id = bt.blog_id
            JOIN tags t ON bt.tag_id = t.id
-           WHERE t.slug = ? OR t.name = ?`,
+           WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'`,
           [tag, tag]
         );
         total = countResult[0]?.count || 0;
@@ -110,18 +113,19 @@ export async function GET(request) {
            FROM blogs b
            JOIN blog_tags bt ON b.id = bt.blog_id
            JOIN tags t ON bt.tag_id = t.id
-           WHERE t.slug = ? OR t.name = ?
+           WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'
            ORDER BY b.published_at DESC
            LIMIT ? OFFSET ?`,
           [tag, tag, limit, offset]
         );
       } else {
-        // Query all blogs from database
-        const countResult = await executeQuery("SELECT COUNT(*) as count FROM blogs");
+        // Query all published blogs from database
+        const countResult = await executeQuery("SELECT COUNT(*) as count FROM blogs WHERE status = 'published'");
         total = countResult[0]?.count || 0;
 
         blogs = await executeQuery(
           `SELECT * FROM blogs
+           WHERE status = 'published'
            ORDER BY published_at DESC
            LIMIT ? OFFSET ?`,
           [limit, offset]

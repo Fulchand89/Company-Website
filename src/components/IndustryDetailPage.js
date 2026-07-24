@@ -10,18 +10,18 @@ import { useState } from "react";
 function FaqItem({ faq }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="mb-3 rounded-2xl overflow-hidden bg-[#111]">
+    <div className="mb-3 rounded-2xl overflow-hidden bg-gray-50 border border-gray-200/80 hover:border-gray-300 transition-all shadow-sm">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left font-semibold text-white hover:bg-[#1a1a1a] transition"
+        className="w-full flex items-center justify-between px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-100/70 transition"
       >
         <span>{faq.q}</span>
-        <span className="text-[#b30d29] text-xl ml-4 flex-shrink-0">
-          {open ? "−" : "+"}
+        <span className="text-gray-500 text-xl ml-4 flex-shrink-0">
+          {open ? "∧" : "∨"}
         </span>
       </button>
       {open && (
-        <div className="px-6 pb-5 text-gray-400 leading-7 text-sm">
+        <div className="px-6 pb-5 pt-2 text-gray-600 leading-7 text-sm border-t border-gray-100 bg-white">
           {faq.a}
         </div>
       )}
@@ -86,7 +86,7 @@ export default function IndustryDetailPage({
     <>
       {/* ══════════════ HERO ══════════════ */}
       <section
-        className="relative min-h-[520px] flex items-center bg-cover bg-center bg-no-repeat text-white pt-20"
+        className="relative min-h-[520px]  flex items-center bg-cover bg-center bg-no-repeat text-white pt-32"
         style={{ backgroundImage: "url('/assets/images/about/aboutbg.png')" }}
       >
         <div className="absolute inset-0 bg-black/65" />
@@ -192,25 +192,25 @@ export default function IndustryDetailPage({
       </section>
 
       {/* ══════════════ FAQ ══════════════ */}
-      <section className="py-16 px-6 lg:px-8 bg-black text-white">
+      <section className="w-full py-16 px-6 lg:px-8 bg-white text-gray-900 border-t border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
 
             {/* Left */}
             <div className="lg:col-span-1">
-              <h2 className="text-3xl font-bold text-white mb-2">FAQ's</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">FAQ's</h2>
               <h3 className="text-2xl font-bold text-[#b30d29] mb-3">
-                Have Questions?
+                Have questions ?
               </h3>
-              <p className="font-semibold text-gray-300 mb-3">
-                We've got answers.
+              <p className="font-semibold text-gray-700 mb-3">
+                We got answers.
               </p>
-              <p className="text-gray-400 leading-7 mb-6">
+              <p className="text-gray-600 leading-7 mb-6 text-sm">
                 {faqDesc ?? `Gupta Tech Web specializes in building secure, scalable, and performance-driven ${title} solutions designed to accelerate your business growth.`}
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center border border-white hover:border-[#b30d29] hover:text-[#b30d29] transition px-6 py-3 rounded-xl font-semibold"
+                className="inline-flex items-center border border-gray-300 text-gray-800 hover:border-[#b30d29] hover:text-[#b30d29] hover:bg-gray-50 transition px-6 py-3 rounded-xl font-semibold text-sm"
               >
                 Contact Us →
               </Link>
@@ -219,7 +219,7 @@ export default function IndustryDetailPage({
             {/* Right — Accordion */}
             <div className="lg:col-span-2">
               <h5 className="text-[#b30d29] font-semibold mb-4 text-base">
-                Outsourcing &amp; Resource Supply
+                Outsourcing and Resource Supply
               </h5>
               {faqList.map((faq, i) => (
                 <FaqItem key={i} faq={faq} />

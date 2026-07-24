@@ -4,7 +4,15 @@ import { emailService } from "@/services/emailService";
 
 export async function POST(request) {
   try {
-    const { name, email, phone, message } = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON request payload" },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, phone, message } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -30,7 +38,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Contact API Route Error:", error);
     return NextResponse.json(
-      { error: "Failed to submit contact request" },
+      { error: "Failed to submit contact request", details: error.message },
       { status: 500 }
     );
   }
@@ -55,7 +63,7 @@ export async function GET(request) {
   } catch (error) {
     console.error("Get Contacts API Route Error:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve messages" },
+      { error: "Failed to retrieve messages", details: error.message },
       { status: 500 }
     );
   }

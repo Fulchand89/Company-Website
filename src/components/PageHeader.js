@@ -23,7 +23,7 @@ export default function PageHeader({
 }) {
   return (
     <section
-      className="relative flex items-center justify-center min-h-[420px] bg-cover bg-center bg-no-repeat text-white"
+      className="relative flex items-center justify-center min-h-[350px] mt-24 bg-cover bg-center bg-no-repeat text-white"
       style={{ backgroundImage: `url('${bgImage}')` }}
     >
       {/* Dark overlay */}

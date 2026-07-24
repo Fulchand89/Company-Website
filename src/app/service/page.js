@@ -27,15 +27,15 @@ const serviceCategories = [
     title: "Website Development",
     img: "/assets/images/service/e-commerce1.png",
     items: [
-      { label: "Laravel Development", href: "/service" },
-      { label: "WordPress Development", href: "/service" },
-      { label: "Shopify Development", href: "/service" },
-      { label: "Python Web Development", href: "/service" },
-      { label: "React.js Development", href: "/service" },
-      { label: "PHP Development", href: "/service" },
-      { label: "DOT NET Development", href: "/service" },
-      { label: "MERN Stack Development", href: "/service" },
-      { label: "Vue.js Development", href: "/service" },
+      { label: "Laravel Development", href: "/service/web" },
+      { label: "WordPress Development", href: "/service/web" },
+      { label: "Shopify Development", href: "/service/web" },
+      { label: "Python Web Development", href: "/service/web" },
+      { label: "React.js Development", href: "/service/web" },
+      { label: "PHP Development", href: "/service/web" },
+      { label: "DOT NET Development", href: "/service/web" },
+      { label: "MERN Stack Development", href: "/service/web" },
+      { label: "Vue.js Development", href: "/service/web" },
     ],
   },
   {
@@ -43,9 +43,9 @@ const serviceCategories = [
     title: "UI/UX Design",
     img: "/assets/images/service/ui-ux.png",
     items: [
-      { label: "Website Design", href: "/service" },
-      { label: "Application Design", href: "/service" },
-      { label: "Responsive Design", href: "/service" },
+      { label: "Website Design", href: "/service/ui-ux" },
+      { label: "Application Design", href: "/service/ui-ux" },
+      { label: "Responsive Design", href: "/service/ui-ux" },
     ],
   },
   {
@@ -53,10 +53,10 @@ const serviceCategories = [
     title: "Digital Marketing",
     img: "/assets/images/service/seo2.png",
     items: [
-      { label: "SEO", href: "/service" },
+      { label: "SEO", href: "/service/digital-marketing" },
       {
         label: "Social Media Marketing",
-        href: "/service",
+        href: "/service/digital-marketing",
       },
     ],
   },
@@ -122,6 +122,7 @@ const techLogos = [
 export default function ServicesPage() {
   return (
     <>
+      <div className="mt-20">
       {/* ================= HERO SECTION ================= */}
       <PageHeader
         breadcrumb="Services"
@@ -210,8 +211,8 @@ export default function ServicesPage() {
 
         </div>
 
-      </section> 
-         {/* ================= WHAT WE DO ================= */}
+      </section>
+      {/* ================= WHAT WE DO ================= */}
 
       <section className="bg-white rounded-[32px] mx-4 lg:mx-8 my-10 py-16 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -486,6 +487,7 @@ export default function ServicesPage() {
         </div>
 
       </section>
- </>
- );
+      </div>
+    </>
+  );
 }

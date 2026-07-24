@@ -46,7 +46,7 @@ export default function BlogPage() {
     setSelectedTag(tagSlug);
     setPage(1); // Reset to first page
     if (typeof window !== "undefined") {
-      const newUrl = tagSlug 
+      const newUrl = tagSlug
         ? `${window.location.pathname}?tag=${encodeURIComponent(tagSlug)}`
         : window.location.pathname;
       window.history.pushState({ path: newUrl }, "", newUrl);
@@ -56,8 +56,8 @@ export default function BlogPage() {
   return (
     <>
       <section className="hero-section">
-        <div className="hero-content w-full h-[180px] text-white bg-[url('/assets/images/blog/blog-bg.png')] bg-center bg-cover bg-no-repeat py-35">
-          <div className="text-center text-white my-5">
+        <div className="hero-content w-full h-[400px] text-white bg-[url('/assets/images/blog/blog-bg.png')] bg-center bg-cover bg-no-repeat py-35">
+          <div className="text-center text-white my-5" style={{ paddingTop: "70px", paddingBottom: "0px" }}>
             <h1 className="font-bold text-4xl md:text-5xl">Our Blog</h1>
             <p className="text-xl mt-2">Insights, ideas, and stories from our team.</p>
           </div>
@@ -112,11 +112,10 @@ export default function BlogPage() {
                           <button
                             key={tag.id}
                             onClick={() => handleTagClick(tag.slug)}
-                            className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-[24px] transition-colors cursor-pointer border-none ${
-                              selectedTag === tag.slug
-                                ? "bg-[#dc3545] text-white"
-                                : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                            }`}
+                            className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-[24px] transition-colors cursor-pointer border-none ${selectedTag === tag.slug
+                              ? "bg-[#dc3545] text-white"
+                              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                              }`}
                             aria-label={`Filter blogs by tag ${tag.name}`}
                           >
                             #{tag.name}

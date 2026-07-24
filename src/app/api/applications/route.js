@@ -55,7 +55,7 @@ export async function GET(request) {
   } catch (error) {
     console.error("GET Applications API Error:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve applications" },
+      { error: "Failed to retrieve applications", details: error.message },
       { status: 500 }
     );
   }
@@ -197,7 +197,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("POST Applications API Error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error. Failed to process upload." },
+      { error: "Internal Server Error. Failed to process upload.", details: error.message },
       { status: 500 }
     );
   }

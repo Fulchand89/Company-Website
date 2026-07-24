@@ -2,6 +2,7 @@ import { executeQuery } from "@/lib/db";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock, Calendar, User, Tag, ChevronRight } from "lucide-react";
+import { ensureSchema } from "@/services/blogService";
 
 const STATIC_BLOG_POSTS = [
   {
@@ -131,8 +132,9 @@ const STATIC_BLOG_POSTS = [
 // Helper to fetch blog post by ID or Slug
 async function getBlogPost(idOrSlug) {
   try {
+    await ensureSchema();
     const results = await executeQuery(
-      "SELECT * FROM blogs WHERE id = ? OR slug = ?", 
+      "SELECT * FROM blogs WHERE (id = ? OR slug = ?) AND status = 'published'", 
       [idOrSlug, idOrSlug]
     );
     if (results && results.length > 0) {
@@ -154,7 +156,7 @@ async function getBlogPost(idOrSlug) {
           `SELECT DISTINCT b.id, b.slug, b.title, b.category, b.img, b.published_at 
            FROM blogs b
            LEFT JOIN blog_tags bt ON b.id = bt.blog_id
-           WHERE b.id != ? AND (b.category = ? OR bt.tag_id IN (
+           WHERE b.id != ? AND b.status = 'published' AND (b.category = ? OR bt.tag_id IN (
              SELECT tag_id FROM blog_tags WHERE blog_id = ?
            ))
            ORDER BY b.published_at DESC
@@ -181,6 +183,17 @@ async function getBlogPost(idOrSlug) {
         seoDescription: post.seo_description || post.excerpt,
         seoKeywords: post.seo_keywords || post.category || "Technology",
         robots: post.robots || "index, follow",
+        canonicalUrl: post.canonical_url,
+        focusKeyword: post.focus_keyword,
+        ogTitle: post.og_title,
+        ogDescription: post.og_description,
+        ogImage: post.og_image,
+        ogUrl: post.og_url,
+        ogType: post.og_type,
+        twitterCard: post.twitter_card,
+        twitterTitle: post.twitter_title,
+        twitterDescription: post.twitter_description,
+        twitterImage: post.twitter_image,
         tags: tags || [],
         relatedPosts: relatedPosts || []
       };
@@ -252,6 +265,7 @@ function calculateReadingTime(htmlContent) {
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 }
 
+// Generates headings TOC
 function generateTableOfContents(htmlContent) {
   if (!htmlContent) return [];
   const matches = [...htmlContent.matchAll(/<(h2|h3)[^>]*>(.*?)<\/\1>/gi)];
@@ -288,8 +302,11 @@ export async function generateMetadata({ params }) {
   const post = await getBlogPost(id);
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://guptatechweb.com";
-  const canonicalUrl = `${baseUrl}/blog/${post.slug || post.id}`;
+  const canonicalUrl = post.canonicalUrl || `${baseUrl}/blog/${post.slug || post.id}`;
   const imageUrl = post.image.startsWith("http") ? post.image : `${baseUrl}${post.image}`;
+
+  const ogImg = post.ogImage ? (post.ogImage.startsWith("http") ? post.ogImage : `${baseUrl}${post.ogImage}`) : imageUrl;
+  const twImg = post.twitterImage ? (post.twitterImage.startsWith("http") ? post.twitterImage : `${baseUrl}${post.twitterImage}`) : imageUrl;
 
   return {
     title: post.seoTitle,
@@ -300,17 +317,17 @@ export async function generateMetadata({ params }) {
     },
     robots: post.robots,
     openGraph: {
-      title: post.seoTitle,
-      description: post.seoDescription,
-      url: canonicalUrl,
-      type: "article",
+      title: post.ogTitle || post.seoTitle,
+      description: post.ogDescription || post.seoDescription,
+      url: post.ogUrl || canonicalUrl,
+      type: post.ogType || "article",
       siteName: "Gupta Tech Web",
       publishedTime: post.publishedAt,
       modifiedTime: post.modifiedAt,
       authors: [post.author],
       images: [
         {
-          url: imageUrl,
+          url: ogImg,
           width: 1200,
           height: 630,
           alt: post.imgAlt,
@@ -318,10 +335,10 @@ export async function generateMetadata({ params }) {
       ],
     },
     twitter: {
-      card: "summary_large_image",
-      title: post.seoTitle,
-      description: post.seoDescription,
-      images: [imageUrl],
+      card: post.twitterCard || "summary_large_image",
+      title: post.twitterTitle || post.seoTitle,
+      description: post.twitterDescription || post.seoDescription,
+      images: [twImg],
     },
   };
 }
@@ -392,6 +409,14 @@ export default async function BlogDetailPage({ params }) {
     ]
   };
 
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gupta Tech Web",
+    "url": baseUrl,
+    "logo": `${baseUrl}/favicon.ico`
+  };
+
   const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -408,6 +433,10 @@ export default async function BlogDetailPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
       />
 
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 text-slate-300">

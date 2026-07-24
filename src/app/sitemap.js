@@ -1,4 +1,7 @@
 import { executeQuery } from "@/lib/db";
+import { ensureSchema } from "@/services/blogService";
+
+export const dynamic = "force-dynamic";
 
 export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://guptatechweb.com";
@@ -35,7 +38,8 @@ export default async function sitemap() {
   // Dynamic blog routes mapping
   let dynamicRoutes = [];
   try {
-    const blogs = await executeQuery("SELECT id, slug, modified_at FROM blogs");
+    await ensureSchema();
+    const blogs = await executeQuery("SELECT id, slug, modified_at FROM blogs WHERE status = 'published'");
     if (blogs && blogs.length > 0) {
       dynamicRoutes = blogs.map((post) => ({
         url: `${baseUrl}/blog/${post.slug || post.id}`,

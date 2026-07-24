@@ -2,116 +2,84 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
-// ─── Testimonial Data ─────────────────────────────────────────────────────────
-
-const testimonials = [
-  {
-    img: "/assets/images/hero/client-img1.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img2.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img3.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img1.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img2.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img3.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img1.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img2.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-  {
-    img: "/assets/images/hero/client-img3.png",
-    name: "Roy Donaldson",
-    project: "Book Luxor",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!",
-  },
-];
+import { useState, useEffect } from "react";
+import Pagination from "@/components/Pagination";
 
 // ─── Testimonial Card ─────────────────────────────────────────────────────────
 
-function TestimonialCard({ img, name, project, text }) {
+function TestimonialCard({ img, name, project, text, rating = 5 }) {
+  const starsString = "★".repeat(rating || 5);
+
   return (
-    <div className="w-full md:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] mt-14 mb-5">
+    <div className="w-full">
       {/* extra top margin on the wrapper to make space for the floating avatar */}
-      <div
-        className="relative border border-gray-200 rounded-[1rem] p-4 bg-white min-h-[380px]"
-        style={{ maxWidth: "600px" }}
-      >
+      <div className="relative flex h-[296px] flex-col rounded-[16px] bg-white px-6 pb-5 pt-[66px] shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
         {/* Floating avatar */}
-        <div className="absolute" style={{ top: "-45px", left: "30px" }}>
+        <div className="absolute left-[27px] top-[-38px]">
           <Image
-            src={img}
-            alt={name}
-            width={75}
-            height={75}
+            src={img || "/assets/images/hero/client-img1.png"}
+            alt={name || "Client"}
+            width={64}
+            height={64}
             className="rounded-full object-cover"
-            style={{ width: "75px", height: "75px" }}
+            style={{ width: "64px", height: "64px" }}
           />
         </div>
 
         {/* Stars */}
-        <div className="text-right text-yellow-400 text-3xl absolute" style={{ top: "5px", right: "15px" }}>
-          ★★★★★
+        <div className="absolute right-5 top-6 text-[22px] leading-none tracking-[1px] text-[#ffb800]">
+          {starsString}
         </div>
 
         {/* Body text — my-5 gives top gap so text clears the avatar */}
-        <p className="text-gray-500 my-5 text-lg leading-8">{text}</p>
+        <p className="text-[14px] leading-[21px] text-[#757575]">{text}</p>
 
         {/* Name + project */}
-        <h5 className="font-bold mb-1 text-[#0f172a]">{name}</h5>
-        <p className="mb-0 text-sm">
-          <span className="text-gray-500">Project : </span>
-          <span className="text-red-600 font-semibold">{project}</span>
-        </p>
+        <div className="mt-auto">
+          <h5 className="mb-1 text-[18px] font-bold leading-5 text-[#bd1232]">{name}</h5>
+          <p className="mb-0 text-[13px] leading-4">
+            <span className="text-[#757575]">Project : </span>
+            <span className="font-semibold text-[#f05263]">{project}</span>
+          </p>
+        </div>
       </div>
-    </div >
+    </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function TestimonialPage() {
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/testimonials?page=${page}&limit=9`);
+        if (!res.ok) throw new Error("Failed to load testimonials.");
+        const data = await res.json();
+        setTestimonials(data.data || []);
+        setTotalPages(data.pagination?.totalPages || 1);
+      } catch (err) {
+        console.error(err);
+        setError("Could not load testimonials.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTestimonials();
+  }, [page]);
+
   return (
     <>
       {/* ── HERO ── */}
       <section className="hero-section">
         <div
-
           className="hero-content w-full text-white py-15"
           style={{
             background:
@@ -126,13 +94,33 @@ export default function TestimonialPage() {
       </section>
 
       {/* ── TESTIMONIAL CARDS ── */}
-      <section className="bg-white rounded-[2rem] p-5">
-        {/* flex-wrap row; extra pt so avatars don't clip at top of section */}
-        <div className="flex flex-wrap gap-4 pt-14">
-          {testimonials.map((item, i) => (
-            <TestimonialCard key={i} {...item} />
-          ))}
-        </div>
+      <section className="bg-white rounded-[2rem] p-6 lg:p-10">
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 font-medium">Loading testimonials...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">{error}</div>
+        ) : (
+          <>
+            {/* flex-wrap row; extra pt so avatars don't clip at top of section */}
+            <div className="grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((item, i) => (
+                <TestimonialCard key={item.id || i} {...item} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="pt-10">
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={(p) => setPage(p)}
+                />
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* ── CTA BANNER ── */}

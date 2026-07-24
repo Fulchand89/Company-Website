@@ -35,36 +35,35 @@ export default function Navbar() {
 
   /* ── Industries data ── */
   const industries = [
-    { name: "Healthcare",           img: "img1.png",  href: "/industry/healthcare" },
-    { name: "Food & Restaurant",    img: "img2.png",  href: "/industry/restaurant" },
-    { name: "Travel",               img: "img3.png",  href: "/industry/travel" },
-    { name: "Real Estate",          img: "img4.png",  href: "/industry/realestate" },
-    { name: "Supply Chain",         img: "img5.png",  href: "/industry/supply-chain" },
-    { name: "Social Media Platform",img: "img6.png",  href: "/industry/social-media-platform" },
-    { name: "Fintech Applications", img: "img7.png",  href: "/industry/fintech-application" },
-    { name: "E-Commerce Solutions", img: "img8.png",  href: "/industry/e-commerce" },
-    { name: "Retails",              img: "img9.png",  href: "/industry/retail" },
-    { name: "Tutors",               img: "img10.png", href: "/industry/tutor" },
+    { name: "Healthcare", img: "img1.png", href: "/industry/healthcare" },
+    { name: "Food & Restaurant", img: "img2.png", href: "/industry/restaurant" },
+    { name: "Travel", img: "img3.png", href: "/industry/travel" },
+    { name: "Real Estate", img: "img4.png", href: "/industry/realestate" },
+    { name: "Supply Chain", img: "img5.png", href: "/industry/supply-chain" },
+    { name: "Social Media Platform", img: "img6.png", href: "/industry/social-media-platform" },
+    { name: "Fintech Applications", img: "img7.png", href: "/industry/fintech-application" },
+    { name: "E-Commerce Solutions", img: "img8.png", href: "/industry/e-commerce" },
+    { name: "Retails", img: "img9.png", href: "/industry/retail" },
+    { name: "Tutors", img: "img10.png", href: "/industry/tutor" },
   ];
 
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 px-4 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${
-        scrolled ? "shadow-lg" : ""
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 px-0 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${scrolled ? "shadow-lg" : ""
+        }`}
     >
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto pl-0 pr-0 py-5  flex items-center justify-between">
 
         {/* ── Logo ── */}
-        <Link href="/" className="navbar-brand">
+        <Link href="/" className="navbar-brand shrink-0">
           <Image
             src="/assets/images/logo-gtw.png"
             alt="logo"
-            width={100}
-            height={30}
+            width={200}
+            height={80}
             priority
-            className="mt-2"
+            style={{ width: "auto", height: "55px" }}
           />
         </Link>
 
@@ -80,17 +79,16 @@ export default function Navbar() {
 
         {/* ── Menu ── */}
         <div
-          className={`${
-            menuOpen ? "flex" : "hidden"
-          } lg:flex flex-col lg:flex-row lg:items-center max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:right-0 max-lg:bg-black max-lg:p-5 max-lg:max-h-[80vh] max-lg:overflow-y-auto`}
+          className={`${menuOpen ? "flex" : "hidden"
+            } lg:flex flex-col lg:flex-row lg:items-center max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:right-0 max-lg:bg-black max-lg:p-5 max-lg:max-h-[80vh] max-lg:overflow-y-auto`}
         >
-          <ul className="flex flex-col lg:flex-row lg:gap-15 gap-2 list-none m-0 p-0">
+          <ul className="flex flex-col lg:flex-row lg:gap-8 gap-2 list-none m-0 p-0">
 
             {/* Home */}
             <li>
               <Link
                 href="/"
-                className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
+                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
                 onClick={closeAll}
               >
                 Home
@@ -101,7 +99,7 @@ export default function Navbar() {
             <li>
               <Link
                 href="/about"
-                className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
+                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
                 onClick={closeAll}
               >
                 About Us
@@ -111,7 +109,7 @@ export default function Navbar() {
             {/* ── SERVICES ── */}
             <li className="relative">
               <button
-                className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
+                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
                 onClick={() => toggleDropdown("services")}
                 onMouseEnter={() => { if (window.innerWidth >= 1024) setOpenDropdown("services"); }}
               >
@@ -121,25 +119,25 @@ export default function Navbar() {
               {/* Services mega-dropdown */}
               {openDropdown === "services" && (
                 <div
-                  className="lg:fixed text-xl lg:left-0 lg:right-0 lg:top-[85px] rounded-[12px] lg:rounded-none pt-10 pb-6 px-6 bg-[#111] shadow-2xl z-50"
+                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[72px] rounded-2xl lg:rounded-b-3xl pt-5 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
                   onMouseLeave={() => { if (window.innerWidth >= 1024) setOpenDropdown(null); }}
                 >
-                    {/* Responsive grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
+                  {/* Responsive grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1440px] mx-auto">
                     {/* Mobile Development */}
-                    <div className="p-4 bg-gradient-to-b from-[#232324] to-[#1b1b1b] rounded-2xl">
-                      <h6 className="text-[#b30d29] font-bold mb-3 text-base">Mobile Development</h6>
-                      <ul className="space-y-2">
+                    <div className="rounded-lg bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 lg:h-[291px]">
+                      <h6 className="mb-4 text-base font-bold text-[#d30d31]">Mobile Development</h6>
+                      <ul className="space-y-4">
                         {[
-                          ["Flutter App Development",  "/service/app"],
-                          ["Android App Development",  "/service/app"],
-                          ["iOS App Development",      "/service/app"],
-                          ["React Native",             "/service/app"],
-                          ["Machine Learning",         "/service/app"],
-                          ["Java Development",         "/service/app"],
+                          ["Flutter App Development", "/service/app"],
+                          ["Android App Development", "/service/app"],
+                          ["iOS App Development", "/service/app"],
+                          ["React Native", "/service/app"],
+                          ["Machine Learning", "/service/app"],
+                          ["Java Development", "/service/app"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="text-white text-base hover:text-[#b30d29] transition" onClick={closeAll}>
+                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -148,22 +146,22 @@ export default function Navbar() {
                     </div>
 
                     {/* Website Development */}
-                    <div className="p-4 bg-gradient-to-b from-[#232324] to-[#1b1b1b] rounded-2xl">
-                      <h6 className="text-[#b30d29] font-bold mb-3 text-base">Website Development</h6>
-                      <ul className="space-y-2">
+                    <div className="rounded-lg bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 lg:h-[411px]">
+                      <h6 className="mb-4 text-base font-bold text-[#d30d31]">Website Development</h6>
+                      <ul className="space-y-4">
                         {[
-                          ["Laravel Development",      "/service"],
-                          ["WordPress Development",    "/service"],
-                          ["Shopify Development",      "/service"],
-                          ["Python Web Development",   "/service"],
-                          ["React.js Development",     "/service"],
-                          ["PHP Development",          "/service"],
-                          ["DOT NET Development",      "/service"],
-                          ["MERN Stack Development",   "/service"],
-                          ["Vue.js Development",       "/service"],
+                          ["Laravel Development", "/service/web"],
+                          ["WordPress Development", "/service/web"],
+                          ["Shopify Development", "/service/web"],
+                          ["Python Web Development", "/service/web"],
+                          ["React.js Development", "/service/web"],
+                          ["PHP Development", "/service/web"],
+                          ["DOT NET Development", "/service/web"],
+                          ["MERN Stack Development", "/service/web"],
+                          ["Vue.js Development", "/service/web"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="text-white text-base hover:text-[#b30d29] transition" onClick={closeAll}>
+                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -172,16 +170,16 @@ export default function Navbar() {
                     </div>
 
                     {/* UI/UX Design */}
-                    <div className="p-4 bg-gradient-to-b from-[#232324] to-[#1b1b1b] rounded-2xl">
-                      <h6 className="text-[#b30d29] font-bold mb-3 text-base">UI/UX Design</h6>
-                      <ul className="space-y-2">
+                    <div className="rounded-lg bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 lg:h-[171px]">
+                      <h6 className="mb-4 text-base font-bold text-[#d30d31]">UI/UX Design</h6>
+                      <ul className="space-y-4">
                         {[
-                          ["Website Design",      "/service"],
-                          ["Application Design",  "/service"],
-                          ["Responsive Design",   "/service"],
+                          ["Website Design", "/service/ui-ux"],
+                          ["Application Design", "/service/ui-ux"],
+                          ["Responsive Design", "/service/ui-ux"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="text-white text-base hover:text-[#b30d29] transition" onClick={closeAll}>
+                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -190,15 +188,15 @@ export default function Navbar() {
                     </div>
 
                     {/* Digital Marketing */}
-                    <div className="p-4 bg-gradient-to-b from-[#232324] to-[#1b1b1b] rounded-2xl">
-                      <h6 className="text-[#b30d29] font-bold mb-3 text-base">Digital Marketing</h6>
-                      <ul className="space-y-2">
+                    <div className="rounded-lg bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 lg:h-[147px]">
+                      <h6 className="mb-4 text-base font-bold text-[#d30d31]">Digital Marketing</h6>
+                      <ul className="space-y-4">
                         {[
-                          ["SEO",                    "/service"],
-                          ["Social Media Marketing", "/service"],
+                          ["SEO", "/service/digital-marketing"],
+                          ["Social Media Marketing", "/service/digital-marketing"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="text-white text-base hover:text-[#b30d29] transition" onClick={closeAll}>
+                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -213,7 +211,7 @@ export default function Navbar() {
             {/* ── INDUSTRIES ── */}
             <li className="relative">
               <button
-                className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
+                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
                 onClick={() => toggleDropdown("industries")}
                 onMouseEnter={() => { if (window.innerWidth >= 1024) setOpenDropdown("industries"); }}
               >
@@ -223,26 +221,29 @@ export default function Navbar() {
               {/* Industries mega-dropdown */}
               {openDropdown === "industries" && (
                 <div
-                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[85px] rounded-[12px] lg:rounded-none pt-10 pb-6 px-6 bg-[#111] shadow-2xl z-50"
+                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[72px] rounded-2xl lg:rounded-b-3xl pt-4 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
                   onMouseLeave={() => { if (window.innerWidth >= 1024) setOpenDropdown(null); }}
                 >
                   {/* Responsive grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-7xl mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1440px] mx-auto">
                     {industries.map((item) => (
                       <Link key={item.name} href={item.href} className="no-underline" onClick={closeAll}>
-                        <div className="bg-gradient-to-b from-[#232324] to-[#1b1b1b] text-white p-4 rounded-xl hover:bg-[#2a2a2a] transition">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Image
-                              src={`/assets/images/topbar/${item.img}`}
-                              alt={item.name}
-                              width={40}
-                              height={40}
-                            />
-                            <span className="text-white text-lg font-semibold">{item.name}</span>
+                        <div className="h-[99px] rounded-md border border-white/5 bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 hover:-translate-y-1">
+                          <div>
+                            <div className="mb-1 flex items-center gap-2">
+                              <Image
+                                src={`/assets/images/topbar/${item.img}`}
+                                alt={item.name}
+                                width={28}
+                                height={28}
+                                className="object-contain shrink-0"
+                              />
+                              <span className="text-base font-bold leading-5 text-white">{item.name}</span>
+                            </div>
+                            <p className="text-sm leading-5 text-white">
+                              Innovative solutions for growing businesses in tech and services.
+                            </p>
                           </div>
-                          <p className="text-gray-400 text-sm leading-5">
-                            Innovative solutions for growing businesses in tech and services.
-                          </p>
                         </div>
                       </Link>
                     ))}
@@ -253,28 +254,28 @@ export default function Navbar() {
 
             {/* Portfolio */}
             <li>
-              <Link href="/portfolio" className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/portfolio" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Portfolio
               </Link>
             </li>
 
             {/* Testimonial */}
             <li>
-              <Link href="/testimonial" className="text-white text-xl  font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/testimonial" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Testimonial
               </Link>
             </li>
 
             {/* Blogs */}
             <li>
-              <Link href="/blog" className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/blog" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Blogs
               </Link>
             </li>
 
             {/* Careers */}
             <li>
-              <Link href="/careers" className="text-white text-xl font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/careers" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Careers
               </Link>
             </li>
@@ -283,7 +284,7 @@ export default function Navbar() {
             <li className="lg:hidden mt-2">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center border border-[#0d6efd] text-[#0d6efd] bg-transparent hover:bg-[#0d6efd]/10 transition duration-200 w-full py-2 px-4 rounded"
+                className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white w-full rounded"
                 onClick={closeAll}
               >
                 Contact Us
@@ -297,7 +298,7 @@ export default function Navbar() {
         <div className="hidden lg:flex ml-3">
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center border border-[#ef4444] text-[#ef4444] bg-transparent hover:bg-red-900/20 transition duration-200 rounded-[12px] px-4 py-2 no-underline whitespace-nowrap"
+            className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white rounded-[12px] no-underline whitespace-nowrap"
           >
             Contact Us →
           </Link>

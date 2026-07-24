@@ -15,10 +15,61 @@ export default function Footer() {
             industry's standard.
           </p>
           <div className="flex items-center mt-2">
-            <a href="#" className="text-white"><Image src="/assets/images/icon/facebook.png" alt="Facebook" width={40} height={40} /></a>
-            <a href="#" className="text-white"><Image src="/assets/images/icon/instagram.png" alt="Instagram" width={40} height={40} /></a>
-            <a href="#" className="text-white"><Image src="/assets/images/icon/twitter.png" alt="Twitter" width={40} height={40} /></a>
-            <a href="#" className="text-white"><Image src="/assets/images/icon/linkdin.png" alt="LinkedIn" width={40} height={40} /></a>
+            <a
+              href="https://www.facebook.com/people/Guptatechweb/61570538930157/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white"
+            >
+              <Image
+                src="/assets/images/icon/facebook.png"
+                alt="Facebook"
+                width={60}
+                height={60}
+              />
+            </a>
+
+            <a
+              href="https://www.instagram.com/gupta.tech.web/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white"
+            >
+              <Image
+                src="/assets/images/icon/instagram.png"
+                alt="Instagram"
+                width={60}
+                height={60}
+              />
+            </a>
+
+            <a
+              href="https://x.com/GuptaWeb66733"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white"
+            >
+              <Image
+                src="/assets/images/icon/twitter.png"
+                alt="X (Twitter)"
+                width={60}
+                height={60}
+              />
+            </a>
+
+            <a
+              href="https://www.linkedin.com/company/gupta-tech-web"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white"
+            >
+              <Image
+                src="/assets/images/icon/linkdin.png"
+                alt="LinkedIn"
+                width={60}
+                height={60}
+              />
+            </a>
           </div>
         </div>
 
@@ -37,9 +88,9 @@ export default function Footer() {
           <h6 className="uppercase text-sm font-semibold mb-3">Services</h6>
           <ul className="list-none m-0 p-0 space-y-1">
             <li><Link href="/service/app" className="text-white no-underline text-sm block mb-1">App Development</Link></li>
-            <li><Link href="/service" className="text-white no-underline text-sm block mb-1">Website Development</Link></li>
-            <li><Link href="/service" className="text-white no-underline text-sm block mb-1">Digital Marketing</Link></li>
-            <li><Link href="/service" className="text-white no-underline text-sm block mb-1">UI-UX</Link></li>
+            <li><Link href="/service/web" className="text-white no-underline text-sm block mb-1">Website Development</Link></li>
+            <li><Link href="/service/digital-marketing" className="text-white no-underline text-sm block mb-1">Digital Marketing</Link></li>
+            <li><Link href="/service/ui-ux" className="text-white no-underline text-sm block mb-1">UI-UX</Link></li>
           </ul>
         </div>
 

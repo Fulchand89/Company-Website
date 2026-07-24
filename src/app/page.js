@@ -11,7 +11,7 @@ const aboutItems = [
     icon: "/assets/images/hero/hero-about-icon1.png",
     title: "Custom Software Development",
     text: "We engineer bespoke software designed to solve your unique operational challenges. From automating internal workflows to building large-scale ERP systems, our solutions are built for high performance, reliability, and long-term scalability.",
-    titleClass: "text-[#0d6efd]",
+    titleClass: "text-[#B30D29]",
   },
   {
     icon: "/assets/images/hero/hero-about-icon2.png",
@@ -74,10 +74,10 @@ const portfolioItems = [
 const techLogos = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
 
 const testimonials = [
-  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor" },
-  { img: "/assets/images/hero/client-img3.png", name: "Roy Donaldson", project: "Book Luxor" },
-  { img: "/assets/images/hero/client-img2.png", name: "Roy Donaldson", project: "Book Luxor" },
-  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor" },
+  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { img: "/assets/images/hero/client-img3.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { img: "/assets/images/hero/client-img2.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
 ];
 
 const teamMembers = Array(8).fill({ name: "Jennifer", role: "CEO" });
@@ -92,8 +92,29 @@ const blogPosts = [
 
 function TestimonialSwiper() {
   const ref = useRef(null);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const res = await fetch("/api/testimonials?limit=20");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.length > 0) {
+            setItems(json.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch testimonials:", err);
+      }
+    }
+    fetchTestimonials();
+  }, []);
+
+  const displayList = items.length > 0 ? items : testimonials;
+
+  useEffect(() => {
+    if (displayList.length === 0) return;
     let instance = null;
     async function init() {
       const { Swiper } = await import("swiper");
@@ -102,10 +123,12 @@ function TestimonialSwiper() {
         modules: [Autoplay],
         slidesPerView: 3,
         spaceBetween: 30,
-        loop: true,
-        centeredSlides: true,
+        loop: displayList.length > 1,
+        centeredSlides: displayList.length > 2,
         speed: 3000,
-        autoplay: { delay: 0, disableOnInteraction: false },
+        autoplay: { delay: 3000, disableOnInteraction: false },
+        observer: true,
+        observeParents: true,
         breakpoints: {
           0: { slidesPerView: 1 },
           768: { slidesPerView: 2 },
@@ -115,22 +138,21 @@ function TestimonialSwiper() {
     }
     init();
     return () => { if (instance) instance.destroy(true, true); };
-  }, []);
+  }, [displayList]);
 
   return (
     <div className="swiper myTestimonialSwiper py-1 overflow-hidden" ref={ref}>
       <div className="swiper-wrapper">
-        {testimonials.map((item, i) => (
-          <div className="swiper-slide pt-14" key={i}>
+        {displayList.map((item, i) => (
+          <div className="swiper-slide pt-14" key={item.id || i}>
             <div
-              className="relative border border-gray-200 rounded-[1rem] p-4 bg-white"
-              style={{ maxWidth: "600px" }}
+              className="relative w-full max-w-[393px] min-h-[335px] rounded-[16px] bg-white px-[25px] pb-[22px] pt-[72px] shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
             >
               {/* Floating avatar */}
               <div className="absolute" style={{ top: "-45px", left: "30px" }}>
                 <Image
-                  src={item.img}
-                  alt={item.name}
+                  src={item.img || "/assets/images/hero/client-img1.png"}
+                  alt={item.name || "Client"}
                   width={75}
                   height={75}
                   className="rounded-full object-cover"
@@ -138,18 +160,16 @@ function TestimonialSwiper() {
                 />
               </div>
               {/* Stars */}
-              <div className="text-right text-yellow-400 text-3xl absolute" style={{ top: "15px", right: "20px" }}>
-                ★★★★★
+              <div className="absolute right-[20px] top-[20px] text-[25px] leading-none tracking-[1px] text-[#ffb800]">
+                {"★".repeat(item.rating || 5)}
               </div>
-              <p className="text-gray-500 my-5 text-sm leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium
-                nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi.
-                Voluptate esse eveniet quisquam!
+              <p className="mb-[48px] text-[16px] leading-[24px] text-[#757575] line-clamp-4">
+                {item.text || "No review text provided."}
               </p>
-              <h5 className="font-bold mb-1 text-[#0f172a]">{item.name}</h5>
-              <p className="mb-0 text-sm">
-                <span className="text-gray-500">Project : </span>
-                <span className="text-red-600 font-semibold">{item.project}</span>
+              <h5 className="mb-1 text-[20px] font-bold leading-6 text-[#bd1232]">{item.name}</h5>
+              <p className="mb-0 text-[14px] leading-5">
+                <span className="text-[#757575]">Project : </span>
+                <span className="font-semibold text-[#f05263]">{item.project}</span>
               </p>
             </div>
           </div>
@@ -161,8 +181,29 @@ function TestimonialSwiper() {
 
 function TeamSwiper() {
   const ref = useRef(null);
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
+    async function fetchTeam() {
+      try {
+        const res = await fetch("/api/teams");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data && json.data.length > 0) {
+            setMembers(json.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch team members:", err);
+      }
+    }
+    fetchTeam();
+  }, []);
+
+  const displayList = members.length > 0 ? members : teamMembers;
+
+  useEffect(() => {
+    if (displayList.length === 0) return;
     let instance = null;
     async function init() {
       const { Swiper } = await import("swiper");
@@ -171,8 +212,10 @@ function TeamSwiper() {
         modules: [Autoplay],
         slidesPerView: 4,
         spaceBetween: 25,
-        loop: true,
-        autoplay: { delay: 500, disableOnInteraction: false },
+        loop: displayList.length > 1,
+        autoplay: { delay: 2000, disableOnInteraction: false },
+        observer: true,
+        observeParents: true,
         breakpoints: {
           0: { slidesPerView: 1 },
           576: { slidesPerView: 2 },
@@ -183,24 +226,24 @@ function TeamSwiper() {
     }
     init();
     return () => { if (instance) instance.destroy(true, true); };
-  }, []);
+  }, [displayList]);
 
   return (
     <div className="swiper teamSwiper overflow-hidden" ref={ref}>
       <div className="swiper-wrapper">
-        {teamMembers.map((member, i) => (
-          <div className="swiper-slide" key={i}>
+        {displayList.map((member, i) => (
+          <div className="swiper-slide" key={member.id || i}>
             <div className="text-center">
               <Image
-                src="/assets/images/hero/team-demo.png"
-                className="w-full h-auto rounded mb-3"
+                src={member.img || "/assets/images/hero/team-demo.png"}
+                className="w-full h-[280px] object-cover rounded mb-3"
                 width={300}
                 height={280}
-                alt={member.name}
+                alt={member.name || "Team Member"}
               />
               <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] rounded-[1.5rem] p-2">
                 <h6 className="mb-0 text-white font-semibold">{member.name}</h6>
-                <small className="text-white">{member.role}</small>
+                <small className="text-white">{member.designation || member.role}</small>
               </div>
             </div>
           </div>
@@ -267,8 +310,8 @@ export default function HomePage() {
             minHeight: "550px",
           }}
         >
-          <div className="hero-text py-5">
-            <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl font-bold">
+          <div className="hero-text py-5 px-5 lg:px-10 max-w-7xl">
+            <h1 className="mt-5 text-3xl md:text-4xl lg:text-4xl font-bold ">
               We Build <span className="text-[#B30D29]">Digital </span>
               <br /> Experiences
             </h1>
@@ -288,47 +331,47 @@ export default function HomePage() {
       </section>
 
       {/* ── ABOUT US ── */}
-      <section className="bg-white p-5 rounded-[2rem] mx-4 my-4">
-        <h2 className="mb-3 font-semibold text-[#0f172a]">About Us</h2>
-        <p className="mb-4 font-semibold text-[#0f172a]">
-          Increase operational efficiency, reduce costs, and drive productivity through
-          <br /> custom-built digital solutions. Our expert teams specialize in building.
+      <section className="bg-white p-6 lg:p-10">
+        <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">About Us</h2>
+        <p className="text-base lg:text-base font-medium text-[#0f172a] leading-relaxed mb-6 max-w-4xl">
+          Increase operational efficiency, reduce costs, and drive productivity through<br />
+          custom-built digital solutions. Our expert teams specialize in building.
         </p>
-        <div className="flex flex-wrap items-center -mx-3">
-          <div className="w-full md:w-1/3 px-3 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div className="md:col-span-5 lg:col-span-4 py-4">
             <Image
               src="/assets/images/hero/hero-about.png"
               alt="About Us"
-              width={400}
-              height={300}
-              className="w-full h-auto rounded"
+              width={500}
+              height={400}
+              className="w-full h-auto rounded-2xl shadow-sm"
             />
           </div>
-          <div className="w-full md:w-2/3 px-3">
-            <div className="relative">
-              {/* Left blue bar */}
+          <div className="md:col-span-7 lg:col-span-8">
+            <div className="relative pl-2">
+              {/* Left red bar */}
               <div
-                className="absolute top-0 bottom-0 bg-[#0d6efd]"
+                className="absolute top-0 bottom-0 bg-[#B30D29]"
                 style={{ width: "4px", left: "15px" }}
               />
               {/* Scrollable feature list */}
               <div
                 className="scrollbar-hide overflow-y-auto"
-                style={{ maxHeight: "400px", paddingRight: "0px" }}
+                style={{ maxHeight: "480px", paddingRight: "10px" }}
               >
                 {aboutItems.map((item, i) => (
-                  <div key={i} className="flex mb-3">
-                    <div className="shrink-0 mr-3">
+                  <div key={i} className="flex mb-6 items-start">
+                    <div className="shrink-0 mr-4">
                       <div
-                        className="bg-white shadow-sm rounded-full flex items-center justify-center relative"
+                        className="bg-white shadow-sm rounded-full flex items-center justify-center relative border border-gray-100"
                         style={{ width: "60px", height: "60px", marginLeft: "-24px", zIndex: 1 }}
                       >
-                        <Image src={item.icon} width={30} height={30} alt="" />
+                        <Image src={item.icon} width={32} height={32} alt="" />
                       </div>
                     </div>
-                    <div className="flex-grow">
-                      <h4 className={`${item.titleClass} font-semibold`}>{item.title}</h4>
-                      <p className="text-[#0f172a]">{item.text}</p>
+                    <div className="flex-grow pl-1">
+                      <h3 className={`${item.titleClass} text-xl lg:text-2xl font-bold mb-2`}>{item.title}</h3>
+                      <p className="text-base lg:text-lg text-gray-700 leading-relaxed font-normal">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -339,104 +382,176 @@ export default function HomePage() {
       </section>
 
       {/* ── OUR EXPERTISE ── */}
-      <section className="p-5 text-white">
-        <h2 className="mb-3 font-semibold">Our Expertise</h2>
-        <p className="mb-5">
-          We design and develop tailored digital solutions that streamline operations, <br />
-          optimize costs, and empower businesses to achieve peak performance
-        </p>
-        <div className="flex flex-wrap -mx-3 gap-4">
+      {/* ─────────────── OUR EXPERTISE ─────────────── */}
+      <section className="py-12 px-6 lg:px-10 text-white">
 
-          {/* Stats column */}
-          <div className="w-full lg:w-1/4 px-3">
-            {stats.map((stat, i) => (
+        {/* Heading */}
+        <div className="mb-8">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-3">
+            Our Expertise
+          </h2>
+
+          <p className="text-base lg:text-lg text-gray-300 max-w-4xl leading-7">
+            We design and develop tailored digital solutions that streamline
+            operations, optimize costs, and empower businesses to achieve peak
+            performance.
+          </p>
+        </div>
+
+        {/* Main Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+
+          {/* ================= LEFT STATS ================= */}
+          <div className="lg:col-span-1 flex flex-col gap-4">
+
+            {stats.map((stat, index) => (
               <div
-                key={i}
-                className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] p-3 mb-3 rounded"
+                key={index}
+                className="group
+                     bg-[#1F2025]
+                     border border-white/10
+                     rounded-2xl
+                     h-[145px]
+                     px-5
+                     py-4
+                     flex flex-col
+                     justify-center
+                     transition-all duration-300
+                     hover:border-[#b30d29]"
               >
-                <h2 className="font-bold">{stat.num}</h2>
-                <p className="mb-0 whitespace-pre-line">{stat.text}</p>
+                <h3 className="text-4xl font-bold text-white group-hover:text-[#b30d29] transition-colors duration-300">
+                  {stat.num}
+                </h3>
+
+                <p className="text-sm text-gray-300 mt-2 whitespace-pre-line leading-6">
+                  {stat.text}
+                </p>
+              </div>
+            ))}
+
+          </div>
+
+          {/* ================= RIGHT SERVICE CARDS ================= */}
+          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {expertiseCards.map((title, index) => (
+              <div
+                key={index}
+                className="group
+                     border border-white/10
+                     rounded-2xl
+                     h-[220px]
+                     p-6
+                     flex flex-col
+                     justify-between
+                     transition-all duration-300
+                     hover:border-white
+                     hover:-translate-y-1
+                     shadow-lg"
+                style={{
+                  background:
+                    "url('/assets/images/hero/card-bg.png') center/cover no-repeat",
+                }}
+              >
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    {title}
+                  </h3>
+
+                  <p className="text-base text-gray-200 leading-7">
+                    Developing smart, secure, and future-ready websites.
+                  </p>
+                </div>
+
+                <button
+                  className="w-10 h-10 rounded-full border border-white
+                       flex items-center justify-center
+                       hover:bg-white/20 transition"
+                >
+                  →
+                </button>
+              </div>
+            ))}
+
+          </div>
+
+        </div>
+
+      </section>
+      {/* ── INDUSTRIES WE SERVE ── */}
+      <section className="p-6 lg:p-10 bg-white">
+        <div className="text-[#0f172a]">
+          <h2 className="text-black text-2xl lg:text-3xl font-bold mb-4">
+            Industries We Serve
+          </h2>
+
+          <p className="text-base lg:text-lg text-[#0f172a] leading-relaxed mb-8 max-w-4xl">
+            Enhance operational efficiency, minimize costs, and accelerate growth
+            with intelligent, custom-built digital solutions powered by our expert
+            development teams.
+          </p>
+
+          {/* ================= Mobile / Tablet ================= */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:hidden gap-6 justify-items-center mb-6 mt-20">
+            {industryGroups.flat().map((item, ii) => (
+              <div
+                key={ii}
+                className="group w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:scale-105 cursor-pointer"
+              >
+                <Image
+                  src={item.img}
+                  alt={item.label}
+                  width={40}
+                  height={40}
+                  className="group-hover:brightness-0 group-hover:invert"
+                />
+
+                <small className="text-center text-xs mt-2 text-[#0f172a] font-medium group-hover:text-white">
+                  {item.label}
+                </small>
               </div>
             ))}
           </div>
 
-          {/* Service cards grid */}
-          <div className="w-full lg:w-[calc(75%-16px)] px-3">
-            <div className="flex flex-wrap -mx-3 gap-4">
-              {expertiseCards.map((title, i) => (
-                <div key={i} className="w-full lg:w-[calc(50%-8px)] md:w-[calc(50%-8px)] px-3">
+          {/* ================= Desktop Zigzag ================= */}
+          <div className="hidden lg:flex justify-between items-start mt-20">
+
+            {industryGroups.map((group, gi) => (
+              <div
+                key={gi}
+                className={`flex flex-col items-center ${group.length === 1 ? "pt-[75px]" : ""
+                  }`}
+              >
+                {group.map((item, ii) => (
                   <div
-                    className="group border-2 border-transparent rounded-[16px] py-4 px-4 flex flex-col justify-between transition-all duration-300 ease-in-out hover:border-white hover:-translate-y-1"
-                    style={{ background: "url('/assets/images/hero/card-bg.png') center/cover" }}
+                    key={ii}
+                    className="group w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:scale-105 cursor-pointer mb-6"
                   >
-                    <div>
-                      <h4 className="font-semibold">{title}</h4>
-                      <p>Developing smart, secure, and future-<br />ready websites.</p>
-                    </div>
-                    <button className="inline-flex items-center justify-center border border-white text-white bg-transparent hover:bg-white/10 transition duration-200 rounded-full text-sm self-start w-8 h-8">
-                      →
-                    </button>
+                    <Image
+                      src={item.img}
+                      alt={item.label}
+                      width={40}
+                      height={40}
+                      className="group-hover:brightness-0 group-hover:invert"
+                    />
+
+                    <small className="text-center text-xs mt-2 text-[#0f172a] font-medium group-hover:text-white">
+                      {item.label}
+                    </small>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ))}
+
           </div>
         </div>
       </section>
-
-      {/* ── INDUSTRIES WE SERVE ── */}
-      <section className="p-5 bg-white rounded-[2rem] mx-4 my-4">
-        <div className="text-[#0f172a]">
-          <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] via-[#ffd700] to-[#d4af37] text-3xl font-bold mb-3">
-            Industries We Serve
-          </h2>
-          <p className="mb-5">
-            Enhance operational efficiency, minimize costs, and accelerate growth with intelligent, custom-built <br />
-            digital solutions powered by our expert development teams.
-          </p>
-        </div>
-
-        {/* Mobile / Tablet Grid View */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:hidden gap-6 justify-items-center mb-6">
-          {industryGroups.flat().map((item, ii) => (
-            <div
-              key={ii}
-              className="w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:text-white hover:scale-105 cursor-pointer shrink-0"
-            >
-              <Image src={item.img} alt={item.label} width={40} height={40} />
-              <small className="text-center text-xs mt-2 text-[#0f172a] font-medium group-hover:text-white">{item.label}</small>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop Zigzag View */}
-        <div className="hidden lg:flex flex-wrap justify-between gap-4">
-          {industryGroups.map((group, gi) => (
-            <div
-              key={gi}
-              className="w-full lg:w-[calc(16.666%-14px)] flex lg:flex-col flex-row items-center justify-between gap-5"
-            >
-              {group.map((item, ii) => (
-                <div
-                  key={ii}
-                  className="w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:scale-105 cursor-pointer shrink-0"
-                >
-                  <Image src={item.img} alt={item.label} width={40} height={40} />
-                  <small className="text-center text-xs mt-1 text-[#0f172a]">{item.label}</small>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── PORTFOLIO ── */}
-      <section className="relative bg-[#0b0b0b] text-white py-5 px-3 lg:px-5">
+      <section className="relative bg-[#0b0b0b] text-white py-8 px-4 lg:px-8">
         <div className="w-full px-4">
-          <h2 className="mb-3 font-semibold">Our Portfolio</h2>
-          <p className="mb-5">
-            Showcasing innovation, creativity, and results through impactful digital
-            <br className="hidden md:block" /> solutions crafted for real-world success.
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4">Our Portfolio</h2>
+          <p className="text-lg lg:text-xl text-gray-300 leading-relaxed mb-8 max-w-4xl">
+            Showcasing innovation, creativity, and results through impactful digital solutions crafted for real-world success.
           </p>
           <div className="flex flex-wrap -mx-3 relative">
 
@@ -444,28 +559,28 @@ export default function HomePage() {
             <div className="w-full lg:w-10/12 px-3">
               <div
                 className="scrollbar-hide overflow-y-auto snap-y snap-mandatory lg:pr-4"
-                style={{ maxHeight: "420px" }}
+                style={{ maxHeight: "480px" }}
               >
                 {portfolioItems.map((item, i) => (
                   <div
                     key={i}
-                    className="bg-[#212529] rounded-[0.75rem] p-3 text-white mb-4 snap-start"
+                    className="bg-[#212529] rounded-[1rem] p-6 text-white mb-6 snap-start border border-white/5"
                   >
-                    <div className="flex flex-wrap items-center -mx-3 gap-3">
+                    <div className="flex flex-wrap items-center -mx-3 gap-4">
                       <div className="w-full md:w-5/12 px-3">
                         <Image
                           src={item.img}
                           alt={item.title}
                           width={500}
                           height={300}
-                          className="w-full h-auto rounded object-contain"
+                          className="w-full h-auto rounded-xl object-contain"
                         />
                       </div>
                       <div className="w-full md:w-7/12 px-3">
-                        <h2 className="mt-2 md:mt-0 text-2xl font-bold py-2">
+                        <h3 className="mt-2 md:mt-0 text-2xl lg:text-3xl font-bold py-2">
                           {item.num} <br /> {item.title}
-                        </h2>
-                        <p className="text-base text-gray-300">{item.text}</p>
+                        </h3>
+                        <p className="text-base lg:text-lg text-gray-300 leading-relaxed">{item.text}</p>
                       </div>
                     </div>
                   </div>
@@ -484,17 +599,17 @@ export default function HomePage() {
       </section>
 
       {/* ── TECH LOGOS AUTO-SCROLL ── */}
-      <div className="py-5 overflow-hidden">
-        <div className="flex gap-8 animate-[slide_12s_linear_infinite]">
+      <div className="py-8 overflow-hidden">
+        <div className="flex gap-12 animate-[slide_12s_linear_infinite]">
           {techLogos.map((n, i) => (
             <div key={i} className="shrink-0">
               <Image
                 src={`/assets/images/icon/tech${n}.png`}
                 alt={`Tech ${n}`}
-                width={80}
-                height={50}
+                width={120}
+                height={80}
                 className="object-contain"
-                style={{ height: "50px", width: "auto" }}
+                style={{ height: "80px", width: "auto" }}
               />
             </div>
           ))}
@@ -502,28 +617,28 @@ export default function HomePage() {
       </div>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="p-5 bg-white rounded-[2rem] mx-4 my-4">
-        <h2 className="font-semibold text-[#0f172a] mb-2">Testimonials</h2>
-        <p className="text-[#0f172a] mb-5">
-          We take pride in building lasting partnerships through quality work, timely delivery, and transparent <br />
+      <section className="p-6 lg:p-10 bg-white">
+        <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">Testimonials</h2>
+        <p className="text-base lg:text-lg text-[#0f172a] leading-relaxed mb-8 max-w-4xl">
+          We take pride in building lasting partnerships through quality work, timely delivery, and transparent
           communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.
         </p>
         <TestimonialSwiper />
       </section>
 
       {/* ── OUR TEAMS ── */}
-      <section className="p-5 text-white">
-        <h2 className="font-semibold mb-3">Our Teams</h2>
-        <p className="mb-4">
+      <section className="p-6 lg:p-10 text-white">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-4">Our Teams</h2>
+        <p className="text-base lg:text-lg text-gray-300 leading-relaxed mb-8 max-w-4xl">
           Showcasing innovation, creativity, and results through impactful digital solutions.
         </p>
         <TeamSwiper />
       </section>
 
       {/* ── BLOG ── */}
-      <section className="p-5 bg-white rounded-[2rem] mx-4 my-4">
-        <h2 className="font-semibold text-[#0f172a] mb-3">Blog</h2>
-        <p className="text-[#0f172a] mb-5" style={{ maxWidth: "650px" }}>
+      <section className="p-6 lg:p-10 bg-white">
+        <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">Blog</h2>
+        <p className="text-base lg:text-base text-[#0f172a] leading-relaxed mb-8 max-w-4xl">
           We take pride in building lasting partnerships through quality work, timely delivery,
           and transparent communication. Our client testimonials reflect the trust and satisfaction
           we strive to achieve in every project.
@@ -539,21 +654,21 @@ export default function HomePage() {
                   height={250}
                   className="w-full h-auto rounded mb-1"
                 />
-                <span className="inline-flex items-center px-3 py-1 border border-slate-300 rounded-[24px] text-[#0f172a] w-fit text-sm">
+                <span className="inline-flex items-center px-3 py-1 border border-slate-300 rounded-[24px] text-[#0f172a] w-fit text-sm font-medium">
                   Inspiration
                 </span>
-                <h6 className="font-semibold text-[#0f172a]">{item.title}</h6>
-                <Link href="#" className="text-red-600 no-underline text-sm">
+                <h3 className="text-xl lg:text-2xl font-bold text-[#0f172a]">{item.title}</h3>
+                <Link href="#" className="text-red-600 no-underline text-base font-semibold">
                   Read
                 </Link>
               </div>
             </div>
           ))}
         </div>
-        <div className="text-center mt-5">
+        <div className="text-center mt-8">
           <Link
             href="/blog"
-            className="inline-flex items-center justify-center border border-[#0d6efd] text-[#0d6efd] hover:bg-blue-50 transition duration-200 px-5 py-2 rounded-[8px] no-underline"
+            className="inline-flex items-center justify-center border border-[#0d6efd] text-[#0d6efd] hover:bg-blue-50 transition duration-200 px-6 py-3 rounded-[8px] no-underline font-semibold text-lg"
           >
             <span className="text-[#0f172a]">Read More</span>&nbsp;→
           </Link>
@@ -561,34 +676,33 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section
-        className="mt-5 p-5 flex items-center"
-        style={{
-          background: "url('/assets/images/hero/bottom.png') center/cover no-repeat",
-          padding: "80px 20px",
-        }}
-      >
-        <div className="flex flex-wrap -mx-3">
-          <div className="w-full lg:w-1/2 px-3 text-white">
-            <h2 className="font-bold text-3xl">
-              From Idea to Impact <br /> We Build What Matters
-            </h2>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center border border-white text-white bg-transparent hover:bg-white/10 transition duration-200 mb-3 rounded-[8px] px-5 py-2 no-underline mt-4"
-            >
-              Contact Us →
-            </Link>
+
+      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] flex items-center bg-[url('/assets/images/hero/bottom.png')] bg-cover bg-center bg-no-repeat py-[90px]">
+        <div className="max-w-7xl mx-auto w-full px-6 lg:px-12">
+          <div className="flex flex-wrap">
+            <div className="w-full text-white">
+              <h2 className="font-bold text-2xl lg:text-3xl leading-tight">
+                From Idea to Impact <br />
+                We Build What <br />
+                Matters
+              </h2>
+
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center border border-white text-white bg-transparent hover:bg-white/10 transition duration-200 rounded-[8px] px-6 py-3 text-lg font-semibold no-underline mt-6"
+              >
+                Contact Us →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
       {/* ── CONTACT ── */}
-      <section className="contact-section p-5">
-        <div className="flex flex-wrap -mx-3 items-center gap-4">
-          <div className="w-full lg:w-1/2 md:w-1/2 px-3">
-            <h2 className="text-white font-semibold mb-1">Contact Us</h2>
-            <p className="text-white mb-4">Connect with our team for expert guidance.</p>
+      <section className="contact-section p-6 lg:p-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-2">Contact Us</h2>
+            <p className="text-base lg:text-base text-gray-200 mb-6">Connect with our team for expert guidance.</p>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <input
@@ -596,7 +710,7 @@ export default function HomePage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd]"
+                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd] text-base"
                   placeholder="Full Name"
                   required
                 />
@@ -607,7 +721,7 @@ export default function HomePage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd]"
+                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd] text-base"
                   placeholder="Email Address"
                   required
                 />
@@ -618,7 +732,7 @@ export default function HomePage() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd]"
+                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd] text-base"
                   placeholder="Phone Number"
                 />
               </div>
@@ -628,15 +742,15 @@ export default function HomePage() {
                   value={formData.message}
                   onChange={handleChange}
                   rows={5}
-                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd]"
-                  style={{ height: "100px" }}
+                  className="w-full border border-slate-600 bg-[#111] text-white rounded-[8px] px-4 py-3 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d6efd] text-base"
+                  style={{ height: "120px" }}
                   placeholder="Write your message"
                   required
                 />
               </div>
-              
+
               {status.message && (
-                <div className={`mb-4 text-sm ${status.type === "success" ? "text-green-500" : "text-red-500"}`}>
+                <div className={`mb-4 text-base ${status.type === "success" ? "text-green-500" : "text-red-500"}`}>
                   {status.message}
                 </div>
               )}
@@ -644,13 +758,13 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center justify-center border border-white text-white bg-transparent hover:bg-white/10 transition duration-200 text-sm px-5 py-2 rounded-[8px] no-underline cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center justify-center border border-white text-white bg-transparent hover:bg-white/10 transition duration-200 text-base font-semibold px-6 py-3 rounded-[8px] no-underline cursor-pointer disabled:opacity-50"
               >
                 {loading ? "Sending..." : "Send Message →"}
               </button>
             </form>
           </div>
-          <div className="w-full lg:w-1/2 md:w-1/2 px-3">
+          <div>
             <div className="text-center lg:text-right">
               <Image
                 src="/assets/images/hero/map.png"

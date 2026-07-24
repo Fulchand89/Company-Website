@@ -143,12 +143,12 @@ function ContactPageContent() {
       {/* ── HERO ── */}
       <section className="hero-section">
         <div
-          className="hero-content w-full text-white"
+          className="hero-content w-full h-[400px] text-white"
           style={{
             background: "url('/assets/images/contact-us.png') center/cover no-repeat",
           }}
         >
-          <div className="text-center text-white" style={{ paddingTop: "140px", paddingBottom: "80px" }}>
+          <div className="text-center text-white" style={{ paddingTop: "180px", paddingBottom: "80px" }}>
             <h1 className="font-bold text-4xl md:text-5xl">{jobTitle ? `Apply for ${jobTitle}` : "Contact Us"}</h1>
             <p className="text-2xl mt-3">Transform Your Ideas into Impactful Solutions</p>
           </div>
@@ -163,11 +163,11 @@ function ContactPageContent() {
           <h3 className="font-bold text-[#0f172a] text-2xl leading-snug">
             {jobTitle ? (
               <>
-                Submit your application for <span className="text-[#0d6efd]">{jobTitle}</span>
+                Submit your application for <span className="text-[#b30d29]">{jobTitle}</span>
               </>
             ) : (
               <>
-                Let&apos;s Build the <span className="text-[#0d6efd]">Future Together!</span>
+                Let&apos;s Build the <span className="text-[#b30d29]">Future Together!</span>
               </>
             )}
             <br />
@@ -180,17 +180,17 @@ function ContactPageContent() {
           <div className="mt-4 flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <Image src="/assets/images/icon/mail.png" alt="Email" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#0f172a]">Sales@guptatechweb.com</h6>
+              <h6 className="mb-0 font-bold text-[#b30d29]">Sales@guptatechweb.com</h6>
             </div>
             <div className="flex items-center gap-3">
               <Image src="/assets/images/icon/location.png" alt="Address" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#0f172a]">
+              <h6 className="mb-0 font-bold text-[#b30d29]">
                 410 Shagun Tower, Vijay Nagar, Indore (M.P)
               </h6>
             </div>
             <div className="flex items-center gap-3">
               <Image src="/assets/images/icon/call.png" alt="Phone" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#0f172a]">+91 7400554294</h6>
+              <h6 className="mb-0 font-bold text-[#b30d29]">+91 7400554294</h6>
             </div>
           </div>
         </div>
@@ -276,7 +276,7 @@ function ContactPageContent() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="border border-[#0d6efd] text-white bg-[#0d6efd] hover:bg-blue-700 transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
+                    className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
                   >
                     {loading ? "Submitting..." : "Submit Application"}
                   </button>
@@ -373,7 +373,7 @@ function ContactPageContent() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="border border-[#0d6efd] text-[#0d6efd] hover:bg-[#0d6efd] hover:text-white transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
+                    className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
                   >
                     {loading ? "Sending..." : "Send Message"}
                   </button>

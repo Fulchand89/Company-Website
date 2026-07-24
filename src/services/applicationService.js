@@ -1,8 +1,44 @@
 import { executeQuery } from "@/lib/db";
 
+let schemaChecked = false;
+
+// Ensure applications table exists dynamically
+export async function ensureApplicationsSchema() {
+  if (schemaChecked) return;
+  try {
+    await executeQuery(`
+      CREATE TABLE IF NOT EXISTS applications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        position VARCHAR(255) NOT NULL,
+        resume_url VARCHAR(555) NOT NULL,
+        status VARCHAR(50) DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_applications_position (position),
+        INDEX idx_applications_status (status),
+        INDEX idx_applications_created_at (created_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Safely add missing status column if application table existed without it
+    const cols = await executeQuery("SHOW COLUMNS FROM applications");
+    const existingColNames = cols.map(c => c.Field.toLowerCase());
+    if (!existingColNames.includes("status")) {
+      await executeQuery("ALTER TABLE applications ADD COLUMN status VARCHAR(50) DEFAULT 'Pending' AFTER resume_url");
+    }
+
+    schemaChecked = true;
+  } catch (err) {
+    console.error("Applications schema auto-verification failed:", err);
+  }
+}
+
 export const applicationService = {
   // Submit new application
   async createApplication({ name, email, phone, position, resumeUrl }) {
+    await ensureApplicationsSchema();
     const result = await executeQuery(
       "INSERT INTO applications (name, email, phone, position, resume_url) VALUES (?, ?, ?, ?, ?)",
       [name, email, phone, position, resumeUrl]
@@ -12,13 +48,15 @@ export const applicationService = {
 
   // Get all applications
   async getAllApplications() {
+    await ensureApplicationsSchema();
     return await executeQuery(
-      "SELECT id, name, email, phone, position, resume_url, created_at FROM applications ORDER BY created_at DESC"
+      "SELECT id, name, email, phone, position, resume_url, status, created_at FROM applications ORDER BY created_at DESC"
     );
   },
 
   // Get paginated applications with search, filtering, and sorting
   async getPaginatedApplications(optionsOrPage = 1, limit = 10) {
+    await ensureApplicationsSchema();
     let page = 1;
     let search = "";
     let position = "";
@@ -102,17 +140,20 @@ export const applicationService = {
 
   // Get dynamic unique positions applied for
   async getUniquePositions() {
+    await ensureApplicationsSchema();
     const results = await executeQuery("SELECT DISTINCT position FROM applications WHERE position IS NOT NULL AND position != '' ORDER BY position ASC");
     return results.map(r => r.position);
   },
 
   // Update application status
   async updateApplicationStatus(id, status) {
+    await ensureApplicationsSchema();
     return await executeQuery("UPDATE applications SET status = ? WHERE id = ?", [status, id]);
   },
 
   // Delete application
   async deleteApplication(id) {
+    await ensureApplicationsSchema();
     return await executeQuery("DELETE FROM applications WHERE id = ?", [id]);
   }
 };
