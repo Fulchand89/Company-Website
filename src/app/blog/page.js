@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { BlogSkeleton } from "@/components/Skeleton";
 import Pagination from "@/components/Pagination";
 
 const INITIAL_BLOGS = [
@@ -85,8 +86,8 @@ const INITIAL_BLOGS = [
 ];
 
 export default function BlogPage() {
-  const [blogs, setBlogs] = useState(INITIAL_BLOGS);
-  const [loading, setLoading] = useState(false);
+  const [blogs, setBlogs] = useState();
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTag, setSelectedTag] = useState("");
@@ -133,7 +134,7 @@ export default function BlogPage() {
     }
   };
 
-  const displayList = blogs.length > 0 ? blogs : INITIAL_BLOGS;
+  const displayList = blogs;
 
   return (
     <>
@@ -163,51 +164,58 @@ export default function BlogPage() {
         )}
 
         <div className="space-y-8">
-          <div className={`flex flex-wrap justify-between gap-y-8 transition-opacity duration-300 ${loading ? 'opacity-70' : 'opacity-100'}`}>
-            {displayList.map((post, index) => (
-              <div key={post.id || index} className="w-full lg:w-1/3 px-3 md:w-1/2">
-                <div className="h-full flex flex-col gap-4 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                  {post.img && (
-                    <Image
-                      src={post.img}
-                      alt={post.title}
-                      width={400}
-                      height={250}
-                      loading="lazy"
-                      className="w-full h-auto object-cover"
-                    />
-                  )}
-                  <div className="px-4 pb-4 flex flex-col flex-grow">
-                    {/* Responsive Tag Pills & Category */}
-                    <div className="flex flex-wrap gap-1.5 mb-2.5 items-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 border border-slate-300 rounded-[24px] text-[#0f172a] text-xs font-semibold">
-                        {post.category}
-                      </span>
-                      {post.tags && post.tags.map((tag) => (
-                        <button
-                          key={tag.id}
-                          onClick={() => handleTagClick(tag.slug)}
-                          className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-[24px] transition-colors cursor-pointer border-none ${selectedTag === tag.slug
-                            ? "bg-[#dc3545] text-white"
-                            : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                            }`}
-                          aria-label={`Filter blogs by tag ${tag.name}`}
-                        >
-                          #{tag.name}
-                        </button>
-                      ))}
-                    </div>
-                    <h6 className="font-semibold text-[#0f172a] text-base leading-snug">{post.title}</h6>
-                    <p className="text-[#6c757d] text-sm mt-2 line-clamp-3">{post.excerpt}</p>
-                    <div className="mt-auto pt-3">
-                      <Link href={`/blog/${post.slug || post.id}`} className="text-[#dc3545] no-underline text-sm font-medium hover:underline inline-flex items-center gap-1">
-                        Read More →
-                      </Link>
+          <div className="flex flex-wrap justify-between gap-y-8 min-h-[300px]">
+            {loading ? (
+              <BlogSkeleton count={3} />
+            ) : displayList.length === 0 ? (
+              <p className="w-full text-center text-gray-400 py-10">No blog posts found.</p>
+            ) : (
+              displayList.map((post, index) => (
+                <div key={post.id || index} className="w-full lg:w-1/3 px-3 md:w-1/2">
+                  <div className="h-full flex flex-col gap-4 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    {post.img && (
+                      <Image
+                        src={post.img}
+                        alt={post.title}
+                        width={400}
+                        height={250}
+                        loading="lazy"
+                        className="w-full h-auto object-cover"
+                      />
+                    )}
+                    <div className="px-4 pb-4 flex flex-col flex-grow">
+                      {/* Responsive Tag Pills & Category */}
+                      <div className="flex flex-wrap gap-1.5 mb-2.5 items-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 border border-slate-300 rounded-[24px] text-[#0f172a] text-xs font-semibold">
+                          {post.category}
+                        </span>
+                        {post.tags && post.tags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            onClick={() => handleTagClick(tag.slug)}
+                            className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-[24px] transition-colors cursor-pointer border-none ${selectedTag === tag.slug
+                              ? "bg-[#dc3545] text-white"
+                              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                              }`}
+                            aria-label={`Filter blogs by tag ${tag.name}`}
+                          >
+                            #{tag.name}
+                          </button>
+                        ))}
+                      </div>
+                      <h6 className="font-semibold text-[#0f172a] text-base leading-snug">{post.title}</h6>
+                      <p className="text-[#6c757d] text-sm mt-2 line-clamp-3">{post.excerpt}</p>
+                      <div className="mt-auto pt-3">
+                        <Link href={`/blog/${post.slug || post.id}`} className="text-[#dc3545] no-underline text-sm font-medium hover:underline inline-flex items-center gap-1">
+                          Read More →
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
+
           </div>
 
           <div className="pt-6 border-t border-gray-100">
@@ -221,4 +229,4 @@ export default function BlogPage() {
       </section>
     </>
   );
-}
+} 

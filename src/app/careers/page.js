@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import Pagination from "@/components/Pagination";
+import { JobSkeleton } from "@/components/Skeleton";
 import {
   Briefcase,
   Users,
@@ -443,8 +444,10 @@ export default function CareerPage() {
           </div>
 
           {/* Openings Grid/List */}
-          <div className={`max-w-4xl mx-auto space-y-6 transition-opacity duration-300 ${loading ? 'opacity-70' : 'opacity-100'}`}>
-            {filteredJobs.length > 0 ? (
+          <div className="max-w-4xl mx-auto space-y-6">
+            {loading ? (
+              <JobSkeleton count={3} />
+            ) : filteredJobs.length > 0 ? (
               filteredJobs.map((job, idx) => (
                 <div
                   key={idx}

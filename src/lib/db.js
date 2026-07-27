@@ -1,4 +1,10 @@
 import mysql from "mysql2/promise";
+import dns from "dns";
+
+// Force Node.js DNS resolver to prefer IPv4 over IPv6 to prevent remote MySQL connection timeouts (ETIMEDOUT) on dual-stack hosts.
+if (typeof dns.setDefaultResultOrder === "function") {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 /**
  * Hostinger MySQL Database Connection Module

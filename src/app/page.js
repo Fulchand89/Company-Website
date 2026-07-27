@@ -102,37 +102,47 @@ const blogPosts = [
 
 // ─── Swiper Components ────────────────────────────────────────────────────────
 
-function TestimonialSwiper() {
+// ─── Swiper Components ────────────────────────────────────────────────────────
+
+function TestimonialSwiper({ testimonials = [] }) {
   const ref = useRef(null);
   const swiperInstanceRef = useRef(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || testimonials.length === 0) return;
 
-    swiperInstanceRef.current = new Swiper(ref.current, {
-      modules: [Autoplay],
-      slidesPerView: 3,
-      spaceBetween: 30,
-      loop: testimonials.length > 1,
-      centeredSlides: testimonials.length > 2,
-      speed: 1000,
-      autoplay: { delay: 3000, disableOnInteraction: false },
-      observer: true,
-      observeParents: true,
-      breakpoints: {
-        0: { slidesPerView: 1 },
-        768: { slidesPerView: 2 },
-        1200: { slidesPerView: 3 },
-      },
-    });
+    let timer = setTimeout(() => {
+      if (!ref.current) return;
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+      }
+
+      swiperInstanceRef.current = new Swiper(ref.current, {
+        modules: [Autoplay],
+        slidesPerView: 3,
+        spaceBetween: 30,
+        loop: testimonials.length > 1,
+        centeredSlides: testimonials.length > 2,
+        speed: 1000,
+        autoplay: { delay: 3000, disableOnInteraction: false },
+        observer: true,
+        observeParents: true,
+        breakpoints: {
+          0: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1200: { slidesPerView: 3 },
+        },
+      });
+    }, 50);
 
     return () => {
+      clearTimeout(timer);
       if (swiperInstanceRef.current) {
         swiperInstanceRef.current.destroy(true, true);
         swiperInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [testimonials]);
 
   return (
     <div className="swiper myTestimonialSwiper py-1 overflow-hidden" ref={ref}>
@@ -170,36 +180,44 @@ function TestimonialSwiper() {
   );
 }
 
-function TeamSwiper() {
+function TeamSwiper({ teamMembers = [] }) {
   const ref = useRef(null);
   const swiperInstanceRef = useRef(null);
 
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || teamMembers.length === 0) return;
 
-    swiperInstanceRef.current = new Swiper(ref.current, {
-      modules: [Autoplay],
-      slidesPerView: 4,
-      spaceBetween: 25,
-      loop: teamMembers.length > 1,
-      autoplay: { delay: 2000, disableOnInteraction: false },
-      observer: true,
-      observeParents: true,
-      breakpoints: {
-        0: { slidesPerView: 1 },
-        576: { slidesPerView: 2 },
-        768: { slidesPerView: 3 },
-        992: { slidesPerView: 4 },
-      },
-    });
+    let timer = setTimeout(() => {
+      if (!ref.current) return;
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+      }
+
+      swiperInstanceRef.current = new Swiper(ref.current, {
+        modules: [Autoplay],
+        slidesPerView: 4,
+        spaceBetween: 25,
+        loop: teamMembers.length > 1,
+        autoplay: { delay: 2000, disableOnInteraction: false },
+        observer: true,
+        observeParents: true,
+        breakpoints: {
+          0: { slidesPerView: 1 },
+          576: { slidesPerView: 2 },
+          768: { slidesPerView: 3 },
+          992: { slidesPerView: 4 },
+        },
+      });
+    }, 50);
 
     return () => {
+      clearTimeout(timer);
       if (swiperInstanceRef.current) {
         swiperInstanceRef.current.destroy(true, true);
         swiperInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [teamMembers]);
 
   return (
     <div className="swiper teamSwiper overflow-hidden" ref={ref}>
@@ -235,6 +253,42 @@ export default function HomePage() {
   });
   const [status, setStatus] = useState({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
+
+  const [dynamicBlogs, setDynamicBlogs] = useState(blogPosts);
+  const [dynamicTestimonials, setDynamicTestimonials] = useState(testimonials);
+  const [dynamicTeam, setDynamicTeam] = useState(teamMembers);
+
+  useEffect(() => {
+    // Fetch blogs
+    fetch("/api/blog?limit=3")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          setDynamicBlogs(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching blogs:", err));
+
+    // Fetch testimonials
+    fetch("/api/testimonials?limit=10")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          setDynamicTestimonials(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching testimonials:", err));
+
+    // Fetch team members
+    fetch("/api/teams")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          setDynamicTeam(data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching team members:", err));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -586,26 +640,24 @@ export default function HomePage() {
           ))}
         </div>
       </div>
-
-      {/* ── TESTIMONIALS ── */}
       <section className="p-6 lg:p-10 bg-white">
         <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">Testimonials</h2>
         <p className="text-base lg:text-lg text-[#0f172a] leading-relaxed mb-8 max-w-4xl">
           We take pride in building lasting partnerships through quality work, timely delivery, and transparent
           communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.
         </p>
-        <TestimonialSwiper />
+        <TestimonialSwiper testimonials={dynamicTestimonials} />
       </section>
-
+ 
       {/* ── OUR TEAMS ── */}
       <section className="p-6 lg:p-10 text-white">
         <h2 className="text-2xl lg:text-3xl font-bold mb-4">Our Teams</h2>
         <p className="text-base lg:text-lg text-gray-300 leading-relaxed mb-8 max-w-4xl">
           Showcasing innovation, creativity, and results through impactful digital solutions.
         </p>
-        <TeamSwiper />
+        <TeamSwiper teamMembers={dynamicTeam} />
       </section>
-
+ 
       {/* ── BLOG ── */}
       <section className="p-6 lg:p-10 bg-white">
         <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">Blog</h2>
@@ -615,18 +667,18 @@ export default function HomePage() {
           we strive to achieve in every project.
         </p>
         <div className="flex flex-wrap -mx-3 gap-4">
-          {blogPosts.map((item, i) => (
+          {dynamicBlogs.map((item, i) => (
             <div key={i} className="w-full lg:w-[calc(33.333%-11px)] md:w-[calc(50%-8px)] px-3">
               <div className="h-full flex flex-col gap-3">
                 <Image
-                  src={item.img}
+                  src={item.img || "/assets/images/hero/blog-img1.png"}
                   alt="blog"
                   width={400}
                   height={250}
-                  className="w-full h-auto rounded mb-1"
+                  className="w-full h-[250px] object-cover rounded mb-1"
                 />
                 <span className="inline-flex items-center px-3 py-1 border border-slate-300 rounded-[24px] text-[#0f172a] w-fit text-sm font-medium">
-                  Inspiration
+                  {item.category || "Blog"}
                 </span>
                 <h3 className="text-xl lg:text-2xl font-bold text-[#0f172a]">{item.title}</h3>
                 <Link href={`/blog/${item.slug}`} className="text-red-600 no-underline text-base font-semibold hover:underline">

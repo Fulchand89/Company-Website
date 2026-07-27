@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, Download, Trash2, Calendar, FileText, Eye, X, RefreshCw } from "lucide-react";
 import Pagination from "@/components/Pagination";
+import { TableRowSkeleton } from "@/components/Skeleton";
 
 export default function ApplicationsPage() {
   // Existing States
@@ -293,11 +294,7 @@ export default function ApplicationsPage() {
 
       {/* Applications Grid Card */}
       <div className="bg-[#161618] border border-gray-800 rounded-3xl p-6">
-        {loading ? (
-          <div className="text-center py-12">
-            <span className="text-gray-400 text-sm">Loading applications...</span>
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="text-center py-12 text-red-500 text-sm">{error}</div>
         ) : (
           <div className="overflow-x-auto">
@@ -313,7 +310,9 @@ export default function ApplicationsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/50 text-sm">
-                {applications.length > 0 ? (
+                {loading ? (
+                  <TableRowSkeleton rows={5} columns={6} />
+                ) : applications.length > 0 ? (
                   applications.map((app) => (
                     <tr key={app.id} className="hover:bg-zinc-800/10 transition-colors">
                       {/* Candidate Name Column */}

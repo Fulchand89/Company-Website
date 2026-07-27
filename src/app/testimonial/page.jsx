@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
+import { TestimonialSkeleton } from "@/components/Skeleton";
 
 // ─── Testimonial Card ─────────────────────────────────────────────────────────
 
@@ -88,16 +89,14 @@ export default function TestimonialPage() {
   const displayList = testimonials.length > 0 ? testimonials : INITIAL_TESTIMONIALS;
 
   return (
-    <>
-      {/* ── HERO ── */}
+    <>{/* ── HERO ── */}
       <section className="hero-section">
         <div
           className="hero-content w-full text-white py-15"
           style={{
             background:
               "url('/assets/images/testnomail/testnomial-bg.png') center/cover no-repeat",
-          }}
-        >
+          }} >
           <div className="text-center text-white" style={{ paddingTop: "140px", paddingBottom: "80px" }}>
             <h1 className="font-bold text-4xl md:text-5xl">Testnomials</h1>
             <p className="text-2xl mt-2">Partnerships Built on Performance and Reliability</p>
@@ -107,10 +106,14 @@ export default function TestimonialPage() {
 
       {/* ── TESTIMONIAL CARDS ── */}
       <section className="bg-white rounded-[2rem] p-6 lg:p-10">
-        <div className={`grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3 transition-opacity duration-300 ${loading ? 'opacity-70' : 'opacity-100'}`}>
-          {displayList.map((item, i) => (
-            <TestimonialCard key={item.id || i} {...item} />
-          ))}
+        <div className="grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3 min-h-[300px]">
+          {loading ? (
+            <TestimonialSkeleton count={6} />
+          ) : (
+            displayList.map((item, i) => (
+              <TestimonialCard key={item.id || i} {...item} />
+            ))
+          )}
         </div>
 
         {totalPages > 1 && (

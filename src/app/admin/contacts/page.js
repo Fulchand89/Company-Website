@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, Trash2, Calendar, MessageSquare } from "lucide-react";
 import Pagination from "@/components/Pagination";
+import { TableRowSkeleton } from "@/components/Skeleton";
 
 export default function ContactsInboxPage() {
   const [contacts, setContacts] = useState([]);
@@ -77,11 +78,7 @@ export default function ContactsInboxPage() {
 
           {/* Table */}
           <div className="bg-[#161618] border border-gray-800 rounded-3xl p-6">
-            {loading ? (
-              <div className="text-center py-12">
-                <span className="text-gray-400 text-sm">Loading messages...</span>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="text-center py-12 text-red-500 text-sm">{error}</div>
             ) : (
               <div className="overflow-x-auto">
@@ -96,7 +93,9 @@ export default function ContactsInboxPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800/50 text-sm">
-                    {filteredContacts.length > 0 ? (
+                    {loading ? (
+                      <TableRowSkeleton rows={5} columns={5} />
+                    ) : filteredContacts.length > 0 ? (
                       filteredContacts.map((c) => (
                         <tr key={c.id} className="hover:bg-zinc-800/10 align-top">
                           <td className="py-4 font-semibold text-white">{c.name}</td>

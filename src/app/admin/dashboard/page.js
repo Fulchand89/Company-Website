@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DashboardCard from "@/components/admin/DashboardCard";
 import { Briefcase, UserCheck, Mail, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { AdminStatCardSkeleton, AdminListSkeleton } from "@/components/Skeleton";
 
 export default function DashboardPage() {
   const [data, setData] = useState({
@@ -45,9 +46,37 @@ export default function DashboardPage() {
           )}
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <span className="text-gray-400 font-medium">Loading statistics...</span>
-            </div>
+            <>
+              {/* Stat Cards Grid Skeleton */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <AdminStatCardSkeleton />
+                <AdminStatCardSkeleton />
+                <AdminStatCardSkeleton />
+              </div>
+
+              {/* Recent Activity Grid Skeleton */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                {/* Recent Applications Skeleton */}
+                <div className="bg-[#161618] border border-gray-800 rounded-3xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-white">Recent Applications</h3>
+                    <span className="text-gray-500 text-xs">Loading...</span>
+                  </div>
+                  <AdminListSkeleton count={3} />
+                </div>
+
+                {/* Recent Contacts Skeleton */}
+                <div className="bg-[#161618] border border-gray-800 rounded-3xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-lg text-white">Recent Contacts</h3>
+                    <span className="text-gray-500 text-xs">Loading...</span>
+                  </div>
+                  <AdminListSkeleton count={3} />
+                </div>
+
+              </div>
+            </>
           ) : (
             <>
               {/* Stat Cards Grid */}
