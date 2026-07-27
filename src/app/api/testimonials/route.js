@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
-import { ensureTestimonialSchema, testimonialService } from "@/services/testimonialService";
+import { executeQuery } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // Cache on Vercel CDN for 60 seconds
+
+// In-memory cache for fast repeated reads
+let cacheData = null;
+let cacheTime = 0;
+const CACHE_TTL = 60 * 1000; // 60 seconds
 
 const STATIC_TESTIMONIALS = [
   {
@@ -80,21 +85,29 @@ const STATIC_TESTIMONIALS = [
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl?.searchParams || new URL(request.url).searchParams;
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "9", 10);
 
+    const now = Date.now();
+    const cacheKey = `testimonials_${page}_${limit}`;
+
+    if (cacheData && cacheData[cacheKey] && (now - cacheTime < CACHE_TTL)) {
+      return NextResponse.json(cacheData[cacheKey], {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+      });
+    }
+
     try {
-      // Skip schema check for public reads — just query directly
       const offset = (page - 1) * limit;
-      const [countResult] = await (await import("@/lib/db")).executeQuery(
-        "SELECT COUNT(*) as count FROM testimonials WHERE status = 'published'"
-      );
-      const total = countResult?.count || 0;
-      const rows = await (await import("@/lib/db")).executeQuery(
-        "SELECT * FROM testimonials WHERE status = 'published' ORDER BY created_at DESC LIMIT ? OFFSET ?",
-        [limit, offset]
-      );
+      
+      // Run DB queries concurrently to cut latency in half
+      const [countResult, rows] = await Promise.all([
+        executeQuery("SELECT COUNT(*) as count FROM testimonials WHERE status = 'published'"),
+        executeQuery("SELECT * FROM testimonials WHERE status = 'published' ORDER BY created_at DESC LIMIT ? OFFSET ?", [limit, offset])
+      ]);
+
+      const total = countResult[0]?.count || 0;
 
       const formattedTestimonials = (rows || []).map(t => ({
         id: t.id,
@@ -105,12 +118,20 @@ export async function GET(request) {
         rating: t.rating || 5,
       }));
 
-      return NextResponse.json({
-        data: formattedTestimonials,
-        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
+      const responsePayload = {
+        data: formattedTestimonials.length > 0 ? formattedTestimonials : STATIC_TESTIMONIALS.slice(offset, offset + limit),
+        pagination: { total: total || STATIC_TESTIMONIALS.length, page, limit, totalPages: Math.ceil((total || STATIC_TESTIMONIALS.length) / limit) }
+      };
+
+      if (!cacheData) cacheData = {};
+      cacheData[cacheKey] = responsePayload;
+      cacheTime = now;
+
+      return NextResponse.json(responsePayload, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
       });
     } catch (dbError) {
-      // Table doesn't exist or DB unreachable — use static fallback
+      console.warn("Testimonials DB Query Error, using static fallback:", dbError.message);
       const offset = (page - 1) * limit;
       const total = STATIC_TESTIMONIALS.length;
       const totalPages = Math.ceil(total / limit);
@@ -118,12 +139,9 @@ export async function GET(request) {
 
       return NextResponse.json({
         data,
-        pagination: {
-          total,
-          page,
-          limit,
-          totalPages
-        }
+        pagination: { total, page, limit, totalPages }
+      }, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
       });
     }
   } catch (error) {

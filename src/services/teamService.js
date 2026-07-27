@@ -170,11 +170,15 @@ export async function ensureTeamSchema() {
 export const teamService = {
   // Get all active team members (for public frontend)
   async getAllActiveTeamMembers() {
-    await ensureTeamSchema();
-    const results = await executeQuery(
-      "SELECT * FROM team_members WHERE status = 'active' ORDER BY display_order ASC, created_at DESC"
-    );
-    return results || [];
+    try {
+      const results = await executeQuery(
+        "SELECT * FROM team_members WHERE status = 'active' ORDER BY display_order ASC, created_at DESC"
+      );
+      return results || [];
+    } catch (err) {
+      await ensureTeamSchema();
+      return (await executeQuery("SELECT * FROM team_members WHERE status = 'active' ORDER BY display_order ASC, created_at DESC").catch(() => [])) || [];
+    }
   },
 
   // Get paginated team members for admin panel (includes inactive)

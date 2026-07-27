@@ -619,4 +619,72 @@ export const emailService = {
 
     return { success: true, results: { hrResult, candidateResult } };
   },
+
+  /**
+   * Send Password Reset Email to Admin
+   */
+  async sendPasswordResetEmail({ email, name, resetUrl, token }) {
+    const transporter = getTransporter();
+    if (!transporter) {
+      return { success: false, error: "SMTP is not configured" };
+    }
+
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "no-reply@company.com";
+    const fromName = process.env.SMTP_FROM_NAME || "Company Notifications";
+    const sanitizedEmail = email ? email.trim() : email;
+    const currentYear = new Date().getFullYear();
+
+    const mailOptions = {
+      from: `"${fromName}" <${fromEmail}>`,
+      to: sanitizedEmail,
+      subject: "🔒 Password Reset Request - Admin Portal",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Password Reset Request</title>
+        </head>
+        <body style="font-family: Arial, Helvetica, sans-serif; background-color: #0b0b0b; color: #ffffff; margin: 0; padding: 40px 16px;">
+          <div style="max-width: 560px; margin: 0 auto; background-color: #161618; border: 1px solid #27272a; border-radius: 24px; padding: 36px 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h2 style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;">Admin Password Reset</h2>
+              <p style="color: #a1a1aa; font-size: 14px; margin-top: 8px;">Gupta Tech Web Management Portal</p>
+            </div>
+
+            <div style="font-size: 14px; line-height: 1.6; color: #d4d4d8; margin-bottom: 24px;">
+              <p style="margin-bottom: 16px;">Hello <strong>${name || "Administrator"}</strong>,</p>
+              <p style="margin-bottom: 20px;">We received a request to reset the password for your admin account. Click the button below to set a new password:</p>
+              
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${resetUrl}" target="_blank" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                  Reset My Password
+                </a>
+              </div>
+
+              <p style="margin-bottom: 12px; font-size: 13px; color: #a1a1aa;">This password reset link will expire in <strong>1 hour</strong>.</p>
+              <p style="margin-bottom: 0; font-size: 13px; color: #71717a;">If you did not request a password reset, you can safely ignore this email.</p>
+            </div>
+
+            <div style="border-top: 1px solid #27272a; padding-top: 20px; text-align: center; font-size: 12px; color: #71717a;">
+              <p style="margin: 0;">&copy; ${currentYear} Gupta Tech Web. All rights reserved.</p>
+            </div>
+
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    try {
+      logMailDetails("Admin Password Reset", mailOptions);
+      const info = await transporter.sendMail(mailOptions);
+      return { success: true, info };
+    } catch (err) {
+      console.error("Error sending Password Reset email:", err);
+      return { success: false, error: err.message };
+    }
+  },
 };

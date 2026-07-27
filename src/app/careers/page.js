@@ -40,6 +40,36 @@ const getJobIcon = (department) => {
   return <Briefcase className="w-5 h-5 text-gray-600" />;
 };
 
+const INITIAL_JOBS = [
+  {
+    id: 1,
+    title: "Senior Full Stack Engineer (MERN / Next.js)",
+    department: "Engineering",
+    location: "Indore, India / Remote",
+    type: "Full-Time",
+    experience: "3+ Years",
+    description: "Build robust, high-performance web applications and enterprise platforms using React, Node.js, and Next.js."
+  },
+  {
+    id: 2,
+    title: "Mobile App Developer (Flutter / React Native)",
+    department: "Engineering",
+    location: "Indore, India",
+    type: "Full-Time",
+    experience: "2+ Years",
+    description: "Engineer beautiful, responsive native and cross-platform mobile apps for iOS and Android."
+  },
+  {
+    id: 3,
+    title: "UI/UX Product Designer",
+    department: "Design",
+    location: "Indore, India / Hybrid",
+    type: "Full-Time",
+    experience: "2+ Years",
+    description: "Design intuitive user interfaces, interactive wireframes, and design systems for enterprise clients."
+  }
+];
+
 export default function CareerPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("All");
@@ -104,9 +134,8 @@ export default function CareerPage() {
     }
   ];
 
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [jobs, setJobs] = useState(INITIAL_JOBS);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -193,13 +222,15 @@ export default function CareerPage() {
       setLoading(true);
       try {
         const res = await fetch(`/api/jobs?page=${page}&limit=3`);
-        if (!res.ok) throw new Error("Failed to load jobs from server.");
-        const data = await res.json();
-        setJobs(data.data || []);
-        setTotalPages(data.pagination?.totalPages || 1);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            setJobs(data.data);
+            setTotalPages(data.pagination?.totalPages || 1);
+          }
+        }
       } catch (err) {
-        console.error(err);
-        setError(err.message);
+        console.error("Failed to fetch jobs:", err);
       } finally {
         setLoading(false);
       }
@@ -247,10 +278,11 @@ export default function CareerPage() {
   ];
 
   // Filters
-  const filteredJobs = jobs.filter((job) => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const displayJobsList = jobs.length > 0 ? jobs : INITIAL_JOBS;
+  const filteredJobs = displayJobsList.filter((job) => {
+    const matchesSearch = (job.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (job.location || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (job.description || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDept = selectedDepartment === "All" || job.department === selectedDepartment;
     return matchesSearch && matchesDept;
   });
@@ -411,16 +443,8 @@ export default function CareerPage() {
           </div>
 
           {/* Openings Grid/List */}
-          <div className="max-w-4xl mx-auto space-y-6">
-            {loading ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500 font-medium">Loading job listings...</p>
-              </div>
-            ) : error ? (
-              <div className="text-center py-12 bg-red-50 border border-red-200 rounded-2xl">
-                <p className="text-red-500 font-medium">{error}</p>
-              </div>
-            ) : filteredJobs.length > 0 ? (
+          <div className={`max-w-4xl mx-auto space-y-6 transition-opacity duration-300 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+            {filteredJobs.length > 0 ? (
               filteredJobs.map((job, idx) => (
                 <div
                   key={idx}

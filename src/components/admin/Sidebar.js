@@ -12,7 +12,8 @@ import {
   LogOut,
   FileText,
   Quote,
-  Users
+  Users,
+  Calendar
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -24,6 +25,7 @@ export default function Sidebar() {
     { name: "Blogs", href: "/admin/blogs", icon: <FileText className="w-5 h-5" /> },
     { name: "Testimonials", href: "/admin/testimonials", icon: <Quote className="w-5 h-5" /> },
     { name: "Our Teams", href: "/admin/teams", icon: <Users className="w-5 h-5" /> },
+    { name: "Events", href: "/admin/events", icon: <Calendar className="w-5 h-5" /> },
     { name: "Jobs", href: "/admin/jobs", icon: <Briefcase className="w-5 h-5" /> },
     { name: "Applications", href: "/admin/applications", icon: <UserCheck className="w-5 h-5" /> },
     { name: "Contacts", href: "/admin/contacts", icon: <Mail className="w-5 h-5" /> },

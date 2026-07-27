@@ -49,10 +49,18 @@ function TestimonialCard({ img, name, project, text, rating = 5 }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+const INITIAL_TESTIMONIALS = [
+  { id: 1, img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { id: 2, img: "/assets/images/hero/client-img2.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { id: 3, img: "/assets/images/hero/client-img3.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { id: 4, img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { id: 5, img: "/assets/images/hero/client-img2.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { id: 6, img: "/assets/images/hero/client-img3.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+];
+
 export default function TestimonialPage() {
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [testimonials, setTestimonials] = useState(INITIAL_TESTIMONIALS);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -61,19 +69,23 @@ export default function TestimonialPage() {
       setLoading(true);
       try {
         const res = await fetch(`/api/testimonials?page=${page}&limit=9`);
-        if (!res.ok) throw new Error("Failed to load testimonials.");
-        const data = await res.json();
-        setTestimonials(data.data || []);
-        setTotalPages(data.pagination?.totalPages || 1);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            setTestimonials(data.data);
+            setTotalPages(data.pagination?.totalPages || 1);
+          }
+        }
       } catch (err) {
-        console.error(err);
-        setError("Could not load testimonials.");
+        console.error("Failed to fetch testimonials:", err);
       } finally {
         setLoading(false);
       }
     }
     fetchTestimonials();
   }, [page]);
+
+  const displayList = testimonials.length > 0 ? testimonials : INITIAL_TESTIMONIALS;
 
   return (
     <>
@@ -95,31 +107,20 @@ export default function TestimonialPage() {
 
       {/* ── TESTIMONIAL CARDS ── */}
       <section className="bg-white rounded-[2rem] p-6 lg:p-10">
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 font-medium">Loading testimonials...</p>
-          </div>
-        ) : error ? (
-          <div className="text-center py-12 text-red-500">{error}</div>
-        ) : (
-          <>
-            {/* flex-wrap row; extra pt so avatars don't clip at top of section */}
-            <div className="grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((item, i) => (
-                <TestimonialCard key={item.id || i} {...item} />
-              ))}
-            </div>
+        <div className={`grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3 transition-opacity duration-300 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+          {displayList.map((item, i) => (
+            <TestimonialCard key={item.id || i} {...item} />
+          ))}
+        </div>
 
-            {totalPages > 1 && (
-              <div className="pt-10">
-                <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={(p) => setPage(p)}
-                />
-              </div>
-            )}
-          </>
+        {totalPages > 1 && (
+          <div className="pt-10">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(p) => setPage(p)}
+            />
+          </div>
         )}
       </section>
 

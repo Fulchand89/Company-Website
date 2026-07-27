@@ -81,71 +81,89 @@ const ALL_BLOG_POSTS = [
   }
 ];
 
+export const revalidate = 60;
+
+let blogCache = null;
+let blogCacheTime = 0;
+const CACHE_TTL = 60 * 1000;
+
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl?.searchParams || new URL(request.url).searchParams;
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "3", 10);
     const tag = searchParams.get("tag"); // Tag slug or name
     const category = searchParams.get("category"); // Category name
 
     const offset = (page - 1) * limit;
+    const now = Date.now();
+    const cacheKey = `blog_${page}_${limit}_${tag || ''}_${category || ''}`;
+
+    if (blogCache && blogCache[cacheKey] && (now - blogCacheTime < CACHE_TTL)) {
+      return NextResponse.json(blogCache[cacheKey], {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+      });
+    }
 
     try {
-      await ensureSchema();
-
       let blogs = [];
       let total = 0;
 
       if (tag) {
         // Query database filtering by tag slug/name and published status
-        const countResult = await executeQuery(
-          `SELECT COUNT(DISTINCT b.id) as count
-           FROM blogs b
-           JOIN blog_tags bt ON b.id = bt.blog_id
-           JOIN tags t ON bt.tag_id = t.id
-           WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'`,
-          [tag, tag]
-        );
+        const [countResult, blogRows] = await Promise.all([
+          executeQuery(
+            `SELECT COUNT(DISTINCT b.id) as count
+             FROM blogs b
+             JOIN blog_tags bt ON b.id = bt.blog_id
+             JOIN tags t ON bt.tag_id = t.id
+             WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'`,
+            [tag, tag]
+          ),
+          executeQuery(
+            `SELECT DISTINCT b.*
+             FROM blogs b
+             JOIN blog_tags bt ON b.id = bt.blog_id
+             JOIN tags t ON bt.tag_id = t.id
+             WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'
+             ORDER BY b.published_at DESC
+             LIMIT ? OFFSET ?`,
+            [tag, tag, limit, offset]
+          )
+        ]);
         total = countResult[0]?.count || 0;
-
-        blogs = await executeQuery(
-          `SELECT DISTINCT b.*
-           FROM blogs b
-           JOIN blog_tags bt ON b.id = bt.blog_id
-           JOIN tags t ON bt.tag_id = t.id
-           WHERE (t.slug = ? OR t.name = ?) AND b.status = 'published'
-           ORDER BY b.published_at DESC
-           LIMIT ? OFFSET ?`,
-          [tag, tag, limit, offset]
-        );
+        blogs = blogRows || [];
       } else if (category) {
         // Query database filtering by category and published status
-        const countResult = await executeQuery(
-          `SELECT COUNT(*) as count FROM blogs WHERE status = 'published' AND LOWER(category) = LOWER(?)`,
-          [category]
-        );
+        const [countResult, blogRows] = await Promise.all([
+          executeQuery(
+            `SELECT COUNT(*) as count FROM blogs WHERE status = 'published' AND LOWER(category) = LOWER(?)`,
+            [category]
+          ),
+          executeQuery(
+            `SELECT * FROM blogs
+             WHERE status = 'published' AND LOWER(category) = LOWER(?)
+             ORDER BY published_at DESC
+             LIMIT ? OFFSET ?`,
+            [category, limit, offset]
+          )
+        ]);
         total = countResult[0]?.count || 0;
-
-        blogs = await executeQuery(
-          `SELECT * FROM blogs
-           WHERE status = 'published' AND LOWER(category) = LOWER(?)
-           ORDER BY published_at DESC
-           LIMIT ? OFFSET ?`,
-          [category, limit, offset]
-        );
+        blogs = blogRows || [];
       } else {
         // Query all published blogs from database
-        const countResult = await executeQuery("SELECT COUNT(*) as count FROM blogs WHERE status = 'published'");
+        const [countResult, blogRows] = await Promise.all([
+          executeQuery("SELECT COUNT(*) as count FROM blogs WHERE status = 'published'"),
+          executeQuery(
+            `SELECT * FROM blogs
+             WHERE status = 'published'
+             ORDER BY published_at DESC
+             LIMIT ? OFFSET ?`,
+            [limit, offset]
+          )
+        ]);
         total = countResult[0]?.count || 0;
-
-        blogs = await executeQuery(
-          `SELECT * FROM blogs
-           WHERE status = 'published'
-           ORDER BY published_at DESC
-           LIMIT ? OFFSET ?`,
-          [limit, offset]
-        );
+        blogs = blogRows || [];
       }
 
       // Format blog lists to match UI keys
@@ -172,26 +190,34 @@ export async function GET(request) {
         );
 
         formattedBlogs.forEach(b => {
-          b.tags = tagResults
+          b.tags = (tagResults || [])
             .filter(t => t.blog_id === b.id)
             .map(t => ({ id: t.id, name: t.name, slug: t.slug }));
         });
       }
 
-      const totalPages = Math.ceil(total / limit);
+      const totalPages = Math.ceil((total || ALL_BLOG_POSTS.length) / limit);
 
-      return NextResponse.json({
-        data: formattedBlogs,
+      const responsePayload = {
+        data: formattedBlogs.length > 0 ? formattedBlogs : ALL_BLOG_POSTS.slice(offset, offset + limit),
         pagination: {
-          total,
+          total: total || ALL_BLOG_POSTS.length,
           page,
           limit,
           totalPages
         }
+      };
+
+      if (!blogCache) blogCache = {};
+      blogCache[cacheKey] = responsePayload;
+      blogCacheTime = now;
+
+      return NextResponse.json(responsePayload, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
       });
 
     } catch (dbError) {
-      console.warn("Database error, falling back to static blogs:", dbError);
+      console.warn("Database error, falling back to static blogs:", dbError.message);
 
       // Filter static blogs by category or tag if requested
       let filteredBlogs = ALL_BLOG_POSTS;

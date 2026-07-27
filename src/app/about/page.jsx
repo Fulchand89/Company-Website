@@ -85,17 +85,81 @@ const workCards = [
 
 // ─── Team Members ─────────────────────────────────────────────────────────────
 
-const teamMembers = Array(8).fill({ name: "Jennifer", role: "CEO" });
+const teamMembers = [
+  { id: 1, name: "Jennifer", designation: "CEO & Founder", img: "/assets/images/hero/team-demo.png" },
+  { id: 2, name: "Alexander Reed", designation: "Chief Technology Officer", img: "/assets/images/hero/team-demo.png" },
+  { id: 3, name: "Sophia Chen", designation: "VP of Product & Design", img: "/assets/images/hero/team-demo.png" },
+  { id: 4, name: "Marcus Vance", designation: "Head of AI & Engineering", img: "/assets/images/hero/team-demo.png" },
+  { id: 5, name: "Emily Watson", designation: "Lead UI/UX Designer", img: "/assets/images/hero/team-demo.png" },
+  { id: 6, name: "David Miller", designation: "Senior Full Stack Dev", img: "/assets/images/hero/team-demo.png" },
+  { id: 7, name: "Rachel Adams", designation: "Marketing Director", img: "/assets/images/hero/team-demo.png" },
+  { id: 8, name: "Daniel Kim", designation: "DevOps Lead", img: "/assets/images/hero/team-demo.png" },
+];
 
-// ─── Event images (duplicated for infinite scroll effect) ─────────────────────
+// ─── Dynamic Events Slider Component ──────────────────────────────────────────
 
-const eventImages = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
+const DEFAULT_EVENTS = [
+  { id: 1, title: "Annual Tech Conference", img: "/assets/images/about/Event1.png" },
+  { id: 2, title: "Office Hackathon", img: "/assets/images/about/Event2.png" },
+  { id: 3, title: "Team Building Outing", img: "/assets/images/about/Event3.png" },
+  { id: 4, title: "Interactive Workshops", img: "/assets/images/about/Event4.png" },
+  { id: 5, title: "Celebrations & Culture", img: "/assets/images/about/Event5.png" },
+];
+
+function EventSlider() {
+  const [events, setEvents] = useState(DEFAULT_EVENTS);
+
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const res = await fetch("/api/events");
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json) && json.length > 0) {
+            setEvents(json);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+      }
+    }
+    fetchEvents();
+  }, []);
+
+  const displayList = events.length > 0 ? events : DEFAULT_EVENTS;
+  const sliderItems = [...displayList, ...displayList, ...displayList];
+
+  return (
+    <div className="overflow-hidden w-full">
+      <div className="flex gap-5 animate-[slide_18s_linear_infinite]">
+        {sliderItems.map((item, i) => (
+          <div key={i} className="shrink-0 relative group rounded-[12px] overflow-hidden">
+            <Image
+              src={item.img || "/assets/images/about/Event1.png"}
+              alt={item.title || `Event ${i}`}
+              width={220}
+              height={165}
+              className="shrink-0 rounded-[12px] object-cover transition-transform duration-300 group-hover:scale-105"
+              style={{ width: "220px", height: "165px" }}
+            />
+            {item.title && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                <span className="text-white text-xs font-semibold">{item.title}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // ─── Team Swiper Component ────────────────────────────────────────────────────
 
 function TeamSwiper() {
   const swiperRef = useRef(null);
-  const [members, setMembers] = useState([]);
+  const swiperInstanceRef = useRef(null);
+  const [members, setMembers] = useState(teamMembers);
 
   useEffect(() => {
     async function fetchTeam() {
@@ -114,21 +178,24 @@ function TeamSwiper() {
     fetchTeam();
   }, []);
 
-  const displayList = members.length > 0 ? members : teamMembers;
-
   useEffect(() => {
-    if (displayList.length === 0) return;
-    let swiperInstance = null;
+    let active = true;
 
     async function initSwiper() {
       const { Swiper } = await import("swiper");
       const { Autoplay } = await import("swiper/modules");
+      if (!active || !swiperRef.current) return;
 
-      swiperInstance = new Swiper(swiperRef.current, {
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+        swiperInstanceRef.current = null;
+      }
+
+      swiperInstanceRef.current = new Swiper(swiperRef.current, {
         modules: [Autoplay],
         slidesPerView: 4,
         spaceBetween: 25,
-        loop: displayList.length > 1,
+        loop: members.length > 1,
         autoplay: {
           delay: 2000,
           disableOnInteraction: false,
@@ -147,14 +214,18 @@ function TeamSwiper() {
     initSwiper();
 
     return () => {
-      if (swiperInstance) swiperInstance.destroy(true, true);
+      active = false;
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+        swiperInstanceRef.current = null;
+      }
     };
-  }, [displayList]);
+  }, [members]);
 
   return (
     <div className="swiper overflow-hidden" ref={swiperRef}>
       <div className="swiper-wrapper">
-        {displayList.map((member, i) => (
+        {members.map((member, i) => (
           <div className="swiper-slide" key={member.id || i}>
             <div className="text-center">
               <Image
@@ -162,6 +233,7 @@ function TeamSwiper() {
                 className="w-full h-[280px] object-cover rounded-lg mb-3"
                 width={300}
                 height={280}
+                priority
                 alt={member.name || "Team Member"}
               />
               <div className="rounded-[1.5rem] p-2 bg-[#212529]">
@@ -321,21 +393,7 @@ export default function AboutPage() {
           creativity, knowledge sharing, and stronger collaboration.
         </p>
 
-        <div className="overflow-hidden w-full">
-          <div className="flex gap-5 animate-[slide_12s_linear_infinite]">
-            {eventImages.map((n, i) => (
-              <Image
-                key={i}
-                src={`/assets/images/about/Event${n}.png`}
-                alt={`slide${n}`}
-                width={200}
-                height={150}
-                className="shrink-0 rounded-[12px] object-cover"
-                style={{ width: "200px", height: "150px" }}
-              />
-            ))}
-          </div>
-        </div>
+        <EventSlider />
       </section>
 
       {/* ── HOW WE WORK ── */}

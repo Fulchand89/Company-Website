@@ -8,6 +8,7 @@ import mysql from "mysql2/promise";
  * - Reuses a single connection pool across requests.
  * - Caches pool instance globally in development to prevent duplication during Next.js Hot Module Replacement (HMR).
  * - Reads all connection parameters strictly from process.env with Hostinger defaults.
+ * - Enforces remote Hostinger database host (overriding any legacy localhost/127.0.0.1 values).
  * - Trims and cleans environment variable inputs.
  * - Provides connection logging (Host, Port, Database, User) without exposing password.
  * - Graceful error handling and query execution helper.
@@ -29,13 +30,27 @@ export function getDbPool() {
     const rawPassword = process.env.DB_PASSWORD || "Gtwwebsite@123";
 
     // Clean and trim environment values to prevent quotation or space issues
-    const host = rawHost.trim().replace(/^['"]|['"]$/g, "");
+    let host = rawHost.trim().replace(/^['"]|['"]$/g, "");
     const port = parseInt(rawPort.toString().trim(), 10) || 3306;
-    const database = rawDatabase.trim().replace(/^['"]|['"]$/g, "");
-    const user = rawUser.trim().replace(/^['"]|['"]$/g, "");
+    let database = rawDatabase.trim().replace(/^['"]|['"]$/g, "");
+    let user = rawUser.trim().replace(/^['"]|['"]$/g, "");
     const password = rawPassword.trim().replace(/^['"]|['"]$/g, "");
 
-    // Configuration object for Hostinger MySQL connection pool
+    // STRICT GUARD: Force remote Hostinger DB host if localhost/127.0.0.1 is passed or empty
+    if (!host || host === "localhost" || host === "127.0.0.1" || host === "::1") {
+      console.warn(`[MySQL Pool Warning] Invalid host '${host}' detected. Overriding with Hostinger server 'srv1823.hstgr.io'.`);
+      host = "srv1823.hstgr.io";
+    }
+
+    if (!user || user === "root") {
+      user = "u879279162_gtwwebsite";
+    }
+
+    if (!database || database === "company_db" || database === "gtnew") {
+      database = "u879279162_gtwwebsite";
+    }
+
+    // Configuration object for Hostinger MySQL connection pool (optimized for serverless & remote latency)
     const poolConfig = {
       host,
       port,
@@ -43,13 +58,13 @@ export function getDbPool() {
       user,
       password,
       waitForConnections: true,
-      connectionLimit: 10,
-      maxIdle: 10,
-      idleTimeout: 60000,
+      connectionLimit: 4, // Keep pool small for serverless lambda instances
+      maxIdle: 4,
+      idleTimeout: 30000,
       queueLimit: 0,
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
-      connectTimeout: 15000, // 15s connection timeout for remote databases
+      connectTimeout: 5000, // 5s connection timeout for remote databases
     };
 
     // Connection logging (Host, Port, Database, User) without exposing password
@@ -59,16 +74,11 @@ export function getDbPool() {
     console.log(`  - Database: ${poolConfig.database}`);
     console.log(`  - User: ${poolConfig.user}`);
 
-    if (process.env.NODE_ENV === "production") {
-      // Direct pool initialization in production
-      pool = mysql.createPool(poolConfig);
-    } else {
-      // In development mode, cache the pool on globalThis to survive Next.js HMR reloads
-      if (!globalThis._mysqlPool) {
-        globalThis._mysqlPool = mysql.createPool(poolConfig);
-      }
-      pool = globalThis._mysqlPool;
+    // Cache the pool globally across both production lambdas and dev HMR to reuse TCP connections
+    if (!globalThis._mysqlPool) {
+      globalThis._mysqlPool = mysql.createPool(poolConfig);
     }
+    pool = globalThis._mysqlPool;
   }
 
   return pool;
@@ -76,18 +86,24 @@ export function getDbPool() {
 
 /**
  * Reusable helper to execute SQL queries with parameter binding.
- * Handles pool retrieval, query execution, error logging, and error handling gracefully.
+ * Includes a 5-second execution timeout guard so remote DB latency doesn't hang the website.
  * 
  * @param {string} query - The SQL query to execute with ? placeholders.
  * @param {Array} params - Array of parameters to safely bind to the query.
+ * @param {number} timeoutMs - Max execution time before failing fast (default 5000ms).
  * @returns {Promise<any>} The results returned by the database query.
  */
-export async function executeQuery(query, params = []) {
+export async function executeQuery(query, params = [], timeoutMs = 5000) {
   try {
     const dbPool = getDbPool();
-    // Execute query via connection pool
-    const [results] = await dbPool.query(query, params);
-    return results;
+    
+    // Execute query with timeout protection for remote latency
+    const queryPromise = dbPool.query(query, params).then(([results]) => results);
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Database query timed out after ${timeoutMs}ms`)), timeoutMs)
+    );
+
+    return await Promise.race([queryPromise, timeoutPromise]);
   } catch (error) {
     // Log query execution error with contextual information
     console.error("Database Query Execution Error:", {

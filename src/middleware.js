@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes except login
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  // Protect admin routes except login and reset-password
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login" && pathname !== "/admin/reset-password") {
     const cookieName = process.env.SESSION_COOKIE_NAME || "gtw_session";
     const sessionCookie = request.cookies.get(cookieName);
 
@@ -33,6 +33,7 @@ export function middleware(request) {
   }
 
   return NextResponse.next();
+
 }
 
 // Only match admin routes

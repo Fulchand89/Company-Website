@@ -40,20 +40,24 @@ export async function ensureJobsSchema() {
 export const jobService = {
   // Get all job listings
   async getAllJobs() {
-    await ensureJobsSchema();
-    return await executeQuery(
-      "SELECT * FROM jobs ORDER BY created_at DESC"
-    );
+    try {
+      return await executeQuery("SELECT * FROM jobs ORDER BY created_at DESC");
+    } catch (err) {
+      await ensureJobsSchema();
+      return await executeQuery("SELECT * FROM jobs ORDER BY created_at DESC").catch(() => []);
+    }
   },
 
   // Get single job by ID
   async getJobById(id) {
-    await ensureJobsSchema();
-    const results = await executeQuery(
-      "SELECT * FROM jobs WHERE id = ?",
-      [id]
-    );
-    return results[0] || null;
+    try {
+      const results = await executeQuery("SELECT * FROM jobs WHERE id = ?", [id]);
+      return results[0] || null;
+    } catch (err) {
+      await ensureJobsSchema();
+      const results = await executeQuery("SELECT * FROM jobs WHERE id = ?", [id]).catch(() => []);
+      return results[0] || null;
+    }
   },
 
   // Create a new job opening
@@ -78,16 +82,19 @@ export const jobService = {
 
   // Get paginated jobs
   async getPaginatedJobs(page = 1, limit = 10) {
-    await ensureJobsSchema();
-    const offset = (page - 1) * limit;
-    const [countResult] = await executeQuery("SELECT COUNT(*) as count FROM jobs");
-    const total = countResult?.count || 0;
-    const data = await executeQuery(
-      "SELECT * FROM jobs ORDER BY created_at DESC LIMIT ? OFFSET ?",
-      [parseInt(limit, 10), parseInt(offset, 10)]
-    );
-    const totalPages = Math.ceil(total / limit);
-    return { data, pagination: { total, page, limit, totalPages } };
+    try {
+      const offset = (page - 1) * limit;
+      const [countResult, data] = await Promise.all([
+        executeQuery("SELECT COUNT(*) as count FROM jobs"),
+        executeQuery("SELECT * FROM jobs ORDER BY created_at DESC LIMIT ? OFFSET ?", [parseInt(limit, 10), parseInt(offset, 10)])
+      ]);
+      const total = countResult?.count || 0;
+      const totalPages = Math.ceil(total / limit);
+      return { data: data || [], pagination: { total, page, limit, totalPages } };
+    } catch (err) {
+      await ensureJobsSchema();
+      return { data: [], pagination: { total: 0, page, limit, totalPages: 0 } };
+    }
   },
 
   // Delete a job listing

@@ -3,6 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Swiper from "swiper";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -80,83 +83,71 @@ const testimonials = [
   { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
 ];
 
-const teamMembers = Array(8).fill({ name: "Jennifer", role: "CEO" });
+const teamMembers = [
+  { id: 1, name: "Jennifer", designation: "CEO & Founder", img: "/assets/images/hero/team-demo.png" },
+  { id: 2, name: "Alexander Reed", designation: "Chief Technology Officer", img: "/assets/images/hero/team-demo.png" },
+  { id: 3, name: "Sophia Chen", designation: "VP of Product & Design", img: "/assets/images/hero/team-demo.png" },
+  { id: 4, name: "Marcus Vance", designation: "Head of AI & Engineering", img: "/assets/images/hero/team-demo.png" },
+  { id: 5, name: "Emily Watson", designation: "Lead UI/UX Designer", img: "/assets/images/hero/team-demo.png" },
+  { id: 6, name: "David Miller", designation: "Senior Full Stack Dev", img: "/assets/images/hero/team-demo.png" },
+  { id: 7, name: "Rachel Adams", designation: "Marketing Director", img: "/assets/images/hero/team-demo.png" },
+  { id: 8, name: "Daniel Kim", designation: "DevOps Lead", img: "/assets/images/hero/team-demo.png" },
+];
 
 const blogPosts = [
-  { img: "/assets/images/hero/blog-img1.png", title: "8 Creative Ways to Repurpose Your Webinar Content" },
-  { img: "/assets/images/hero/blog-img2.png", title: "Why Webinars Are the #1 Lead Generation Marketing Strategy, You May Not Be Thinking About" },
-  { img: "/assets/images/hero/blog-img3.png", title: "How to Drive Qualified Pipeline and Enable Sales After Your Webinar Wraps" },
+  { img: "/assets/images/hero/blog-img1.png", title: "8 Creative Ways to Repurpose Your Webinar Content", slug: "8-creative-ways-to-repurpose-your-webinar-content" },
+  { img: "/assets/images/hero/blog-img2.png", title: "Why Webinars Are the #1 Lead Generation Marketing Strategy, You May Not Be Thinking About", slug: "why-webinars-are-the-1-lead-generation-marketing-strategy" },
+  { img: "/assets/images/hero/blog-img3.png", title: "How to Drive Qualified Pipeline and Enable Sales After Your Webinar Wraps", slug: "how-to-drive-qualified-pipeline-and-enable-sales-after-your-webinar-wraps" },
 ];
 
 // ─── Swiper Components ────────────────────────────────────────────────────────
 
 function TestimonialSwiper() {
   const ref = useRef(null);
-  const [items, setItems] = useState([]);
+  const swiperInstanceRef = useRef(null);
 
   useEffect(() => {
-    async function fetchTestimonials() {
-      try {
-        const res = await fetch("/api/testimonials?limit=20");
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.length > 0) {
-            setItems(json.data);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch testimonials:", err);
+    if (!ref.current) return;
+
+    swiperInstanceRef.current = new Swiper(ref.current, {
+      modules: [Autoplay],
+      slidesPerView: 3,
+      spaceBetween: 30,
+      loop: testimonials.length > 1,
+      centeredSlides: testimonials.length > 2,
+      speed: 1000,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      observer: true,
+      observeParents: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        1200: { slidesPerView: 3 },
+      },
+    });
+
+    return () => {
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+        swiperInstanceRef.current = null;
       }
-    }
-    fetchTestimonials();
+    };
   }, []);
-
-  const displayList = items.length > 0 ? items : testimonials;
-
-  useEffect(() => {
-    if (displayList.length === 0) return;
-    let instance = null;
-    async function init() {
-      const { Swiper } = await import("swiper");
-      const { Autoplay } = await import("swiper/modules");
-      instance = new Swiper(ref.current, {
-        modules: [Autoplay],
-        slidesPerView: 3,
-        spaceBetween: 30,
-        loop: displayList.length > 1,
-        centeredSlides: displayList.length > 2,
-        speed: 3000,
-        autoplay: { delay: 3000, disableOnInteraction: false },
-        observer: true,
-        observeParents: true,
-        breakpoints: {
-          0: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1200: { slidesPerView: 3 },
-        },
-      });
-    }
-    init();
-    return () => { if (instance) instance.destroy(true, true); };
-  }, [displayList]);
 
   return (
     <div className="swiper myTestimonialSwiper py-1 overflow-hidden" ref={ref}>
       <div className="swiper-wrapper">
-        {displayList.map((item, i) => (
+        {testimonials.map((item, i) => (
           <div className="swiper-slide pt-14" key={item.id || i}>
             <div
               className="relative w-full max-w-[393px] min-h-[335px] rounded-[16px] bg-white px-[25px] pb-[22px] pt-[72px] shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
             >
               {/* Floating avatar */}
               <div className="absolute" style={{ top: "-45px", left: "30px" }}>
-                <Image
+                <img
                   src={item.img || "/assets/images/hero/client-img1.png"}
                   alt={item.name || "Client"}
-                  width={75}
-                  height={75}
-                  className="rounded-full object-cover"
-                  style={{ width: "75px", height: "75px" }}
+                  className="rounded-full object-cover w-[75px] h-[75px]"
                 />
               </div>
               {/* Stars */}
@@ -181,64 +172,44 @@ function TestimonialSwiper() {
 
 function TeamSwiper() {
   const ref = useRef(null);
-  const [members, setMembers] = useState([]);
+  const swiperInstanceRef = useRef(null);
 
   useEffect(() => {
-    async function fetchTeam() {
-      try {
-        const res = await fetch("/api/teams");
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.length > 0) {
-            setMembers(json.data);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch team members:", err);
+    if (!ref.current) return;
+
+    swiperInstanceRef.current = new Swiper(ref.current, {
+      modules: [Autoplay],
+      slidesPerView: 4,
+      spaceBetween: 25,
+      loop: teamMembers.length > 1,
+      autoplay: { delay: 2000, disableOnInteraction: false },
+      observer: true,
+      observeParents: true,
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        576: { slidesPerView: 2 },
+        768: { slidesPerView: 3 },
+        992: { slidesPerView: 4 },
+      },
+    });
+
+    return () => {
+      if (swiperInstanceRef.current) {
+        swiperInstanceRef.current.destroy(true, true);
+        swiperInstanceRef.current = null;
       }
-    }
-    fetchTeam();
+    };
   }, []);
-
-  const displayList = members.length > 0 ? members : teamMembers;
-
-  useEffect(() => {
-    if (displayList.length === 0) return;
-    let instance = null;
-    async function init() {
-      const { Swiper } = await import("swiper");
-      const { Autoplay } = await import("swiper/modules");
-      instance = new Swiper(ref.current, {
-        modules: [Autoplay],
-        slidesPerView: 4,
-        spaceBetween: 25,
-        loop: displayList.length > 1,
-        autoplay: { delay: 2000, disableOnInteraction: false },
-        observer: true,
-        observeParents: true,
-        breakpoints: {
-          0: { slidesPerView: 1 },
-          576: { slidesPerView: 2 },
-          768: { slidesPerView: 3 },
-          992: { slidesPerView: 4 },
-        },
-      });
-    }
-    init();
-    return () => { if (instance) instance.destroy(true, true); };
-  }, [displayList]);
 
   return (
     <div className="swiper teamSwiper overflow-hidden" ref={ref}>
       <div className="swiper-wrapper">
-        {displayList.map((member, i) => (
+        {teamMembers.map((member, i) => (
           <div className="swiper-slide" key={member.id || i}>
             <div className="text-center">
-              <Image
+              <img
                 src={member.img || "/assets/images/hero/team-demo.png"}
                 className="w-full h-[280px] object-cover rounded mb-3"
-                width={300}
-                height={280}
                 alt={member.name || "Team Member"}
               />
               <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] rounded-[1.5rem] p-2">
@@ -658,8 +629,8 @@ export default function HomePage() {
                   Inspiration
                 </span>
                 <h3 className="text-xl lg:text-2xl font-bold text-[#0f172a]">{item.title}</h3>
-                <Link href="#" className="text-red-600 no-underline text-base font-semibold">
-                  Read
+                <Link href={`/blog/${item.slug}`} className="text-red-600 no-underline text-base font-semibold hover:underline">
+                  Read More →
                 </Link>
               </div>
             </div>

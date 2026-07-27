@@ -1,22 +1,44 @@
 import { NextResponse } from "next/server";
 import { jobService } from "@/services/jobService";
 
+export const revalidate = 60;
+
+let jobsCache = null;
+let jobsCacheTime = 0;
+const CACHE_TTL = 60 * 1000;
+
 // GET /api/jobs - List all jobs (with optional pagination)
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl?.searchParams || new URL(request.url).searchParams;
     const page = searchParams.get("page");
     const limit = searchParams.get("limit");
 
+    const now = Date.now();
+    const cacheKey = `jobs_${page || 'all'}_${limit || 'all'}`;
+
+    if (jobsCache && jobsCache[cacheKey] && (now - jobsCacheTime < CACHE_TTL)) {
+      return NextResponse.json(jobsCache[cacheKey], {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+      });
+    }
+
+    let payload;
     if (page || limit) {
       const p = parseInt(page || "1", 10);
       const l = parseInt(limit || "10", 10);
-      const result = await jobService.getPaginatedJobs(p, l);
-      return NextResponse.json(result);
+      payload = await jobService.getPaginatedJobs(p, l);
+    } else {
+      payload = await jobService.getAllJobs();
     }
 
-    const jobs = await jobService.getAllJobs();
-    return NextResponse.json(jobs);
+    if (!jobsCache) jobsCache = {};
+    jobsCache[cacheKey] = payload;
+    jobsCacheTime = now;
+
+    return NextResponse.json(payload, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+    });
   } catch (error) {
     console.error("GET Jobs API Error:", error);
     return NextResponse.json(

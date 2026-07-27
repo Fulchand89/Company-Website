@@ -19,6 +19,15 @@ export async function GET() {
 // POST /api/users - Create a new user (Registration)
 export async function POST(request) {
   try {
+    // Enforce single user rule for admin panel
+    const existingCount = await userService.getUserCount();
+    if (existingCount >= 1) {
+      return NextResponse.json(
+        { error: "Only one administrator user is allowed in the system. Further user registration is disabled." },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json().catch(() => null);
 
     if (!body) {

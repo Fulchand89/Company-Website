@@ -149,28 +149,36 @@ export async function ensureTestimonialSchema() {
 export const testimonialService = {
   // Get published testimonials (for public frontend) with optional pagination
   async getAllPublishedTestimonials({ page = 1, limit = 10 } = {}) {
-    await ensureTestimonialSchema();
     const offset = (page - 1) * limit;
 
-    const [countResult] = await executeQuery("SELECT COUNT(*) as count FROM testimonials WHERE status = 'published'");
-    const total = countResult?.count || 0;
+    try {
+      const [countResult, data] = await Promise.all([
+        executeQuery("SELECT COUNT(*) as count FROM testimonials WHERE status = 'published'"),
+        executeQuery(
+          "SELECT * FROM testimonials WHERE status = 'published' ORDER BY created_at DESC LIMIT ? OFFSET ?",
+          [parseInt(limit, 10), parseInt(offset, 10)]
+        )
+      ]);
 
-    const data = await executeQuery(
-      "SELECT * FROM testimonials WHERE status = 'published' ORDER BY created_at DESC LIMIT ? OFFSET ?",
-      [parseInt(limit, 10), parseInt(offset, 10)]
-    );
+      const total = countResult[0]?.count || 0;
+      const totalPages = Math.ceil(total / limit);
 
-    const totalPages = Math.ceil(total / limit);
-
-    return {
-      data: data || [],
-      pagination: {
-        total,
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
-        totalPages
-      }
-    };
+      return {
+        data: data || [],
+        pagination: {
+          total,
+          page: parseInt(page, 10),
+          limit: parseInt(limit, 10),
+          totalPages
+        }
+      };
+    } catch (err) {
+      await ensureTestimonialSchema();
+      return {
+        data: [],
+        pagination: { total: 0, page: parseInt(page, 10), limit: parseInt(limit, 10), totalPages: 0 }
+      };
+    }
   },
 
   // Get paginated testimonials for admin panel (includes drafts)

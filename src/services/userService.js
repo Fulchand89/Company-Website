@@ -54,6 +54,14 @@ export async function ensureUsersSchema() {
       await executeQuery("ALTER TABLE users ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at");
     }
 
+    if (!existingColNames.includes("reset_token")) {
+      await executeQuery("ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL AFTER updated_at");
+    }
+
+    if (!existingColNames.includes("reset_token_expiry")) {
+      await executeQuery("ALTER TABLE users ADD COLUMN reset_token_expiry DATETIME DEFAULT NULL AFTER reset_token");
+    }
+
     schemaChecked = true;
   } catch (err) {
     console.error("Users schema verification warning:", err);
@@ -89,9 +97,48 @@ export const userService = {
     return results[0] || null;
   },
 
-  // Create new user
+  // Get total count of users
+  async getUserCount() {
+    await ensureUsersSchema();
+    const results = await executeQuery("SELECT COUNT(*) as count FROM users");
+    return Number(results[0]?.count || 0);
+  },
+
+  // Save password reset token for a user
+  async saveResetToken(userId, token, expiryDate) {
+    await ensureUsersSchema();
+    return await executeQuery(
+      "UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?",
+      [token, expiryDate, userId]
+    );
+  },
+
+  // Find user by active reset token
+  async getUserByResetToken(token) {
+    await ensureUsersSchema();
+    const results = await executeQuery(
+      "SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()",
+      [token]
+    );
+    return results[0] || null;
+  },
+
+  // Clear reset token after successful password reset
+  async clearResetToken(userId) {
+    await ensureUsersSchema();
+    return await executeQuery(
+      "UPDATE users SET reset_token = NULL, reset_token_expiry = NULL WHERE id = ?",
+      [userId]
+    );
+  },
+
+  // Create new user (restricted to single admin user)
   async createUser({ name, email, passwordHash, role = "user" }) {
     await ensureUsersSchema();
+    const count = await this.getUserCount();
+    if (count >= 1) {
+      throw new Error("Only one administrator account is allowed in the system. Further user registration is restricted.");
+    }
     const cleanEmail = email.toLowerCase().trim();
     const cleanName = name.trim();
     
@@ -119,7 +166,7 @@ export const userService = {
   async updatePassword(id, passwordHash) {
     await ensureUsersSchema();
     return await executeQuery(
-      "UPDATE users SET password_hash = ? WHERE id = ?",
+      "UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?",
       [passwordHash, id]
     );
   },
