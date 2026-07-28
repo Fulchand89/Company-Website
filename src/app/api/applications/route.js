@@ -152,8 +152,11 @@ export async function POST(request) {
     const cleanOriginalName = resumeFile.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const uniqueFilename = `${uniqueId}-${cleanOriginalName}`;
     
-    // Directory path: public/uploads/resumes
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "resumes");
+    // Vercel has a read-only filesystem except for /tmp
+    const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL;
+    const uploadDir = isProduction
+      ? path.join("/tmp", "resumes")
+      : path.join(process.cwd(), "public", "uploads", "resumes");
     
     // Ensure upload directory exists
     await mkdir(uploadDir, { recursive: true });
@@ -162,7 +165,11 @@ export async function POST(request) {
     await writeFile(absoluteFilePath, buffer);
     
     // Public URL path to store in database
-    const relativeResumeUrl = `/uploads/resumes/${uniqueFilename}`;
+    // Note: On Vercel, files in /tmp are not publicly accessible via URL.
+    // For a permanent solution, you should use AWS S3, Cloudinary, or Vercel Blob.
+    const relativeResumeUrl = isProduction
+      ? `/uploads/resumes/${uniqueFilename}` // This will 404 on Vercel, but allows DB save.
+      : `/uploads/resumes/${uniqueFilename}`;
 
     // 6. Save details to MySQL
     const application = await applicationService.createApplication({
