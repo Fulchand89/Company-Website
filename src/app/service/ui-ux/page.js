@@ -50,16 +50,16 @@ const steps = [
    Key Features / Benefits
 ───────────────────────────────────────────── */
 const features = [
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
-  "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+  "Comprehensive User Research & Persona Creation",
+  "Wireframing & Interactive Prototyping",
+  "User-Centered Interface Design",
+  "Usability & A/B Testing",
+  "Cross-Platform Accessibility Compliance",
+  "Micro-Interaction & Animation Design",
+  "Brand Identity Integration",
+  "Information Architecture & User Flow Mapping",
+  "Design System Development",
+  "Continuous Iteration based on User Feedback",
 ];
 
 /* ─────────────────────────────────────────────
@@ -101,7 +101,7 @@ function FaqItem({ faq }) {
       >
         <span className="text-sm sm:text-base">{faq.q}</span>
         <span className="text-gray-500 text-xl ml-4 flex-shrink-0">
-          {open ? "∧" : "∨"}
+          {open ? "˄" : "˅"}
         </span>
       </button>
       {open && (
@@ -128,10 +128,10 @@ export default function UiUxDesignPage() {
               Website Design
             </h1>
             <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos laboriosam expedita porro beatae sint dicta, facere ratione explicatio nam sed, dolore accusamus similique consequuntur iusto!
+              Our UI/UX design services focus on creating intuitive, user-centric interfaces that engage your audience and drive conversions. We blend aesthetics with functionality to deliver exceptional digital experiences.
             </p>
             <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet, error id? Nisi nemo ad, officia nam minus ullam! Voluptates fugiat dignissimos aspernatur ad aliquid eaque. Ut aspernatur neque est aliquam officia libero consequuntur nam molestiae quam.
+              From initial wireframing to high-fidelity prototyping, our design process ensures that every interaction feels natural and effortless. Let us transform your vision into a beautiful, functional product that users love.
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function UiUxDesignPage() {
               How <span className="text-[#b30d29]">Ui Ux Design</span> Work
             </h2>
             <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              We combine strategy, technology, and innovation to deliver scalable eCommerce solutions.We combine strategy, technology, and innovation to deliver scalable eCommerce solutions.We combine strategy, technology, and innovation to deliver scalable eCommerce solutions..
+              We employ a structured, data-driven design process to ensure every decision enhances the overall user experience and aligns with your business goals.
             </p>
           </div>
 

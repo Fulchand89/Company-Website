@@ -41,35 +41,6 @@ const getJobIcon = (department) => {
   return <Briefcase className="w-5 h-5 text-gray-600" />;
 };
 
-const INITIAL_JOBS = [
-  {
-    id: 1,
-    title: "Senior Full Stack Engineer (MERN / Next.js)",
-    department: "Engineering",
-    location: "Indore, India / Remote",
-    type: "Full-Time",
-    experience: "3+ Years",
-    description: "Build robust, high-performance web applications and enterprise platforms using React, Node.js, and Next.js."
-  },
-  {
-    id: 2,
-    title: "Mobile App Developer (Flutter / React Native)",
-    department: "Engineering",
-    location: "Indore, India",
-    type: "Full-Time",
-    experience: "2+ Years",
-    description: "Engineer beautiful, responsive native and cross-platform mobile apps for iOS and Android."
-  },
-  {
-    id: 3,
-    title: "UI/UX Product Designer",
-    department: "Design",
-    location: "Indore, India / Hybrid",
-    type: "Full-Time",
-    experience: "2+ Years",
-    description: "Design intuitive user interfaces, interactive wireframes, and design systems for enterprise clients."
-  }
-];
 
 export default function CareerPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -135,8 +106,8 @@ export default function CareerPage() {
     }
   ];
 
-  const [jobs, setJobs] = useState(INITIAL_JOBS);
-  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -222,10 +193,10 @@ export default function CareerPage() {
     async function fetchJobs() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/jobs?page=${page}&limit=3`);
+        const res = await fetch(`/api/jobs?page=${page}&limit=10`);
         if (res.ok) {
           const data = await res.json();
-          if (data.data && data.data.length > 0) {
+          if (data.data) {
             setJobs(data.data);
             setTotalPages(data.pagination?.totalPages || 1);
           }
@@ -279,7 +250,7 @@ export default function CareerPage() {
   ];
 
   // Filters
-  const displayJobsList = jobs.length > 0 ? jobs : INITIAL_JOBS;
+  const displayJobsList = jobs;
   const filteredJobs = displayJobsList.filter((job) => {
     const matchesSearch = (job.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       (job.location || "").toLowerCase().includes(searchTerm.toLowerCase()) ||

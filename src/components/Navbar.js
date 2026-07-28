@@ -50,10 +50,10 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 px-0 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${scrolled ? "shadow-lg" : ""
+      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-8 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${scrolled ? "shadow-lg" : ""
         }`}
     >
-      <div className="container mx-auto pl-0 pr-0 py-5  flex items-center justify-between">
+      <div className="container mx-auto py-5 flex items-center justify-between">
 
         {/* ── Logo ── */}
         <Link href="/" className="navbar-brand shrink-0">

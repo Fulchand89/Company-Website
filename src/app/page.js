@@ -24,14 +24,14 @@ const aboutItems = [
   },
   {
     icon: "/assets/images/hero/hero-about-icon1.png",
-    title: "Custom Software Development",
-    text: "We engineer bespoke software designed to solve your unique operational challenges. From automating internal workflows to building large-scale ERP systems, our solutions are built for high performance, reliability, and long-term scalability.",
+    title: "Mobile App Development",
+    text: "Deliver seamless mobile experiences across iOS and Android platforms. Our mobile applications are built with user-centric design, robust security, and cross-platform compatibility to ensure maximum reach.",
     titleClass: "text-[#0f172a]",
   },
   {
     icon: "/assets/images/hero/hero-about-icon1.png",
-    title: "Custom Software Development",
-    text: "We engineer bespoke software designed to solve your unique operational challenges. From automating internal workflows to building large-scale ERP systems, our solutions are built for high performance, reliability, and long-term scalability.",
+    title: "UI/UX & Digital Marketing",
+    text: "We combine stunning interfaces with data-driven marketing strategies. From wireframing intuitive designs to executing SEO and social media campaigns, we help you acquire and retain customers.",
     titleClass: "text-[#0f172a]",
   },
 ];
@@ -69,18 +69,18 @@ const industryGroups = [
 ];
 
 const portfolioItems = [
-  { num: "01", title: "Mind Reset Website", img: "/assets/images/hero/mind-reset.png", text: "Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes." },
-  { num: "02", title: "Booking Luxor Website", img: "/assets/images/protfolio/protfolio2.png", text: "Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes. Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes." },
-  { num: "03", title: "Smart Brain Academy", img: "/assets/images/protfolio/protfolio3.png", text: "Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes. Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes." },
+  { num: "01", title: "Mind Reset Website", img: "/assets/images/hero/mind-reset.png", text: "A comprehensive platform dedicated to mental wellness and personal growth, featuring interactive courses, a resource library, and secure user profiles." },
+  { num: "02", title: "Booking Luxor Website", img: "/assets/images/protfolio/protfolio2.png", text: "A streamlined travel and accommodation booking portal. Integrates real-time availability, secure payment gateways, and a dynamic search engine for a seamless user experience." },
+  { num: "03", title: "Smart Brain Academy", img: "/assets/images/protfolio/protfolio3.png", text: "Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, and improved learning outcomes." },
 ];
 
 const techLogos = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
 
 const testimonials = [
-  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
-  { img: "/assets/images/hero/client-img3.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
-  { img: "/assets/images/hero/client-img2.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
-  { img: "/assets/images/hero/client-img1.png", name: "Roy Donaldson", project: "Book Luxor", text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla veritatis, doloremque laudantium nemo perspiciatis nam rem beatae deserunt iusto est quibusdam, mollitia eaque! Harum, labore modi. Voluptate esse eveniet quisquam!", rating: 5 },
+  { img: "/assets/images/hero/client-img1.png", name: "David Henderson", project: "E-Commerce Replatforming", text: "Gupta Tech Web transformed our online store. The new architecture is blazingly fast, and we saw a 40% increase in conversions within the first month. Highly recommended team!", rating: 5 },
+  { img: "/assets/images/hero/client-img3.png", name: "Sarah Collins", project: "Healthcare CRM App", text: "They delivered our mobile application ahead of schedule. The team was incredibly responsive, and their attention to UI/UX details made the app extremely intuitive for our medical staff.", rating: 5 },
+  { img: "/assets/images/hero/client-img2.png", name: "Michael Chang", project: "Logistics Dashboard", text: "Our supply chain operations were completely modernized. Gupta Tech Web engineered a custom dashboard that gives us real-time insights, saving us countless hours of manual work.", rating: 5 },
+  { img: "/assets/images/hero/client-img1.png", name: "Emma Robertson", project: "SEO & Digital Strategy", text: "Their digital marketing expertise is unmatched. Our organic traffic doubled in just 6 months, and the quality of leads has improved significantly. A fantastic partner for growth.", rating: 5 },
 ];
 
 const teamMembers = [
@@ -329,18 +329,18 @@ export default function HomePage() {
       {/* ── HERO ── */}
       <section className="hero-section">
         <div
-          className="hero-content p-5 flex items-center w-full text-white"
+          className="hero-content p-5 pt-[100px] lg:pt-[120px] flex items-center w-full text-white"
           style={{
             background: "url('/assets/images/hero/bg-gif.gif') center/cover no-repeat",
             minHeight: "550px",
           }}
         >
-          <div className="hero-text py-5 px-5 lg:px-10 max-w-7xl">
-            <h1 className="mt-5 text-3xl md:text-4xl lg:text-4xl font-bold ">
+          <div className="hero-text py-5 px-2 md:px-5 lg:px-10 max-w-7xl">
+            <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               We Build <span className="text-[#B30D29]">Digital </span>
-              <br /> Experiences
+              <br className="hidden md:block" /> Experiences
             </h1>
-            <p className="text-xl mt-3">
+            <p className="text-lg md:text-xl mt-4 max-w-2xl text-gray-200">
               Empowering businesses with innovative and <br /> next-gen IT Solutions.
             </p>
             <div className="mt-4">
@@ -360,7 +360,7 @@ export default function HomePage() {
         <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">About Us</h2>
         <p className="text-base lg:text-base font-medium text-[#0f172a] leading-relaxed mb-6 max-w-4xl">
           Increase operational efficiency, reduce costs, and drive productivity through<br />
-          custom-built digital solutions. Our expert teams specialize in building.
+          custom-built digital solutions. Our expert teams specialize in building scalable and innovative platforms.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           <div className="md:col-span-5 lg:col-span-4 py-4">
@@ -388,8 +388,8 @@ export default function HomePage() {
                   <div key={i} className="flex mb-6 items-start">
                     <div className="shrink-0 mr-4">
                       <div
-                        className="bg-white shadow-sm rounded-full flex items-center justify-center relative border border-gray-100"
-                        style={{ width: "60px", height: "60px", marginLeft: "-24px", zIndex: 1 }}
+                        className="bg-white shadow-sm rounded-full flex shrink-0 items-center justify-center relative border border-gray-100 -ml-3 md:-ml-6 z-10"
+                        style={{ width: "60px", height: "60px" }}
                       >
                         <Image src={item.icon} width={32} height={32} alt="" />
                       </div>
@@ -427,7 +427,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
 
           {/* ================= LEFT STATS ================= */}
-          <div className="lg:col-span-1 flex flex-col gap-4">
+          <div className="lg:col-span-1 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
 
             {stats.map((stat, index) => (
               <div
@@ -517,7 +517,7 @@ export default function HomePage() {
           </p>
 
           {/* ================= Mobile / Tablet ================= */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:hidden gap-6 justify-items-center mb-6 mt-20">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:hidden gap-6 justify-items-center mb-6 mt-10">
             {industryGroups.flat().map((item, ii) => (
               <div
                 key={ii}
@@ -700,7 +700,7 @@ export default function HomePage() {
 
       {/* ── CTA BANNER ── */}
 
-      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] flex items-center bg-[url('/assets/images/hero/bottom.png')] bg-cover bg-center bg-no-repeat py-[90px]">
+      <section className="relative w-full flex items-center bg-[url('/assets/images/hero/bottom.png')] bg-cover bg-center bg-no-repeat py-[90px] overflow-hidden">
         <div className="max-w-7xl mx-auto w-full px-6 lg:px-12">
           <div className="flex flex-wrap">
             <div className="w-full text-white">

@@ -36,25 +36,25 @@ const visionCards = [
     img: "/assets/images/about/vision1.png",
     alt: "Innovation",
     title: "Strategic Vision",
-    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "We partner with our clients to map out long-term technological roadmaps, ensuring that every digital investment drives measurable business value.",
   },
   {
     img: "/assets/images/about/vision2.png",
     alt: "Growth",
     title: "Innovation & Growth",
-    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "By adopting cutting-edge technologies like AI and scalable cloud architecture, we help modern enterprises stay ahead of the curve and accelerate growth.",
   },
   {
     img: "/assets/images/about/vision3.png",
     alt: "Quality",
     title: "Inclusive Solutions",
-    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "Our design philosophy centers on accessibility and inclusivity, crafting digital experiences that empower users of all backgrounds and abilities.",
   },
   {
     img: "/assets/images/about/vision4.png",
     alt: "Impact",
     title: "Scaling Worldwide",
-    text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "We build high-performance, robust systems capable of supporting global user bases, ensuring reliable service delivery across international markets.",
   },
 ];
 
@@ -408,9 +408,7 @@ export default function AboutPage() {
               Through Collaboration.
             </h2>
             <p className="text-base leading-6 text-[#525b6b]">
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-              Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s,
-              when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+              We believe in a structured, transparent, and collaborative approach. From initial ideation to final deployment, our agile methodology ensures that every project is delivered on time, within budget, and exceeds expectations.
             </p>
           </div>
 

@@ -121,7 +121,7 @@ function FaqItem({ faq }) {
       >
         <span className="text-sm sm:text-base">{faq.q}</span>
         <span className="text-gray-500 text-xl ml-4 flex-shrink-0">
-          {open ? "∧" : "∨"}
+          {open ? "˄" : "˅"}
         </span>
       </button>
       {open && (

@@ -34,10 +34,10 @@ const steps = [
    Key Features / Benefits
 ───────────────────────────────────────────── */
 const features = [
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "Robust, scalable architecture capable of handling high traffic loads.",
+  "SEO-optimized codebase to improve search engine rankings and visibility.",
+  "Seamless integration with third-party APIs and payment gateways.",
+  "Responsive, mobile-first design ensuring flawless performance across all devices.",
 ];
 
 /* ─────────────────────────────────────────────
@@ -151,10 +151,10 @@ export default function WebsiteDevelopmentPage() {
                 India
               </h1>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed mb-5">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                We specialize in engineering robust, high-performance web applications tailored to your unique business requirements. Our full-stack development team utilizes modern frameworks to build scalable solutions that drive growth.
               </p>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Whether you need a dynamic corporate portal, a complex SaaS platform, or a high-converting e-commerce store, we deliver secure, fast, and reliable web experiences that elevate your brand and engage your customers.
               </p>
             </div>
 
@@ -192,10 +192,10 @@ export default function WebsiteDevelopmentPage() {
                 What is an <span className="text-[#b30d29]">E-commerce Website</span> , Why You Should Create It &amp; Key Features/Benefits
               </h2>
               <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                An e-commerce website is your digital storefront, allowing you to sell products and services directly to consumers worldwide, 24/7. It provides a convenient, secure platform for transactions, inventory management, and customer engagement.
               </p>
               <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Creating a dedicated e-commerce platform empowers you to bypass third-party marketplaces, retain complete control over your brand identity, and maximize profit margins while leveraging data analytics to understand customer behavior and drive targeted marketing campaigns.
               </p>
             </div>
           </div>

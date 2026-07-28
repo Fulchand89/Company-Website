@@ -11,8 +11,7 @@ export default function Footer() {
             <Image src="/assets/images/logo-gtw.png" alt="GTW Logo" width={120} height={30} />
           </div>
           <p className="text-sm text-slate-300">
-            Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-            industry's standard.
+            Gupta Tech Web is a premier IT solutions provider, delivering cutting-edge software development, UI/UX design, and digital marketing to empower your business.
           </p>
           <div className="flex items-center mt-2">
             <a
@@ -74,7 +73,7 @@ export default function Footer() {
         </div>
 
         {/* Quick Links */}
-        <div className="w-1/2 w-full sm:w-1/3 px-3 md:w-1/6">
+        <div className="w-1/2 sm:w-1/3 px-3 md:w-1/6">
           <h6 className="uppercase text-sm font-semibold mb-3">Quick Links</h6>
           <ul className="list-none m-0 p-0 space-y-1">
             <li><Link href="/about" className="text-white no-underline text-sm block mb-1">About Us</Link></li>
@@ -84,7 +83,7 @@ export default function Footer() {
         </div>
 
         {/* Services */}
-        <div className="w-1/2 w-full sm:w-1/3 px-3 md:w-1/6">
+        <div className="w-1/2 sm:w-1/3 px-3 md:w-1/6">
           <h6 className="uppercase text-sm font-semibold mb-3">Services</h6>
           <ul className="list-none m-0 p-0 space-y-1">
             <li><Link href="/service/app" className="text-white no-underline text-sm block mb-1">App Development</Link></li>
@@ -95,7 +94,7 @@ export default function Footer() {
         </div>
 
         {/* Resources */}
-        <div className="w-1/2 w-full sm:w-1/3 px-3 md:w-1/6">
+        <div className="w-1/2 sm:w-1/3 px-3 md:w-1/6">
           <h6 className="uppercase text-sm font-semibold mb-3">Resources</h6>
           <ul className="list-none m-0 p-0 space-y-1">
             <li><Link href="/blog" className="text-white no-underline text-sm block mb-1">Blog</Link></li>

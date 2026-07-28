@@ -34,10 +34,10 @@ const steps = [
    Key Features / Benefits
 ───────────────────────────────────────────── */
 const features = [
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "Native iOS (Swift) & Android (Kotlin) development for peak performance.",
+  "Cross-Platform solutions using React Native & Flutter to minimize time-to-market.",
+  "Secure, enterprise-grade architecture with robust API backends.",
+  "Intuitive UI/UX designed specifically for mobile gesture interactions.",
 ];
 
 /* ─────────────────────────────────────────────
@@ -116,7 +116,7 @@ function FaqItem({ faq }) {
       >
         <span>{faq.q}</span>
         <span className="text-gray-500 text-xl ml-4 flex-shrink-0">
-          {open ? "∧" : "∨"}
+          {open ? "˄" : "˅"}
         </span>
       </button>
       {open && (
@@ -149,10 +149,10 @@ export default function MobileAppDevelopmentPage() {
                 Mobile App <span className="text-[#b30d29]">Development</span> Services in India
               </h1>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed mb-5">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                We engineer state-of-the-art mobile applications that captivate users and deliver tangible business results. From consumer-facing apps to complex enterprise mobility solutions, our team handles the entire lifecycle.
               </p>
               <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Leveraging the latest native and cross-platform frameworks, we build secure, scalable, and intuitive mobile experiences designed to help you dominate the App Store and Google Play.
               </p>
             </div>
 
@@ -190,10 +190,10 @@ export default function MobileAppDevelopmentPage() {
                 What is a <span className="text-[#b30d29]">Mobile Application</span> , Why You Should Create It &amp; Key Features/Benefits
               </h2>
               <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                A mobile application is a powerful software designed specifically for smartphones and tablets. It allows businesses to interact directly with their customers, offering personalized experiences, push notifications, and offline capabilities.
               </p>
               <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Creating a custom mobile app dramatically increases customer loyalty, streamlines internal operations, and provides a direct marketing channel to your most engaged users right in the palm of their hands.
               </p>
             </div>
           </div>
