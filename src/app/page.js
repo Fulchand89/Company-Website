@@ -648,7 +648,7 @@ export default function HomePage() {
         </p>
         <TestimonialSwiper testimonials={dynamicTestimonials} />
       </section>
- 
+
       {/* ── OUR TEAMS ── */}
       <section className="p-6 lg:p-10 text-white">
         <h2 className="text-2xl lg:text-3xl font-bold mb-4">Our Teams</h2>
@@ -657,7 +657,7 @@ export default function HomePage() {
         </p>
         <TeamSwiper teamMembers={dynamicTeam} />
       </section>
- 
+
       {/* ── BLOG ── */}
       <section className="p-6 lg:p-10 bg-white">
         <h2 className="text-2xl lg:text-3xl font-bold text-[#0f172a] mb-4">Blog</h2>

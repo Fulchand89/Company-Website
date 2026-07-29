@@ -64,19 +64,19 @@ const features = [
 /* ─────────────────────────────────────────────
    Blogs Section Cards
 ───────────────────────────────────────────── */
-const blogs = [
+const STATIC_BLOGS = [
   {
-    img: "/assets/images/blog/blog1.png",
+    img: "/assets/images/hero/blog-img1.png",
     category: "Inspiration",
     title: "8 Creative Ways to Repurpose Your Webinar Content",
   },
   {
-    img: "/assets/images/blog/blog2.png",
+    img: "/assets/images/hero/blog-img2.png",
     category: "Inspiration",
     title: "Why Webinars Are the #1 Lead Generation Marketing Strategy You May Not Be Thinking About",
   },
   {
-    img: "/assets/images/blog/blog3.png",
+    img: "/assets/images/hero/blog-img3.png",
     category: "Inspiration",
     title: "How to Drive Qualified Pipeline and Enable Sales After Your Webinar Wraps",
   },
@@ -137,12 +137,31 @@ function FaqItem({ faq }) {
    Page Component (Digital Marketing / SEO Page - Exact Match 3rd Screenshot)
 ───────────────────────────────────────────── */
 export default function DigitalMarketingPage() {
+  const [blogs, setBlogs] = useState(STATIC_BLOGS);
+
+  useEffect(() => {
+    async function fetchDynamicBlogs() {
+      try {
+        const res = await fetch("/api/blog?page=1&limit=3");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            setBlogs(data.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch dynamic blogs:", err);
+      }
+    }
+    fetchDynamicBlogs();
+  }, []);
+
   return (
     <div className="bg-black text-white font-sans">
       {/* ══════════════ 1. HERO SECTION ══════════════ */}
       <section
         className="relative min-h-[480px] bg-cover bg-center bg-no-repeat text-white pt-32 pb-20 flex items-center justify-center text-center"
-        style={{ backgroundImage: "url('/assets/images/about/aboutbg.png')" }}
+        style={{ backgroundImage: "url('/assets/images/about/bottom-card.png')" }}
       >
         <div className="absolute inset-0 bg-black/85" />
 
@@ -325,14 +344,16 @@ export default function DigitalMarketingPage() {
         {/* 3 Blog Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {blogs.map((b, i) => (
-            <div key={i} className="bg-[#111113] rounded-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-2">
+            <div key={b.id || i} className="bg-[#111113] rounded-2xl overflow-hidden border border-white/10 flex flex-col justify-between p-2">
               <div className="relative h-52 w-full rounded-xl overflow-hidden bg-gray-800 mb-3">
-                <Image
-                  src={b.img}
-                  alt={b.title}
-                  fill
-                  className="object-cover"
-                />
+                {b.img && (
+                  <Image
+                    src={b.img}
+                    alt={b.title}
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
               <div className="p-3 flex flex-col justify-between flex-1">
                 <div>
@@ -344,7 +365,7 @@ export default function DigitalMarketingPage() {
                   </h3>
                 </div>
                 <Link
-                  href="/blog"
+                  href={`/blog/${b.slug || b.id}`}
                   className="text-xs text-[#b30d29] hover:underline font-semibold"
                 >
                   Read

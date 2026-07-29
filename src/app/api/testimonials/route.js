@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { executeQuery } from "@/lib/db";
 
-export const revalidate = 60; // Cache on Vercel CDN for 60 seconds
-
-// In-memory cache for fast repeated reads
-let cacheData = null;
-let cacheTime = 0;
-const CACHE_TTL = 60 * 1000; // 60 seconds
+export const dynamic = "force-dynamic";
 
 const STATIC_TESTIMONIALS = [
   {
@@ -89,14 +84,7 @@ export async function GET(request) {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "9", 10);
 
-    const now = Date.now();
-    const cacheKey = `testimonials_${page}_${limit}`;
 
-    if (cacheData && cacheData[cacheKey] && (now - cacheTime < CACHE_TTL)) {
-      return NextResponse.json(cacheData[cacheKey], {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
-      });
-    }
 
     try {
       const offset = (page - 1) * limit;
@@ -123,12 +111,12 @@ export async function GET(request) {
         pagination: { total: total || STATIC_TESTIMONIALS.length, page, limit, totalPages: Math.ceil((total || STATIC_TESTIMONIALS.length) / limit) }
       };
 
-      if (!cacheData) cacheData = {};
-      cacheData[cacheKey] = responsePayload;
-      cacheTime = now;
-
       return NextResponse.json(responsePayload, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+        headers: { 
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store"
+        }
       });
     } catch (dbError) {
       console.warn("Testimonials DB Query Error, using static fallback:", dbError.message);
@@ -141,7 +129,11 @@ export async function GET(request) {
         data,
         pagination: { total, page, limit, totalPages }
       }, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+        headers: { 
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store"
+        }
       });
     }
   } catch (error) {

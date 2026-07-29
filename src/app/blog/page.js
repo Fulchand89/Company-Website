@@ -92,6 +92,14 @@ export default function BlogPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTag, setSelectedTag] = useState("");
 
+  const blogCategories = [
+    { name: "All Posts", slug: "" },
+    { name: "Branding", slug: "branding" },
+    { name: "Social", slug: "social" },
+    { name: "Technology", slug: "technology" },
+    { name: "Growth", slug: "growth" },
+  ];
+
   // Sync state with URL parameter on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -133,6 +141,14 @@ export default function BlogPage() {
       window.history.pushState({ path: newUrl }, "", newUrl);
     }
   };
+  const allTags = [
+    ...new Map(
+      INITIAL_BLOGS.flatMap((blog) => blog.tags || []).map((tag) => [
+        tag.slug,
+        tag,
+      ])
+    ).values(),
+  ];
 
   const displayList = blogs;
 
@@ -147,7 +163,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <section className="p-5 bg-white rounded-[32px] mx-4 my-4 relative">
+      <section className="w-full p-5 bg-white rounded-[32px] my-4 relative">
         {/* Active Tag Filter Banner */}
         {selectedTag && (
           <div className="mb-6 p-4 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between mx-3">
@@ -162,6 +178,32 @@ export default function BlogPage() {
             </button>
           </div>
         )}
+        <div className="mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"> Blog </h2>
+
+
+          <p className="text-gray-500 text-sm leading-relaxed w-full">
+            We take pride in building lasting partnerships through quality work,
+            timely delivery, and transparent communication. Our client testimonials
+            reflect the trust and satisfaction we strive to achieve in every project.
+          </p>
+        </div>
+
+
+        <div className="flex flex-wrap justify-center items-center gap-30 mb-10 px-3">
+          {blogCategories.map((category) => (
+            <button
+              key={category.slug || "all"}
+              onClick={() => handleTagClick(category.slug)}
+              className={`px-6 py-2 rounded-full text-sm font-medium border transition ${selectedTag === category.slug
+                  ? "bg-[#dc3545] text-white border-[#dc3545]"
+                  : "bg-white text-[#dc3545] border-[#dc3545] hover:bg-red-50"
+                }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
 
         <div className="space-y-8">
           <div className="flex flex-wrap justify-between gap-y-8 min-h-[300px]">

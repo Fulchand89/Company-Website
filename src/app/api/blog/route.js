@@ -81,11 +81,7 @@ const ALL_BLOG_POSTS = [
   }
 ];
 
-export const revalidate = 60;
-
-let blogCache = null;
-let blogCacheTime = 0;
-const CACHE_TTL = 60 * 1000;
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   try {
@@ -96,14 +92,6 @@ export async function GET(request) {
     const category = searchParams.get("category"); // Category name
 
     const offset = (page - 1) * limit;
-    const now = Date.now();
-    const cacheKey = `blog_${page}_${limit}_${tag || ''}_${category || ''}`;
-
-    if (blogCache && blogCache[cacheKey] && (now - blogCacheTime < CACHE_TTL)) {
-      return NextResponse.json(blogCache[cacheKey], {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
-      });
-    }
 
     try {
       let blogs = [];
@@ -208,12 +196,12 @@ export async function GET(request) {
         }
       };
 
-      if (!blogCache) blogCache = {};
-      blogCache[cacheKey] = responsePayload;
-      blogCacheTime = now;
-
       return NextResponse.json(responsePayload, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+        headers: { 
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store"
+        }
       });
 
     } catch (dbError) {

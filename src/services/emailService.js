@@ -6,6 +6,12 @@ function getTransporter() {
   const port = parseInt(process.env.SMTP_PORT || "587", 10);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
+  console.log("SMTP DEBUG:", {
+    host,
+    port,
+    user,
+    pass: pass ? "AVAILABLE" : "MISSING",
+  });
 
   if (!host || !user || !pass) {
     console.warn("SMTP configuration is incomplete. Check .env.local variables (SMTP_HOST, SMTP_USER, SMTP_PASS).");
@@ -56,7 +62,7 @@ function logMailDetails(label, mailOptions) {
   console.log(`  To:       ${mailOptions.to}`);
   console.log(`  Reply-To: ${mailOptions.replyTo || "(not set)"}`);
   console.log(`  Subject:  ${mailOptions.subject}`);
-  if (mailOptions.cc)  console.log(`  CC:       ${mailOptions.cc}`);
+  if (mailOptions.cc) console.log(`  CC:       ${mailOptions.cc}`);
   if (mailOptions.bcc) console.log(`  BCC:      ${mailOptions.bcc}`);
   console.log(`--- [END EMAIL DEBUG] ---\n`);
 }
@@ -91,7 +97,7 @@ export const emailService = {
       const infoPart = message.substring(additionalInfoIndex);
       const serviceMatch = infoPart.match(/Service:\s*(.*)/);
       const countryMatch = infoPart.match(/Country:\s*(.*)/);
-      
+
       if (serviceMatch && serviceMatch[1]) {
         service = serviceMatch[1].trim();
       }
@@ -500,11 +506,11 @@ export const emailService = {
       `,
       attachments: absoluteResumePath
         ? [
-            {
-              filename: filename || "Resume",
-              path: absoluteResumePath,
-            },
-          ]
+          {
+            filename: filename || "Resume",
+            path: absoluteResumePath,
+          },
+        ]
         : [],
     };
 

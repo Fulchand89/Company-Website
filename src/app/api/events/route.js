@@ -1,28 +1,19 @@
 import { NextResponse } from "next/server";
 import { eventService } from "@/services/eventService";
 
-export const revalidate = 60;
-
-let eventsCache = null;
-let eventsCacheTime = 0;
-const CACHE_TTL = 60 * 1000;
+export const dynamic = "force-dynamic";
 
 // GET /api/events - List active events for public showcase
 export async function GET(request) {
   try {
-    const now = Date.now();
-    if (eventsCache && (now - eventsCacheTime < CACHE_TTL)) {
-      return NextResponse.json(eventsCache, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
-      });
-    }
-
     const events = await eventService.getAllEvents();
-    eventsCache = events;
-    eventsCacheTime = now;
 
     return NextResponse.json(events, {
-      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+      headers: { 
+        "Cache-Control": "no-store, max-age=0, must-revalidate",
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store"
+      }
     });
   } catch (error) {
     console.error("GET Events API Error:", error);
