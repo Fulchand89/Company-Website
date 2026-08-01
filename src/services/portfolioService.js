@@ -1,9 +1,22 @@
 import { executeQuery } from "@/lib/db";
 
+function parseJsonSafe(val, defaultVal = []) {
+  if (!val) return defaultVal;
+  if (typeof val === "object") return val;
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    return defaultVal;
+  }
+}
+
+let isSchemaEnsured = false;
+
 /**
  * Ensures that the 'portfolio' database table exists and contains initial seed projects if empty.
  */
 export async function ensureSchema() {
+  if (isSchemaEnsured) return;
   try {
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS portfolio (
@@ -15,10 +28,16 @@ export async function ensureSchema() {
         full_description LONGTEXT NOT NULL,
         image VARCHAR(255) NOT NULL,
         image_alt VARCHAR(255) DEFAULT NULL,
-        gallery JSON DEFAULT NULL,
+        hero_image VARCHAR(500) DEFAULT NULL,
         client_name VARCHAR(255) DEFAULT NULL,
-        project_url VARCHAR(255) DEFAULT NULL,
+        client_location VARCHAR(255) DEFAULT NULL,
+        industry VARCHAR(255) DEFAULT NULL,
+        development_time VARCHAR(255) DEFAULT NULL,
+        target_audience TEXT DEFAULT NULL,
+        deliverables JSON DEFAULT NULL,
+        gallery JSON DEFAULT NULL,
         technologies JSON DEFAULT NULL,
+        project_url VARCHAR(255) DEFAULT NULL,
         completion_date DATE DEFAULT NULL,
         status VARCHAR(50) DEFAULT 'published',
         featured BOOLEAN DEFAULT FALSE,
@@ -49,30 +68,95 @@ export async function ensureSchema() {
     `;
     await executeQuery(createTableQuery);
 
-    // Check if table is empty
+    // Auto-migrate missing columns cleanly without throwing ER_DUP_FIELDNAME errors
+    try {
+      const existingColsRows = await executeQuery("SHOW COLUMNS FROM portfolio");
+      const existingColNames = (existingColsRows || []).map((r) => r.Field.toLowerCase());
+
+      const columnsToAdd = [
+        { name: "hero_image", type: "VARCHAR(500) DEFAULT NULL" },
+        { name: "client_location", type: "VARCHAR(255) DEFAULT NULL" },
+        { name: "industry", type: "VARCHAR(255) DEFAULT NULL" },
+        { name: "development_time", type: "VARCHAR(255) DEFAULT NULL" },
+        { name: "target_audience", type: "TEXT DEFAULT NULL" },
+        { name: "deliverables", type: "JSON DEFAULT NULL" }
+      ];
+
+      for (const col of columnsToAdd) {
+        if (!existingColNames.includes(col.name.toLowerCase())) {
+          await executeQuery(`ALTER TABLE portfolio ADD COLUMN ${col.name} ${col.type}`);
+        }
+      }
+    } catch (colErr) {
+      console.warn("[portfolioService] Schema migration column check notice:", colErr);
+    }
+
+    // Check if table is empty or update initial project with full Case Study data
     const countCheck = await executeQuery("SELECT COUNT(*) as count FROM portfolio");
     if (countCheck[0]?.count === 0) {
       console.log("[portfolioService] Seeding initial portfolio items into MySQL...");
+      
+      const defaultDeliverables = JSON.stringify([
+        {
+          id: 1,
+          number: "01",
+          title: "UI UX Design",
+          description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+          image: "/assets/images/protfolio/protfolio1.png"
+        },
+        {
+          id: 2,
+          number: "02",
+          title: "Web Development",
+          description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+          image: "/assets/images/hero/mind-reset.png"
+        },
+        {
+          id: 3,
+          number: "03",
+          title: "Search Engine Optimization",
+          description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+          image: "/assets/images/protfolio/protfolio3.png"
+        }
+      ]);
+
+      const defaultTech = JSON.stringify(["HTML5", "CSS3", "Figma", "Laravel", "Swift", "Flutter", "Python", "Next.js", "WordPress"]);
+
+      const defaultGallery = JSON.stringify([
+        "/assets/images/hero/mind-reset.png",
+        "/assets/images/protfolio/protfolio1.png",
+        "/assets/images/protfolio/protfolio2.png",
+        "/assets/images/protfolio/protfolio3.png"
+      ]);
+
       const seedQuery = `
         INSERT INTO portfolio 
-          (id, slug, title, category, short_description, full_description, image, image_alt, client_name, project_url, status, featured, display_order, seo_title, seo_description)
+          (id, slug, title, category, short_description, full_description, image, image_alt, hero_image, client_name, client_location, industry, development_time, target_audience, deliverables, technologies, gallery, project_url, status, featured, display_order, seo_title, seo_description)
         VALUES
           (
             1,
             'mind-reset-website',
             'Mind Reset Website',
             'Website',
-            'Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes.',
-            '<h2>Project Overview</h2><p>Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem. Smooth interactions, efficient bookings, improved outcomes.</p><h3>Key Features</h3><ul><li>Customized dashboard for students and tutors</li><li>Integrated scheduling & booking system</li><li>Secure payment processing</li></ul>',
+            'Mind Reset is an awareness-based approach created to support clarity and inner balance without force, pressure, or complex techniques. Rather than focusing on fixing or changing yourself, it invites a deeper understanding of your thoughts and emotions as they naturally arise.',
+            'Mind Reset is an awareness-based approach created to support clarity and inner balance without force, pressure, or complex techniques. Rather than focusing on fixing or changing yourself, it invites a deeper understanding of your thoughts and emotions as they naturally arise. Through guided audios, reflective content, and supportive experiences, you are gently encouraged to observe your inner world with openness and ease.',
             '/assets/images/hero/mind-reset.png',
             'Mind Reset Website',
+            '/assets/images/hero/mind-reset.png',
             'Smart Brain Academy',
+            'Arabic',
+            'Health & Wellness',
+            '2 Month',
+            'individuals seeking greater clarity, emotional balance, and a deeper understanding of their inner experience.',
+            ?,
+            ?,
+            ?,
             'https://mindreset.example.com',
             'published',
             TRUE,
             1,
-            'Mind Reset Website | Gupta Tech Web Portfolio',
-            'Smart Brain Academy empowers students and educators through a reliable online tutoring ecosystem.'
+            'Mind Reset Website - Dynamic Case Study | Gupta Tech Web',
+            'Mind Reset is an awareness-based approach created to support clarity and inner balance.'
           ),
           (
             2,
@@ -80,15 +164,23 @@ export async function ensureSchema() {
             'Booking Luxor Website',
             'Website',
             'Luxor travel and hotel booking platform designed for seamless excursion reservations, intuitive user UI, and high-conversion landing flows.',
-            '<h2>Project Overview</h2><p>Luxor travel and hotel booking platform designed for seamless excursion reservations, intuitive user UI, and high-conversion landing flows.</p><h3>Key Features</h3><ul><li>Real-time booking availability calendar</li><li>Interactive Egypt travel packages</li><li>Multi-currency payment gateway</li></ul>',
+            'Luxor travel and hotel booking platform designed for seamless excursion reservations, intuitive user UI, and high-conversion landing flows.',
             '/assets/images/protfolio/protfolio2.png',
             'Booking Luxor Website',
+            '/assets/images/protfolio/protfolio2.png',
             'Luxor Tours',
+            'Egypt',
+            'Travel & Hospitality',
+            '3 Month',
+            'Travelers looking for premium Nile cruises and excursion bookings.',
+            ?,
+            ?,
+            ?,
             'https://bookingluxor.example.com',
             'published',
             TRUE,
             2,
-            'Booking Luxor Website | Gupta Tech Web Portfolio',
+            'Booking Luxor Website - Case Study | Gupta Tech Web',
             'Luxor travel and hotel booking platform designed for seamless excursion reservations.'
           ),
           (
@@ -97,16 +189,24 @@ export async function ensureSchema() {
             'Smart Brain Academy',
             'Website',
             'Educational web platform offering interactive learning modules, student performance tracking, and live virtual classroom integrations.',
-            '<h2>Project Overview</h2><p>Educational web platform offering interactive learning modules, student performance tracking, and live virtual classroom integrations.</p><h3>Key Features</h3><ul><li>Interactive quiz engines & video courses</li><li>Live progress analytics</li><li>Automated certification issuance</li></ul>',
+            'Educational web platform offering interactive learning modules, student performance tracking, and live virtual classroom integrations.',
             '/assets/images/protfolio/protfolio3.png',
             'Smart Brain Academy',
-            'Smart Brain Academy Inc',
+            '/assets/images/protfolio/protfolio3.png',
+            'Smart Brain Inc',
+            'United States',
+            'Education & EdTech',
+            '4 Month',
+            'Students, teachers, and academic tutors worldwide.',
+            ?,
+            ?,
+            ?,
             'https://smartbrain.example.com',
             'published',
             FALSE,
             3,
-            'Smart Brain Academy | Gupta Tech Web Portfolio',
-            'Educational web platform offering interactive learning modules and student tracking.'
+            'Smart Brain Academy - Case Study | Gupta Tech Web',
+            'Educational web platform offering interactive learning modules.'
           ),
           (
             4,
@@ -114,15 +214,23 @@ export async function ensureSchema() {
             'Pauwii Mobile Application',
             'Applications',
             'Cross-platform mobile application providing real-time pet care services, veterinary appointment scheduling, and community pet forums.',
-            '<h2>Project Overview</h2><p>Cross-platform mobile application providing real-time pet care services, veterinary appointment scheduling, and community pet forums.</p><h3>Key Features</h3><ul><li>GPS pet tracking & health logs</li><li>One-click vet appointment booking</li><li>Push notification reminders</li></ul>',
+            'Cross-platform mobile application providing real-time pet care services, veterinary appointment scheduling, and community pet forums.',
             '/assets/images/protfolio/protfolio4.png',
             'Pauwii Mobile Application',
+            '/assets/images/protfolio/protfolio4.png',
             'Pauwii Pet Tech',
+            'Australia',
+            'Pet Care & Services',
+            '2 Month',
+            'Pet owners and professional veterinarians.',
+            ?,
+            ?,
+            ?,
             'https://pauwii.example.com',
             'published',
             TRUE,
             4,
-            'Pauwii Mobile Application | Gupta Tech Web Portfolio',
+            'Pauwii Mobile Application - Case Study | Gupta Tech Web',
             'Cross-platform mobile application providing real-time pet care services.'
           ),
           (
@@ -131,20 +239,35 @@ export async function ensureSchema() {
             'Go Wheeler Mobile Application',
             'Applications',
             'On-demand vehicle rental and ride hailing mobile app with live driver tracking, automated fare calculations, and digital wallet payment.',
-            '<h2>Project Overview</h2><p>On-demand vehicle rental and ride hailing mobile app with live driver tracking, automated fare calculations, and digital wallet payment.</p><h3>Key Features</h3><ul><li>Real-time driver location mapping</li><li>In-app digital payment wallet</li><li>Automated receipt generation</li></ul>',
+            'On-demand vehicle rental and ride hailing mobile app with live driver tracking, automated fare calculations, and digital wallet payment.',
             '/assets/images/protfolio/protfolio5.png',
             'Go Wheeler Mobile Application',
+            '/assets/images/protfolio/protfolio5.png',
             'Go Wheeler Mobility',
+            'India',
+            'Transportation & Mobility',
+            '5 Month',
+            'Commuters and vehicle rental operators.',
+            ?,
+            ?,
+            ?,
             'https://gowheeler.example.com',
             'published',
             FALSE,
             5,
-            'Go Wheeler Mobile Application | Gupta Tech Web Portfolio',
+            'Go Wheeler Mobile Application - Case Study | Gupta Tech Web',
             'On-demand vehicle rental and ride hailing mobile app.'
           );
       `;
-      await executeQuery(seedQuery);
+      await executeQuery(seedQuery, [
+        defaultDeliverables, defaultTech, defaultGallery,
+        defaultDeliverables, defaultTech, defaultGallery,
+        defaultDeliverables, defaultTech, defaultGallery,
+        defaultDeliverables, defaultTech, defaultGallery,
+        defaultDeliverables, defaultTech, defaultGallery
+      ]);
     }
+    isSchemaEnsured = true;
   } catch (error) {
     console.error("[portfolioService] ensureSchema Error:", error);
   }
@@ -174,10 +297,7 @@ export async function getCategories() {
     );
     const dbCategories = (rows || []).map(r => r.category);
 
-    // Standard defaults to ensure tabs always exist even if database has limited records
     const defaults = ["Website", "Applications", "Digital Marketing"];
-    
-    // Combine and deduplicate case-insensitively
     const combined = [...defaults];
     dbCategories.forEach(cat => {
       if (!combined.some(c => c.toLowerCase() === cat.toLowerCase())) {
@@ -211,7 +331,6 @@ export async function getPublicProjects({ category = "all", page = 1, limit = 20
   const params = [];
 
   if (category && category !== "all") {
-    // Map tab keys to database categories (e.g. 'web' -> 'Website', 'mobile' -> 'Applications', 'marketing' -> 'Digital Marketing')
     const lowerCat = category.toLowerCase();
     let catFilter = category;
     if (lowerCat === "web" || lowerCat === "website") catFilter = "Website";
@@ -261,7 +380,7 @@ export async function getPublicProjects({ category = "all", page = 1, limit = 20
 }
 
 /**
- * Retrieves a single project detail by slug or numeric ID
+ * Retrieves a single project detail by slug or numeric ID with full Case Study data
  */
 export async function getProjectBySlugOrId(slugOrId) {
   await ensureSchema();
@@ -287,6 +406,41 @@ export async function getProjectBySlugOrId(slugOrId) {
     console.error("[portfolioService] Fetch related items failed:", err);
   }
 
+  const deliverables = parseJsonSafe(item.deliverables, [
+    {
+      id: 1,
+      number: "01",
+      title: "UI UX Design",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+      image: "/assets/images/protfolio/protfolio1.png"
+    },
+    {
+      id: 2,
+      number: "02",
+      title: "Web Development",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+      image: item.image || "/assets/images/hero/mind-reset.png"
+    },
+    {
+      id: 3,
+      number: "03",
+      title: "Search Engine Optimization",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication. Our client testimonials reflect the trust and satisfaction we strive to achieve in every project.",
+      image: "/assets/images/protfolio/protfolio3.png"
+    }
+  ]);
+
+  const technologies = parseJsonSafe(item.technologies, [
+    "HTML5", "CSS3", "Figma", "Laravel", "Swift", "Flutter", "Python", "Next.js", "WordPress"
+  ]);
+
+  const gallery = parseJsonSafe(item.gallery, [
+    item.image || "/assets/images/hero/mind-reset.png",
+    "/assets/images/protfolio/protfolio1.png",
+    "/assets/images/protfolio/protfolio2.png",
+    "/assets/images/protfolio/protfolio3.png"
+  ]);
+
   return {
     id: item.id,
     slug: item.slug,
@@ -296,12 +450,20 @@ export async function getProjectBySlugOrId(slugOrId) {
     fullDescription: item.full_description,
     image: item.image,
     imageAlt: item.image_alt || item.title,
-    clientName: item.client_name,
+    heroImage: item.hero_image || item.image,
+    clientName: item.client_name || "Smart Brain Academy",
+    clientLocation: item.client_location || "Arabic",
+    industry: item.industry || item.category || "Health & Wellness",
+    developmentTime: item.development_time || "2 Month",
+    targetAudience: item.target_audience || "individuals seeking greater clarity, emotional balance, and a deeper understanding of their inner experience.",
+    deliverables,
+    technologies,
+    gallery,
     projectUrl: item.project_url,
     status: item.status,
     featured: Boolean(item.featured),
-    seoTitle: item.seo_title || `${item.title} | Gupta Tech Web Portfolio`,
-    seoDescription: item.seo_description || item.short_description,
+    seoTitle: item.seo_title || `${item.title} - Dynamic Case Study | Gupta Tech Web`,
+    seoDescription: item.seo_description || item.short_description || item.title,
     seoKeywords: item.seo_keywords || item.category,
     robots: item.robots || "index, follow",
     canonicalUrl: item.canonical_url,
@@ -363,7 +525,7 @@ export async function getAdminProjects({ search = "", category = "", status = ""
 }
 
 /**
- * Admin POST: Creates a new portfolio project
+ * Admin POST: Creates a new portfolio project with Case Study fields
  */
 export async function createProject(data) {
   await ensureSchema();
@@ -380,7 +542,6 @@ export async function createProject(data) {
   let slug = data.slug?.trim() ? generateSlug(data.slug) : generateSlug(title);
   if (!slug) slug = `project-${Date.now()}`;
 
-  // Ensure unique slug
   const existing = await executeQuery("SELECT id FROM portfolio WHERE slug = ?", [slug]);
   if (existing && existing.length > 0) {
     slug = `${slug}-${Date.now()}`;
@@ -389,10 +550,16 @@ export async function createProject(data) {
   const query = `
     INSERT INTO portfolio (
       slug, title, category, short_description, full_description,
-      image, image_alt, client_name, project_url, status, featured, display_order,
+      image, image_alt, hero_image, client_name, client_location, industry,
+      development_time, target_audience, deliverables, technologies, gallery,
+      project_url, status, featured, display_order,
       seo_title, seo_description, seo_keywords, robots, canonical_url
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
+
+  const deliverablesJson = typeof data.deliverables === "string" ? data.deliverables : JSON.stringify(data.deliverables || []);
+  const technologiesJson = typeof data.technologies === "string" ? data.technologies : JSON.stringify(data.technologies || []);
+  const galleryJson = typeof data.gallery === "string" ? data.gallery : JSON.stringify(data.gallery || []);
 
   const params = [
     slug,
@@ -402,7 +569,15 @@ export async function createProject(data) {
     full_description,
     image,
     data.image_alt || title,
+    data.hero_image || image,
     data.client_name || null,
+    data.client_location || null,
+    data.industry || null,
+    data.development_time || null,
+    data.target_audience || null,
+    deliverablesJson,
+    technologiesJson,
+    galleryJson,
     data.project_url || null,
     data.status || "published",
     data.featured ? 1 : 0,
@@ -419,7 +594,7 @@ export async function createProject(data) {
 }
 
 /**
- * Admin PUT: Updates an existing portfolio project
+ * Admin PUT: Updates an existing portfolio project with Case Study fields
  */
 export async function updateProject(id, data) {
   await ensureSchema();
@@ -444,6 +619,18 @@ export async function updateProject(id, data) {
     }
   }
 
+  const deliverablesJson = data.deliverables !== undefined
+    ? (typeof data.deliverables === "string" ? data.deliverables : JSON.stringify(data.deliverables))
+    : current.deliverables;
+
+  const technologiesJson = data.technologies !== undefined
+    ? (typeof data.technologies === "string" ? data.technologies : JSON.stringify(data.technologies))
+    : current.technologies;
+
+  const galleryJson = data.gallery !== undefined
+    ? (typeof data.gallery === "string" ? data.gallery : JSON.stringify(data.gallery))
+    : current.gallery;
+
   const query = `
     UPDATE portfolio SET
       slug = ?,
@@ -453,7 +640,15 @@ export async function updateProject(id, data) {
       full_description = ?,
       image = ?,
       image_alt = ?,
+      hero_image = ?,
       client_name = ?,
+      client_location = ?,
+      industry = ?,
+      development_time = ?,
+      target_audience = ?,
+      deliverables = ?,
+      technologies = ?,
+      gallery = ?,
       project_url = ?,
       status = ?,
       featured = ?,
@@ -475,7 +670,15 @@ export async function updateProject(id, data) {
     full_description,
     image,
     data.image_alt ?? current.image_alt,
+    data.hero_image ?? current.hero_image ?? image,
     data.client_name ?? current.client_name,
+    data.client_location ?? current.client_location,
+    data.industry ?? current.industry,
+    data.development_time ?? current.development_time,
+    data.target_audience ?? current.target_audience,
+    deliverablesJson,
+    technologiesJson,
+    galleryJson,
     data.project_url ?? current.project_url,
     data.status ?? current.status,
     data.featured !== undefined ? (data.featured ? 1 : 0) : current.featured,
@@ -516,3 +719,4 @@ export const portfolioService = {
   updateProject,
   deleteProject
 };
+

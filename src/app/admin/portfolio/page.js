@@ -12,11 +12,12 @@ import {
   Check,
   X,
   FileText,
-  Settings,
   Star,
   ExternalLink,
   Layers,
-  Eye
+  Eye,
+  Sliders,
+  CheckSquare
 } from "lucide-react";
 import Pagination from "@/components/Pagination";
 
@@ -40,11 +41,35 @@ export default function AdminPortfolioPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
-  const [activeTab, setActiveTab] = useState("content"); // content, media, seo
+  const [activeTab, setActiveTab] = useState("content"); // content, overview, deliverables, media, seo
   const [editingProject, setEditingProject] = useState(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const defaultDeliverables = [
+    {
+      id: 1,
+      number: "01",
+      title: "UI UX Design",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication.",
+      image: "/assets/images/protfolio/protfolio1.png"
+    },
+    {
+      id: 2,
+      number: "02",
+      title: "Web Development",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication.",
+      image: "/assets/images/hero/mind-reset.png"
+    },
+    {
+      id: 3,
+      number: "03",
+      title: "Search Engine Optimization",
+      description: "We take pride in building lasting partnerships through quality work, timely delivery, and transparent communication.",
+      image: "/assets/images/protfolio/protfolio3.png"
+    }
+  ];
 
   // Form State
   const [form, setForm] = useState({
@@ -56,7 +81,15 @@ export default function AdminPortfolioPage() {
     full_description: "",
     image: "",
     image_alt: "",
+    hero_image: "",
     client_name: "",
+    client_location: "Arabic",
+    industry: "Health & Wellness",
+    development_time: "2 Month",
+    target_audience: "individuals seeking greater clarity, emotional balance, and a deeper understanding of their inner experience.",
+    deliverables: defaultDeliverables,
+    technologies: "HTML5, CSS3, Figma, Laravel, Swift, Flutter, Python, Next.js, WordPress",
+    gallery: "/assets/images/hero/mind-reset.png, /assets/images/protfolio/protfolio1.png, /assets/images/protfolio/protfolio2.png, /assets/images/protfolio/protfolio3.png",
     project_url: "",
     status: "published",
     featured: false,
@@ -68,6 +101,16 @@ export default function AdminPortfolioPage() {
     robots: "index, follow",
     canonical_url: ""
   });
+
+  const parseJsonField = (val, defaultVal) => {
+    if (!val) return defaultVal;
+    if (typeof val === "object") return val;
+    try {
+      return JSON.parse(val);
+    } catch {
+      return defaultVal;
+    }
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -147,7 +190,15 @@ export default function AdminPortfolioPage() {
       full_description: "",
       image: "",
       image_alt: "",
+      hero_image: "",
       client_name: "",
+      client_location: "Arabic",
+      industry: "Health & Wellness",
+      development_time: "2 Month",
+      target_audience: "individuals seeking greater clarity, emotional balance, and a deeper understanding of their inner experience.",
+      deliverables: defaultDeliverables,
+      technologies: "HTML5, CSS3, Figma, Laravel, Swift, Flutter, Python, Next.js, WordPress",
+      gallery: "/assets/images/hero/mind-reset.png, /assets/images/protfolio/protfolio1.png, /assets/images/protfolio/protfolio2.png, /assets/images/protfolio/protfolio3.png",
       project_url: "",
       status: "published",
       featured: false,
@@ -165,6 +216,14 @@ export default function AdminPortfolioPage() {
     setEditingProject(project);
     setIsSlugManual(true);
     setActiveTab("content");
+
+    const parsedDelivs = parseJsonField(project.deliverables, defaultDeliverables);
+    const parsedTech = parseJsonField(project.technologies, ["HTML5", "CSS3", "Figma", "Laravel"]);
+    const parsedGal = parseJsonField(project.gallery, []);
+
+    const techString = Array.isArray(parsedTech) ? parsedTech.join(", ") : String(parsedTech || "");
+    const galString = Array.isArray(parsedGal) ? parsedGal.join(", ") : String(parsedGal || "");
+
     setForm({
       title: project.title || "",
       slug: project.slug || "",
@@ -174,7 +233,15 @@ export default function AdminPortfolioPage() {
       full_description: project.full_description || "",
       image: project.image || "",
       image_alt: project.image_alt || project.title || "",
+      hero_image: project.hero_image || project.image || "",
       client_name: project.client_name || "",
+      client_location: project.client_location || "Arabic",
+      industry: project.industry || project.category || "Health & Wellness",
+      development_time: project.development_time || "2 Month",
+      target_audience: project.target_audience || "",
+      deliverables: parsedDelivs,
+      technologies: techString,
+      gallery: galString,
       project_url: project.project_url || "",
       status: project.status || "published",
       featured: Boolean(project.featured),
@@ -210,6 +277,7 @@ export default function AdminPortfolioPage() {
       setForm((prev) => ({
         ...prev,
         image: data.url,
+        hero_image: prev.hero_image || data.url,
         image_alt: prev.image_alt || prev.title
       }));
       setSuccessMessage("Portfolio image uploaded successfully!");
@@ -231,9 +299,20 @@ export default function AdminPortfolioPage() {
       ? form.customCategory.trim()
       : form.category;
 
+    // Convert comma-separated strings to array
+    const techArray = form.technologies
+      ? form.technologies.split(",").map(t => t.trim()).filter(Boolean)
+      : [];
+
+    const galleryArray = form.gallery
+      ? form.gallery.split(",").map(g => g.trim()).filter(Boolean)
+      : [];
+
     const payload = {
       ...form,
       category: categoryToSave,
+      technologies: techArray,
+      gallery: galleryArray,
       full_description: form.full_description || form.short_description || form.title
     };
 
@@ -254,7 +333,7 @@ export default function AdminPortfolioPage() {
 
       setShowModal(false);
       setSuccessMessage(
-        editingProject ? "Portfolio project updated!" : "Portfolio project created!"
+        editingProject ? "Portfolio project updated successfully!" : "Portfolio project created successfully!"
       );
       setTimeout(() => setSuccessMessage(""), 3500);
       fetchProjects();
@@ -293,7 +372,7 @@ export default function AdminPortfolioPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-white tracking-tight">Portfolio Management</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Manage projects, upload media, set status, and handle dynamic portfolio categories
+            Manage projects, dynamic case study sections, status, and SEO friendly slug URLs
           </p>
         </div>
         <button
@@ -396,7 +475,7 @@ export default function AdminPortfolioPage() {
                 <tr className="border-b border-gray-800 text-xs font-semibold text-gray-400 uppercase bg-zinc-900/40">
                   <th className="p-4">Project</th>
                   <th className="p-4">Category</th>
-                  <th className="p-4">Client / URL</th>
+                  <th className="p-4">Client & Industry</th>
                   <th className="p-4">Status</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
@@ -425,7 +504,7 @@ export default function AdminPortfolioPage() {
                               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 shrink-0" />
                             )}
                           </div>
-                          <span className="text-xs text-gray-500 font-mono">{item.slug}</span>
+                          <span className="text-xs text-red-400 font-mono">/portfolio/{item.slug}</span>
                         </div>
                       </div>
                     </td>
@@ -437,20 +516,10 @@ export default function AdminPortfolioPage() {
                       </span>
                     </td>
 
-                    {/* Client & URL */}
+                    {/* Client & Industry */}
                     <td className="p-4 text-gray-400 text-xs">
-                      <div>{item.client_name || item.client || "Gupta Tech Web"}</div>
-                      {item.project_url && (
-                        <a
-                          href={item.project_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-red-400 hover:underline flex items-center gap-1 mt-0.5"
-                        >
-                          <span>Visit link</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+                      <div className="font-medium text-gray-200">{item.client_name || "Smart Brain Academy"}</div>
+                      <div className="text-gray-500 mt-0.5">{item.industry || item.category}</div>
                     </td>
 
                     {/* Status */}
@@ -474,7 +543,7 @@ export default function AdminPortfolioPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 text-gray-400 hover:text-white hover:bg-zinc-800 rounded-lg transition"
-                          title="Preview project page"
+                          title="Preview dynamic case study"
                         >
                           <Eye className="w-4 h-4" />
                         </a>
@@ -527,7 +596,7 @@ export default function AdminPortfolioPage() {
                   {editingProject ? "Edit Portfolio Project" : "Add Portfolio Project"}
                 </h2>
                 <p className="text-xs text-gray-400 mt-1">
-                  Fill in the details below to update the portfolio showcase dynamically.
+                  Configure case study page content, overview statistics, deliverables, and SEO slug.
                 </p>
               </div>
               <button
@@ -539,35 +608,59 @@ export default function AdminPortfolioPage() {
             </div>
 
             {/* Modal Tabs Header */}
-            <div className="flex border-b border-gray-800 bg-zinc-900/40 px-6 gap-6">
+            <div className="flex border-b border-gray-800 bg-zinc-900/40 px-6 gap-4 overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab("content")}
-                className={`py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
+                className={`py-3 text-xs md:text-sm font-semibold border-b-2 flex items-center gap-2 transition whitespace-nowrap ${
                   activeTab === "content"
                     ? "border-red-600 text-red-500"
                     : "border-transparent text-gray-400 hover:text-white"
                 }`}
               >
                 <FileText className="w-4 h-4" />
-                Project Details
+                Basic Info
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("overview")}
+                className={`py-3 text-xs md:text-sm font-semibold border-b-2 flex items-center gap-2 transition whitespace-nowrap ${
+                  activeTab === "overview"
+                    ? "border-red-600 text-red-500"
+                    : "border-transparent text-gray-400 hover:text-white"
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+                Overview Stats
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("deliverables")}
+                className={`py-3 text-xs md:text-sm font-semibold border-b-2 flex items-center gap-2 transition whitespace-nowrap ${
+                  activeTab === "deliverables"
+                    ? "border-red-600 text-red-500"
+                    : "border-transparent text-gray-400 hover:text-white"
+                }`}
+              >
+                <CheckSquare className="w-4 h-4" />
+                Deliverables Timeline
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("media")}
-                className={`py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
+                className={`py-3 text-xs md:text-sm font-semibold border-b-2 flex items-center gap-2 transition whitespace-nowrap ${
                   activeTab === "media"
                     ? "border-red-600 text-red-500"
                     : "border-transparent text-gray-400 hover:text-white"
                 }`}
               >
                 <ImageIcon className="w-4 h-4" />
-                Media & Links
+                Media & Tech
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("seo")}
-                className={`py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
+                className={`py-3 text-xs md:text-sm font-semibold border-b-2 flex items-center gap-2 transition whitespace-nowrap ${
                   activeTab === "seo"
                     ? "border-red-600 text-red-500"
                     : "border-transparent text-gray-400 hover:text-white"
@@ -602,7 +695,7 @@ export default function AdminPortfolioPage() {
                     {/* Slug */}
                     <div>
                       <label className="block text-xs font-medium text-gray-300 mb-1">
-                        URL Slug *
+                        URL Slug (SEO friendly) *
                       </label>
                       <input
                         type="text"
@@ -684,28 +777,28 @@ export default function AdminPortfolioPage() {
                   {/* Short Description */}
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Short Description / Card Excerpt
+                      Short Description / Case Study Subtitle
                     </label>
                     <textarea
                       rows={3}
                       value={form.short_description}
                       onChange={(e) => setForm({ ...form, short_description: e.target.value })}
-                      placeholder="Brief overview displayed on portfolio card..."
+                      placeholder="Brief overview displayed in hero section and portfolio card..."
                       className="w-full bg-zinc-900 border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-600"
                     />
                   </div>
 
-                  {/* Full Description / HTML */}
+                  {/* Full Description */}
                   <div>
                     <label className="block text-xs font-medium text-gray-300 mb-1">
-                      Full Description (Supports HTML / Headings)
+                      Full Overview Description
                     </label>
                     <textarea
-                      rows={6}
+                      rows={5}
                       value={form.full_description}
                       onChange={(e) => setForm({ ...form, full_description: e.target.value })}
-                      placeholder="<h2>Project Overview</h2><p>Detailed project case study content...</p>"
-                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-600 font-mono"
+                      placeholder="Comprehensive details about the project..."
+                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-600"
                     />
                   </div>
 
@@ -725,11 +818,10 @@ export default function AdminPortfolioPage() {
                 </div>
               )}
 
-              {/* TAB 2: Media & Links */}
-              {activeTab === "media" && (
+              {/* TAB 2: Case Study Overview Stats */}
+              {activeTab === "overview" && (
                 <div className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* Client Name */}
                     <div>
                       <label className="block text-xs font-medium text-gray-300 mb-1">
                         Client Name
@@ -743,21 +835,181 @@ export default function AdminPortfolioPage() {
                       />
                     </div>
 
-                    {/* Project URL */}
                     <div>
                       <label className="block text-xs font-medium text-gray-300 mb-1">
-                        Project / Demo URL
+                        Client Location
                       </label>
                       <input
-                        type="url"
-                        value={form.project_url}
-                        onChange={(e) => setForm({ ...form, project_url: e.target.value })}
-                        placeholder="https://example.com"
+                        type="text"
+                        value={form.client_location}
+                        onChange={(e) => setForm({ ...form, client_location: e.target.value })}
+                        placeholder="e.g. Arabic / United States"
+                        className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Industry
+                      </label>
+                      <input
+                        type="text"
+                        value={form.industry}
+                        onChange={(e) => setForm({ ...form, industry: e.target.value })}
+                        placeholder="e.g. Health & Wellness"
+                        className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-300 mb-1">
+                        Development Time
+                      </label>
+                      <input
+                        type="text"
+                        value={form.development_time}
+                        onChange={(e) => setForm({ ...form, development_time: e.target.value })}
+                        placeholder="e.g. 2 Month"
                         className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-600"
                       />
                     </div>
                   </div>
 
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Target Audience
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={form.target_audience}
+                      onChange={(e) => setForm({ ...form, target_audience: e.target.value })}
+                      placeholder="e.g. individuals seeking greater clarity, emotional balance, and a deeper understanding of their inner experience."
+                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-red-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Project Demo URL
+                    </label>
+                    <input
+                      type="url"
+                      value={form.project_url}
+                      onChange={(e) => setForm({ ...form, project_url: e.target.value })}
+                      placeholder="https://example.com"
+                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-600"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: Deliverables Builder */}
+              {activeTab === "deliverables" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">What We Delivered Steps</h3>
+                      <p className="text-xs text-gray-400">Configure the numbered deliverables timeline for the case study.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newDeliv = {
+                          id: Date.now(),
+                          number: String(form.deliverables.length + 1).padStart(2, "0"),
+                          title: "New Deliverable",
+                          description: "Description of the delivered feature...",
+                          image: form.image || "/assets/images/protfolio/protfolio1.png"
+                        };
+                        setForm({ ...form, deliverables: [...form.deliverables, newDeliv] });
+                      }}
+                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add Deliverable
+                    </button>
+                  </div>
+
+                  {form.deliverables.map((deliv, index) => (
+                    <div key={deliv.id || index} className="p-4 bg-zinc-900 border border-gray-800 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-red-500">Step {deliv.number || (index + 1)}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = form.deliverables.filter((_, i) => i !== index);
+                            setForm({ ...form, deliverables: updated });
+                          }}
+                          className="text-gray-400 hover:text-red-400 text-xs flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Remove
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[11px] text-gray-400 mb-1">Step No.</label>
+                          <input
+                            type="text"
+                            value={deliv.number || ""}
+                            onChange={(e) => {
+                              const updated = [...form.deliverables];
+                              updated[index].number = e.target.value;
+                              setForm({ ...form, deliverables: updated });
+                            }}
+                            placeholder="01"
+                            className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-3 py-1.5 text-xs text-white"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-[11px] text-gray-400 mb-1">Deliverable Title</label>
+                          <input
+                            type="text"
+                            value={deliv.title || ""}
+                            onChange={(e) => {
+                              const updated = [...form.deliverables];
+                              updated[index].title = e.target.value;
+                              setForm({ ...form, deliverables: updated });
+                            }}
+                            placeholder="e.g. UI UX Design"
+                            className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-3 py-1.5 text-xs text-white"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Description</label>
+                        <textarea
+                          rows={2}
+                          value={deliv.description || ""}
+                          onChange={(e) => {
+                            const updated = [...form.deliverables];
+                            updated[index].description = e.target.value;
+                            setForm({ ...form, deliverables: updated });
+                          }}
+                          placeholder="Detailed description of what was delivered..."
+                          className="w-full bg-zinc-950 border border-gray-800 rounded-lg p-2 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-gray-400 mb-1">Preview Image Path</label>
+                        <input
+                          type="text"
+                          value={deliv.image || ""}
+                          onChange={(e) => {
+                            const updated = [...form.deliverables];
+                            updated[index].image = e.target.value;
+                            setForm({ ...form, deliverables: updated });
+                          }}
+                          placeholder="/assets/images/protfolio/protfolio1.png"
+                          className="w-full bg-zinc-950 border border-gray-800 rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* TAB 4: Media & Technologies */}
+              {activeTab === "media" && (
+                <div className="space-y-5">
                   {/* Image Upload Box */}
                   <div className="bg-zinc-900/60 border border-gray-800 rounded-2xl p-5 space-y-4">
                     <label className="block text-xs font-medium text-gray-300">
@@ -793,7 +1045,7 @@ export default function AdminPortfolioPage() {
                         </label>
 
                         <p className="text-xs text-gray-500">
-                          Or enter direct image path below (e.g. /assets/images/hero/mind-reset.png):
+                          Or enter direct image path below:
                         </p>
 
                         <input
@@ -807,24 +1059,52 @@ export default function AdminPortfolioPage() {
                       </div>
                     </div>
 
-                    {/* Image Alt */}
+                    {/* Hero Image */}
                     <div>
                       <label className="block text-xs font-medium text-gray-400 mb-1">
-                        Image Alt Text
+                        Hero Laptop Image Path (Defaults to featured image if empty)
                       </label>
                       <input
                         type="text"
-                        value={form.image_alt}
-                        onChange={(e) => setForm({ ...form, image_alt: e.target.value })}
-                        placeholder="Accessible description of the image"
-                        className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-red-600"
+                        value={form.hero_image}
+                        onChange={(e) => setForm({ ...form, hero_image: e.target.value })}
+                        placeholder="/assets/images/hero/mind-reset.png"
+                        className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-red-600 font-mono"
                       />
                     </div>
+                  </div>
+
+                  {/* Technologies */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Technologies Used (Comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={form.technologies}
+                      onChange={(e) => setForm({ ...form, technologies: e.target.value })}
+                      placeholder="HTML5, CSS3, Figma, Laravel, Swift, Flutter, Python, Next.js"
+                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-600"
+                    />
+                  </div>
+
+                  {/* Gallery */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-300 mb-1">
+                      Gallery Images (Comma-separated paths)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={form.gallery}
+                      onChange={(e) => setForm({ ...form, gallery: e.target.value })}
+                      placeholder="/assets/images/hero/mind-reset.png, /assets/images/protfolio/protfolio1.png"
+                      className="w-full bg-zinc-900 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-red-600 font-mono"
+                    />
                   </div>
                 </div>
               )}
 
-              {/* TAB 3: SEO Metadata */}
+              {/* TAB 5: SEO Metadata */}
               {activeTab === "seo" && (
                 <div className="space-y-4">
                   <div>
