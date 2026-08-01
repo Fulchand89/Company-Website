@@ -532,11 +532,11 @@ export async function createProject(data) {
 
   const title = data.title?.trim();
   const category = data.category?.trim();
-  const image = data.image?.trim();
+  const image = data.image?.trim() || "/assets/images/protfolio/protfolio1.png";
   const full_description = data.full_description || data.short_description || title;
 
-  if (!title || !category || !image) {
-    throw new Error("Title, category, and featured image are required.");
+  if (!title || !category) {
+    throw new Error("Title and category are required.");
   }
 
   let slug = data.slug?.trim() ? generateSlug(data.slug) : generateSlug(title);

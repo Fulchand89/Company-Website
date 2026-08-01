@@ -58,6 +58,8 @@ export default function PortfolioPage() {
     { id: "digitalmarketing", label: "Digital Marketing" },
   ]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     async function loadPortfolioData() {
@@ -97,6 +99,11 @@ export default function PortfolioPage() {
     loadPortfolioData();
   }, []);
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setCurrentPage(1);
+  };
+
   // Filter projects by active dynamic tab
   const filtered =
     activeTab === "all"
@@ -115,6 +122,20 @@ export default function PortfolioPage() {
           }
           return projectCat.replace(/[^a-z0-9]/g, "").includes(active) || active.includes(projectCat.replace(/[^a-z0-9]/g, ""));
         });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProjects = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      const element = document.getElementById("portfolio-projects-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <>
@@ -163,7 +184,7 @@ export default function PortfolioPage() {
           {categories.map((tab) => (
             <li key={tab.id} className="w-full md:w-auto">
               <button
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={[
                   "w-full md:w-auto px-8 py-3 rounded-full font-semibold transition-colors duration-200 text-white border border-[#B30D29]",
                   activeTab === tab.id
@@ -178,7 +199,7 @@ export default function PortfolioPage() {
         </ul>
 
         {/* Project Cards */}
-        <div>
+        <div id="portfolio-projects-section">
           {loading ? (
             <div className="text-center text-gray-400 py-16">
               <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#B30D29] border-t-transparent mb-4"></div>
@@ -189,16 +210,62 @@ export default function PortfolioPage() {
               No projects in this category yet.
             </p>
           ) : (
-            filtered.map((item, i) => (
-              <PortfolioCard
-                key={item.id || i}
-                num={item.num || String(i + 1).padStart(2, "0")}
-                title={item.title}
-                img={item.img}
-                text={item.text}
-                href={item.href || `/portfolio/${item.slug || item.id}`}
-              />
-            ))
+            <>
+              {paginatedProjects.map((item, i) => {
+                const itemIndex = startIndex + i + 1;
+                return (
+                  <PortfolioCard
+                    key={item.id || i}
+                    num={item.num || String(itemIndex).padStart(2, "0")}
+                    title={item.title}
+                    img={item.img}
+                    text={item.text}
+                    href={item.href || `/portfolio/${item.slug || item.id}`}
+                  />
+                );
+              })}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-10 mb-6">
+                  {/* Previous Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-lg font-medium border border-gray-700 transition duration-200 text-white bg-[#212529] hover:bg-[#B30D29] hover:border-[#B30D29] disabled:opacity-40 disabled:hover:bg-[#212529] disabled:hover:border-gray-700 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+
+                  {/* Page Numbers */}
+                  {Array.from({ length: totalPages }, (_, index) => {
+                    const pageNum = index + 1;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`w-10 h-10 rounded-lg font-semibold border transition duration-200 ${
+                          currentPage === pageNum
+                            ? "bg-[#B30D29] text-white border-[#B30D29] shadow-md shadow-red-900/40"
+                            : "bg-[#212529] text-gray-300 border-gray-700 hover:bg-[#B30D29] hover:text-white hover:border-[#B30D29]"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 rounded-lg font-medium border border-gray-700 transition duration-200 text-white bg-[#212529] hover:bg-[#B30D29] hover:border-[#B30D29] disabled:opacity-40 disabled:hover:bg-[#212529] disabled:hover:border-gray-700 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

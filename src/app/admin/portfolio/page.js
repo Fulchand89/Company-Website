@@ -188,7 +188,7 @@ export default function AdminPortfolioPage() {
       customCategory: "",
       short_description: "",
       full_description: "",
-      image: "",
+      image: "/assets/images/protfolio/protfolio1.png",
       image_alt: "",
       hero_image: "",
       client_name: "",
@@ -231,7 +231,7 @@ export default function AdminPortfolioPage() {
       customCategory: "",
       short_description: project.short_description || "",
       full_description: project.full_description || "",
-      image: project.image || "",
+      image: project.image || "/assets/images/protfolio/protfolio1.png",
       image_alt: project.image_alt || project.title || "",
       hero_image: project.hero_image || project.image || "",
       client_name: project.client_name || "",
@@ -299,6 +299,8 @@ export default function AdminPortfolioPage() {
       ? form.customCategory.trim()
       : form.category;
 
+    const imageToSave = form.image.trim() || "/assets/images/protfolio/protfolio1.png";
+
     // Convert comma-separated strings to array
     const techArray = form.technologies
       ? form.technologies.split(",").map(t => t.trim()).filter(Boolean)
@@ -310,6 +312,7 @@ export default function AdminPortfolioPage() {
 
     const payload = {
       ...form,
+      image: imageToSave,
       category: categoryToSave,
       technologies: techArray,
       gallery: galleryArray,
