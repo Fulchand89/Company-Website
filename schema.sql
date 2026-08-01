@@ -211,3 +211,28 @@ ON DUPLICATE KEY UPDATE id=id;
 
 -- 11. Compatibility View: Teams Table Alias (Resolves Vercel schema mismatch errors)
 CREATE OR REPLACE VIEW teams AS SELECT * FROM team_members;
+
+-- 12. Developers Table
+CREATE TABLE IF NOT EXISTS developers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  role VARCHAR(255) NOT NULL,
+  experience VARCHAR(100) NOT NULL,
+  skills JSON NOT NULL,
+  available TINYINT(1) DEFAULT 1,
+  img VARCHAR(255) NOT NULL,
+  status VARCHAR(50) DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_developers_status (status),
+  INDEX idx_developers_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed default developers
+INSERT INTO developers (name, role, experience, skills, available, img, status) VALUES 
+('Rahul Sharma', 'Full Stack Developer', 'Senior (5+ yrs)', '["React.js", "Node.js", "MERN Stack"]', 1, '/assets/images/hero/team-demo.png', 'active'),
+('Priya Patel', 'Mobile App Developer', 'Mid (2-5 yrs)', '["Flutter", "React Native", "Android"]', 1, '/assets/images/hero/team-demo.png', 'active'),
+('Amit Verma', 'Backend Developer', 'Senior (5+ yrs)', '["Python", "Node.js", ".NET"]', 0, '/assets/images/hero/team-demo.png', 'active'),
+('Sneha Gupta', 'Frontend Developer', 'Mid (2-5 yrs)', '["React.js", "Vue.js", "WordPress"]', 1, '/assets/images/hero/team-demo.png', 'active')
+ON DUPLICATE KEY UPDATE id=id;
+

@@ -198,7 +198,8 @@ function TeamSwiper({ teamMembers = [] }) {
         slidesPerView: 4,
         spaceBetween: 25,
         loop: teamMembers.length > 1,
-        autoplay: { delay: 2000, disableOnInteraction: false },
+        speed: 400,
+        autoplay: { delay: 1000, disableOnInteraction: false },
         observer: true,
         observeParents: true,
         breakpoints: {

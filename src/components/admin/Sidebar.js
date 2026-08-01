@@ -13,7 +13,8 @@ import {
   FileText,
   Quote,
   Users,
-  Calendar
+  Calendar,
+  Code
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -28,6 +29,7 @@ export default function Sidebar() {
     { name: "Events", href: "/admin/events", icon: <Calendar className="w-5 h-5" /> },
     { name: "Jobs", href: "/admin/jobs", icon: <Briefcase className="w-5 h-5" /> },
     { name: "Applications", href: "/admin/applications", icon: <UserCheck className="w-5 h-5" /> },
+    { name: "Developers", href: "/admin/developers", icon: <Code className="w-5 h-5" /> },
     { name: "Contacts", href: "/admin/contacts", icon: <Mail className="w-5 h-5" /> },
     { name: "Profile", href: "/admin/profile", icon: <User className="w-5 h-5" /> },
   ];

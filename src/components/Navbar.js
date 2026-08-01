@@ -280,6 +280,17 @@ export default function Navbar() {
               </Link>
             </li>
 
+            {/* Mobile Find a Developer */}
+            <li className="lg:hidden mt-2">
+              <Link
+                href="/find-developer"
+                className="inline-flex items-center justify-center border border-white/20 bg-transparent px-4 py-2 text-white transition duration-200 hover:bg-white/10 w-full rounded"
+                onClick={closeAll}
+              >
+                Find a Developer
+              </Link>
+            </li>
+
             {/* Mobile Contact */}
             <li className="lg:hidden mt-2">
               <Link
@@ -294,13 +305,19 @@ export default function Navbar() {
           </ul>
         </div>
 
-        {/* ── Desktop Contact ── */}
-        <div className="hidden lg:flex ml-3">
+        {/* ── Desktop Find a Developer + Contact ── */}
+        <div className="hidden lg:flex ml-3 gap-3">
+          <Link
+            href="/find-developer"
+            className="inline-flex items-center justify-center border border-white/20 bg-transparent px-4 py-2 text-white transition duration-200 hover:bg-white/10 rounded-[12px] no-underline whitespace-nowrap"
+          >
+            Find a Developer →
+          </Link>
           <Link
             href="/contact"
             className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white rounded-[12px] no-underline whitespace-nowrap"
           >
-            Contact Us →
+            Contact →
           </Link>
         </div>
 
