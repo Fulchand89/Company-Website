@@ -275,6 +275,32 @@ export default function AboutPage() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
 
           {/* Left: Image Stack */}
+          {/* Mobile: horizontal row */}
+          <div className="flex md:hidden gap-3 justify-center items-end w-full mb-5">
+            <Image
+              src="/assets/images/about/about1.png"
+              className="rounded-[16px] object-cover"
+              width={110}
+              height={130}
+              alt="Image 1"
+            />
+            <Image
+              src="/assets/images/about/about2.png"
+              className="rounded-[16px] object-cover -mt-2"
+              width={130}
+              height={160}
+              alt="Image 2"
+            />
+            <Image
+              src="/assets/images/about/about3.png"
+              className="rounded-[16px] object-cover"
+              width={110}
+              height={130}
+              alt="Image 3"
+            />
+          </div>
+
+          {/* Desktop: absolute positioned stack */}
           <div className="h-[260px] w-full md:w-1/2 relative hidden md:block mb-5">
             <Image
               src="/assets/images/about/about1.png"
@@ -321,17 +347,17 @@ export default function AboutPage() {
       </section>
 
       {/* ── OUR VISION ── */}
-      <section className="p-5 text-white">
+      <section className="p-5 text-white text-center md:text-left">
         <h2 className="font-semibold mb-3 text-3xl">Our Vision</h2>
         <p className="mb-5">
           Our team of dedicated experts brings vision and innovation together to turn your <br /> concepts into reality. We
           combine aesthetic excellence with meticulous execution to <br /> create impactful results.
         </p>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 justify-center">
           {visionCards.map((card, i) => (
             <div key={i} className="w-full lg:w-[calc(25%-12px)] md:w-[calc(50%-8px)] sm:w-[calc(50%-8px)]">
-              <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] text-white transition-all duration-300 rounded-[0.75rem] text-center p-4 h-full">
+              <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] text-white transition-all duration-300 rounded-[0.75rem] text-center p-4 h-full flex flex-col items-center">
                 <div className="mb-3">
                   <Image src={card.img} alt={card.alt} height={40} width={40} />
                 </div>

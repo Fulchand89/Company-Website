@@ -518,23 +518,32 @@ export default function HomePage() {
           </p>
 
           {/* ================= Mobile / Tablet ================= */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:hidden gap-6 justify-items-center mb-6 mt-10">
-            {industryGroups.flat().map((item, ii) => (
+          <div className="flex flex-col gap-6 lg:hidden mt-10 mb-6">
+            {industryGroups.map((group, gi) => (
               <div
-                key={ii}
-                className="group w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:scale-105 cursor-pointer"
+                key={gi}
+                className={`grid gap-6 justify-center justify-items-center ${
+                  group.length === 1 ? "grid-cols-1" : "grid-cols-2 max-w-[320px] mx-auto"
+                }`}
               >
-                <Image
-                  src={item.img}
-                  alt={item.label}
-                  width={40}
-                  height={40}
-                  className="group-hover:brightness-0 group-hover:invert"
-                />
+                {group.map((item, ii) => (
+                  <div
+                    key={ii}
+                    className="group w-[130px] h-[130px] bg-white rounded-full p-4 flex flex-col items-center justify-center shadow-[inset_2px_2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-[#B30D29] hover:scale-105 cursor-pointer"
+                  >
+                    <Image
+                      src={item.img}
+                      alt={item.label}
+                      width={40}
+                      height={40}
+                      className="group-hover:brightness-0 group-hover:invert"
+                    />
 
-                <small className="text-center text-xs mt-2 text-[#0f172a] font-medium group-hover:text-white">
-                  {item.label}
-                </small>
+                    <small className="text-center text-xs mt-2 text-[#0f172a] font-medium group-hover:text-white">
+                      {item.label}
+                    </small>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
