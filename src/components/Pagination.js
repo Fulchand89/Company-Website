@@ -6,7 +6,12 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
   const pages = [];
-  for (let i = 1; i <= totalPages; i++) {
+  const maxVisible = 5;
+  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+  let end = Math.min(totalPages, start + maxVisible - 1);
+  // Adjust start if we don't have enough pages at the end
+  start = Math.max(1, end - maxVisible + 1);
+  for (let i = start; i <= end; i++) {
     pages.push(i);
   }
 

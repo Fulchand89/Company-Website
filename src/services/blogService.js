@@ -411,11 +411,22 @@ export const blogService = {
     }
   },
 
-  // Get distinct list of categories currently used
+  // Get distinct list of categories currently used (combines standard + dynamic DB categories)
   async getAllCategories() {
     await ensureSchema();
-    const results = await executeQuery("SELECT DISTINCT category FROM blogs WHERE category IS NOT NULL AND category != '' ORDER BY category ASC");
-    return results.map(r => r.category);
+    try {
+      const results = await executeQuery(
+        "SELECT DISTINCT category FROM blogs WHERE category IS NOT NULL AND category != '' ORDER BY category ASC"
+      );
+      const dbCategories = (results || []).map((r) => r.category);
+      // Always ensure these required categories are available
+      const requiredCategories = ["Branding", "Social", "Growth"];
+      const merged = Array.from(new Set([...dbCategories, ...requiredCategories]));
+      return merged.sort();
+    } catch (err) {
+      console.error("[blogService] getAllCategories error:", err);
+      return ["Branding", "Social", "Growth"];
+    }
   },
 
   // Get all existing tags
