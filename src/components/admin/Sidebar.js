@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard,
+  FolderKanban,
   Briefcase,
   UserCheck,
   Mail,
@@ -23,6 +24,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+    { name: "Portfolio", href: "/admin/portfolio", icon: <FolderKanban className="w-5 h-5" /> },
     { name: "Blogs", href: "/admin/blogs", icon: <FileText className="w-5 h-5" /> },
     { name: "Testimonials", href: "/admin/testimonials", icon: <Quote className="w-5 h-5" /> },
     { name: "Our Teams", href: "/admin/teams", icon: <Users className="w-5 h-5" /> },
@@ -61,14 +63,14 @@ export default function Sidebar() {
       </div>
 
       {/* Nav Menu */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium text-sm transition ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition ${
                 isActive
                   ? "bg-red-600 text-white shadow-lg shadow-red-900/10 font-semibold"
                   : "text-gray-400 hover:text-white hover:bg-zinc-800/40"

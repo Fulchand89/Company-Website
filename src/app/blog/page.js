@@ -190,14 +190,14 @@ export default function BlogPage() {
         </div>
 
 
-        <div className="flex flex-wrap justify-center items-center gap-30 mb-10 px-3">
+        <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center gap-3 md:gap-6 mb-10 px-3">
           {blogCategories.map((category) => (
             <button
               key={category.slug || "all"}
               onClick={() => handleTagClick(category.slug)}
               className={`px-6 py-2 rounded-full text-sm font-medium border transition ${selectedTag === category.slug
-                  ? "bg-[#dc3545] text-white border-[#dc3545]"
-                  : "bg-white text-[#dc3545] border-[#dc3545] hover:bg-red-50"
+                ? "bg-[#dc3545] text-white border-[#dc3545]"
+                : "bg-white text-[#dc3545] border-[#dc3545] hover:bg-red-50"
                 }`}
             >
               {category.name}
