@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { testimonialService } from "@/services/testimonialService";
+import { clearTestimonialsCache } from "@/app/api/testimonials/route";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,14 @@ export async function PUT(request, { params }) {
 
     const updatedTestimonial = await testimonialService.updateTestimonial(id, body);
 
+    try {
+      clearTestimonialsCache();
+      revalidatePath("/");
+      revalidatePath("/testimonial");
+    } catch (rErr) {
+      console.warn("Revalidate error:", rErr);
+    }
+
     return NextResponse.json({ message: "Testimonial updated successfully", data: updatedTestimonial });
   } catch (error) {
     console.error("PUT Admin Testimonial Update Error:", error);
@@ -98,6 +108,14 @@ export async function DELETE(request, { params }) {
     }
 
     await testimonialService.deleteTestimonial(id);
+
+    try {
+      clearTestimonialsCache();
+      revalidatePath("/");
+      revalidatePath("/testimonial");
+    } catch (rErr) {
+      console.warn("Revalidate error:", rErr);
+    }
 
     return NextResponse.json({ message: "Testimonial deleted successfully" });
   } catch (error) {

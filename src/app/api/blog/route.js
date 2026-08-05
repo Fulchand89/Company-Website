@@ -4,6 +4,33 @@ import { blogService, ensureSchema } from "@/services/blogService";
 
 export const dynamic = "force-dynamic";
 
+// ── In-memory cache (60 s TTL) ────────────────────────────────────────────────
+// Keyed by a string that encodes the query params so different filter
+// combinations are cached independently.
+const blogCache = new Map();
+const BLOG_CACHE_TTL = 60_000; // 60 seconds
+export function clearBlogCache() {
+  blogCache.clear();
+}
+
+function getBlogCacheKey(page, limit, tag, category) {
+  return `${page}:${limit}:${tag ?? ""}:${category ?? ""}`;
+}
+
+function getBlogCache(key) {
+  const entry = blogCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > BLOG_CACHE_TTL) {
+    blogCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setBlogCache(key, data) {
+  blogCache.set(key, { data, ts: Date.now() });
+}
+
 export async function GET(request) {
   try {
     const searchParams = request.nextUrl?.searchParams || new URL(request.url).searchParams;
@@ -13,6 +40,18 @@ export async function GET(request) {
     const category = searchParams.get("category"); // Category name
 
     const offset = (page - 1) * limit;
+
+    // ── Serve from cache if fresh ─────────────────────────────────────────
+    const cacheKey = getBlogCacheKey(page, limit, tag, category);
+    const cached = getBlogCache(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          "X-Cache": "HIT",
+        },
+      });
+    }
 
     try {
       let blogs = [];
@@ -128,12 +167,14 @@ export async function GET(request) {
         }
       };
 
+      // ── Store in cache then respond ─────────────────────────────────────
+      setBlogCache(cacheKey, responsePayload);
+
       return NextResponse.json(responsePayload, {
-        headers: { 
-          "Cache-Control": "no-store, max-age=0, must-revalidate",
-          "CDN-Cache-Control": "no-store",
-          "Vercel-CDN-Cache-Control": "no-store"
-        }
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          "X-Cache": "MISS",
+        },
       });
 
     } catch (dbError) {

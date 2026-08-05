@@ -87,8 +87,8 @@ export function TestimonialSkeleton({ count = 6 }) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="w-full">
-          <div className="relative flex h-[296px] flex-col rounded-[16px] bg-white px-6 pb-5 pt-[66px] shadow-[0_8px_24px_rgba(15,23,42,0.08)] animate-pulse border border-slate-100">
+        <div key={i} className="w-full h-full pt-10">
+          <div className="relative flex flex-col rounded-[16px] bg-white px-6 pb-5 pt-[66px] shadow-[0_8px_24px_rgba(15,23,42,0.08)] animate-pulse border border-slate-100 h-full">
             {/* Floating circular avatar */}
             <div className="absolute left-[27px] top-[-38px]">
               <div className="rounded-full bg-slate-200 w-[64px] h-[64px] border-4 border-white shadow-sm" />

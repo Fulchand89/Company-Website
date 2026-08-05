@@ -157,242 +157,243 @@ function ContactPageContent() {
 
       {/* ── CONTACT SECTION ── */}
       <section className="bg-white rounded-[2rem] p-5">
+        <div className="max-w-7xl mx-auto w-full px-4 lg:px-8">
+          {/* Top info block */}
+          <div className="mb-6">
+            <h3 className="font-bold text-[#0f172a] text-2xl leading-snug">
+              {jobTitle ? (
+                <>
+                  Submit your application for <span className="text-[#b30d29]">{jobTitle}</span>
+                </>
+              ) : (
+                <>
+                  Let&apos;s Build the <span className="text-[#b30d29]">Future Together!</span>
+                </>
+              )}
+              <br />
+              Connect With Us
+            </h3>
+            <p className="text-[#0f172a] font-semibold text-base mt-2">
+              Connect with our team for expert guidance.
+            </p>
 
-        {/* Top info block */}
-        <div className="mb-6">
-          <h3 className="font-bold text-[#0f172a] text-2xl leading-snug">
-            {jobTitle ? (
-              <>
-                Submit your application for <span className="text-[#b30d29]">{jobTitle}</span>
-              </>
-            ) : (
-              <>
-                Let&apos;s Build the <span className="text-[#b30d29]">Future Together!</span>
-              </>
-            )}
-            <br />
-            Connect With Us
-          </h3>
-          <p className="text-[#0f172a] font-semibold text-base mt-2">
-            Connect with our team for expert guidance.
-          </p>
-
-          <div className="mt-4 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <Image src="/assets/images/icon/mail.png" alt="Email" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#b30d29]">Sales@guptatechweb.com</h6>
-            </div>
-            <div className="flex items-center gap-3">
-              <Image src="/assets/images/icon/location.png" alt="Address" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#b30d29]">
-                410 Shagun Tower, Vijay Nagar, Indore (M.P)
-              </h6>
-            </div>
-            <div className="flex items-center gap-3">
-              <Image src="/assets/images/icon/call.png" alt="Phone" width={20} height={20} />
-              <h6 className="mb-0 font-bold text-[#b30d29]">+91 7400554294</h6>
+            <div className="mt-4 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <Image src="/assets/images/icon/mail.png" alt="Email" width={20} height={20} />
+                <h6 className="mb-0 font-bold text-[#b30d29]">Sales@guptatechweb.com</h6>
+              </div>
+              <div className="flex items-center gap-3">
+                <Image src="/assets/images/icon/location.png" alt="Address" width={20} height={20} />
+                <h6 className="mb-0 font-bold text-[#b30d29]">
+                  410 Shagun Tower, Vijay Nagar, Indore (M.P)
+                </h6>
+              </div>
+              <div className="flex items-center gap-3">
+                <Image src="/assets/images/icon/call.png" alt="Phone" width={20} height={20} />
+                <h6 className="mb-0 font-bold text-[#b30d29]">+91 7400554294</h6>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Form + Map row */}
-        <div className="flex flex-wrap items-center gap-8">
+          {/* Form + Map row */}
+          <div className="flex flex-wrap items-center gap-8">
 
-          {/* ── FORM ── */}
-          <div className="w-full md:w-[calc(50%-16px)]">
-            {jobTitle ? (
-              /* Job Application Form */
-              <form onSubmit={handleAppSubmit}>
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="name"
-                    value={appData.name}
-                    onChange={handleAppChange}
-                    placeholder="Full Name"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="email"
-                    name="email"
-                    value={appData.email}
-                    onChange={handleAppChange}
-                    placeholder="Email Address"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="phone"
-                    value={appData.phone}
-                    onChange={handleAppChange}
-                    placeholder="Phone Number"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="position"
-                    value={appData.position}
-                    onChange={handleAppChange}
-                    placeholder="Position"
-                    className="w-full border border-[#747272] bg-gray-100 text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none"
-                    required
-                    readOnly
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Upload Resume (PDF, DOCX only, max 5MB)
-                  </label>
-                  <input
-                    id="resume-upload"
-                    type="file"
-                    accept=".pdf,.docx"
-                    onChange={handleFileChange}
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 focus:outline-none"
-                    required
-                  />
-                </div>
-
-                {status.message && (
-                  <div className={`mb-3 text-sm ${status.type === "success" ? "text-green-600" : "text-red-600"}`}>
-                    {status.message}
+            {/* ── FORM ── */}
+            <div className="w-full md:w-[calc(50%-16px)]">
+              {jobTitle ? (
+                /* Job Application Form */
+                <form onSubmit={handleAppSubmit}>
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="name"
+                      value={appData.name}
+                      onChange={handleAppChange}
+                      placeholder="Full Name"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                      required
+                    />
                   </div>
-                )}
 
-                <div className="text-center mt-4">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
-                  >
-                    {loading ? "Submitting..." : "Submit Application"}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              /* General Contact Form */
-              <form onSubmit={handleSubmit}>
-                {/* First + Last name row */}
-                <div className="flex gap-3 mb-3">
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="First Name"
-                    className="w-1/2 border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Last Name"
-                    className="w-1/2 border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email Address"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Phone Number"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    placeholder="Service"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    placeholder="Country"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder="Write your message"
-                    className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272] resize-none"
-                    required
-                  />
-                </div>
-
-                {status.message && (
-                  <div className={`mb-3 text-sm ${status.type === "success" ? "text-green-600" : "text-red-600"}`}>
-                    {status.message}
+                  <div className="mb-3">
+                    <input
+                      type="email"
+                      name="email"
+                      value={appData.email}
+                      onChange={handleAppChange}
+                      placeholder="Email Address"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                      required
+                    />
                   </div>
-                )}
 
-                <div className="text-center mt-4">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
-                  >
-                    {loading ? "Sending..." : "Send Message"}
-                  </button>
-                </div>
-              </form>
-            )}
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="phone"
+                      value={appData.phone}
+                      onChange={handleAppChange}
+                      placeholder="Phone Number"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="position"
+                      value={appData.position}
+                      onChange={handleAppChange}
+                      placeholder="Position"
+                      className="w-full border border-[#747272] bg-gray-100 text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none"
+                      required
+                      readOnly
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Upload Resume (PDF, DOCX only, max 5MB)
+                    </label>
+                    <input
+                      id="resume-upload"
+                      type="file"
+                      accept=".pdf,.docx"
+                      onChange={handleFileChange}
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  {status.message && (
+                    <div className={`mb-3 text-sm ${status.type === "success" ? "text-green-600" : "text-red-600"}`}>
+                      {status.message}
+                    </div>
+                  )}
+
+                  <div className="text-center mt-4">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
+                    >
+                      {loading ? "Submitting..." : "Submit Application"}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* General Contact Form */
+                <form onSubmit={handleSubmit}>
+                  {/* First + Last name row */}
+                  <div className="flex gap-3 mb-3">
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="First Name"
+                      className="w-1/2 border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                      required
+                    />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Last Name"
+                      className="w-1/2 border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Email Address"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Phone Number"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="service"
+                      value={formData.service}
+                      onChange={handleChange}
+                      placeholder="Service"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <input
+                      type="text"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      placeholder="Country"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272]"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={4}
+                      placeholder="Write your message"
+                      className="w-full border border-[#747272] bg-white text-black rounded-[6px] px-3 py-2 placeholder:text-[#888] focus:outline-none focus:border-[#747272] resize-none"
+                      required
+                    />
+                  </div>
+
+                  {status.message && (
+                    <div className={`mb-3 text-sm ${status.type === "success" ? "text-green-600" : "text-red-600"}`}>
+                      {status.message}
+                    </div>
+                  )}
+
+                  <div className="text-center mt-4">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="border border-[#b30d29] text-white bg-[#b30d29] hover:bg-[#9a0b23] transition-colors duration-200 px-5 py-2 rounded-[6px] font-medium cursor-pointer disabled:opacity-50"
+                    >
+                      {loading ? "Sending..." : "Send Message"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* ── MAP IMAGE ── */}
+            <div className="w-full md:w-[calc(50%-16px)] text-center">
+              <Image
+                src="/assets/images/hero/map.png"
+                alt="Map"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+              />
+            </div>
+
           </div>
-
-          {/* ── MAP IMAGE ── */}
-          <div className="w-full md:w-[calc(50%-16px)] text-center">
-            <Image
-              src="/assets/images/hero/map.png"
-              alt="Map"
-              width={600}
-              height={400}
-              className="w-full h-auto"
-            />
-          </div>
-
         </div>
       </section>
     </>

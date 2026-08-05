@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { portfolioService } from "@/services/portfolioService";
+import { clearPortfolioCache } from "@/app/api/portfolio/route";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,8 @@ export async function PUT(request, { params }) {
 
     // Revalidate public portfolio routes immediately
     try {
+      clearPortfolioCache();
+      revalidatePath("/");
       revalidatePath("/portfolio");
       revalidatePath(`/portfolio/${updated.slug}`);
       revalidatePath(`/portfolio/${id}`);
@@ -95,6 +98,8 @@ export async function DELETE(request, { params }) {
     await portfolioService.deleteProject(id);
 
     try {
+      clearPortfolioCache();
+      revalidatePath("/");
       revalidatePath("/portfolio");
     } catch (rErr) {
       console.warn("RevalidatePath warning:", rErr);

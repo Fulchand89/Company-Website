@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { portfolioService } from "@/services/portfolioService";
+import { clearPortfolioCache } from "@/app/api/portfolio/route";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,8 @@ export async function POST(request) {
 
     // Revalidate public portfolio cache for immediate reflection
     try {
+      clearPortfolioCache();
+      revalidatePath("/");
       revalidatePath("/portfolio");
       revalidatePath(`/portfolio/${newProject.slug}`);
     } catch (rErr) {

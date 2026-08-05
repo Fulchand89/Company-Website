@@ -50,20 +50,21 @@ export default function Navbar() {
   return (
     <nav
       ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-8 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${scrolled ? "shadow-lg" : ""
+      className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-6 backdrop-blur-[8px] bg-black/60 transition duration-300 ease-in-out ${scrolled ? "shadow-lg" : ""
         }`}
     >
-      <div className="container mx-auto py-5 flex items-center justify-between">
+      <div className="container mx-auto py-3 lg:py-4 xl:py-5 flex items-center justify-between">
 
         {/* ── Logo ── */}
         <Link href="/" className="navbar-brand shrink-0">
           <Image
             src="/assets/images/logo-gtw.png"
             alt="logo"
-            width={200}
-            height={80}
+            width={160}
+            height={64}
             priority
-            style={{ width: "auto", height: "55px" }}
+            className="h-[40px] xl:h-[50px] 2xl:h-[55px] w-auto shrink-0"
+            style={{ width: "auto" }}
           />
         </Link>
 
@@ -82,13 +83,13 @@ export default function Navbar() {
           className={`${menuOpen ? "flex" : "hidden"
             } lg:flex flex-col lg:flex-row lg:items-center max-lg:absolute max-lg:top-full max-lg:left-0 max-lg:right-0 max-lg:bg-black max-lg:p-5 max-lg:max-h-[80vh] max-lg:overflow-y-auto`}
         >
-          <ul className="flex flex-col lg:flex-row lg:gap-8 gap-2 list-none m-0 p-0">
+          <ul className="flex flex-col lg:flex-row lg:gap-3 xl:gap-6 2xl:gap-8 gap-2 list-none m-0 p-0">
 
             {/* Home */}
             <li>
               <Link
                 href="/"
-                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
+                className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
                 onClick={closeAll}
               >
                 Home
@@ -99,7 +100,7 @@ export default function Navbar() {
             <li>
               <Link
                 href="/about"
-                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
+                className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0"
                 onClick={closeAll}
               >
                 About Us
@@ -109,7 +110,7 @@ export default function Navbar() {
             {/* ── SERVICES ── */}
             <li className="relative">
               <button
-                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
+                className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
                 onClick={() => toggleDropdown("services")}
                 onMouseEnter={() => { if (window.innerWidth >= 1024) setOpenDropdown("services"); }}
               >
@@ -119,11 +120,11 @@ export default function Navbar() {
               {/* Services mega-dropdown */}
               {openDropdown === "services" && (
                 <div
-                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[72px] rounded-2xl lg:rounded-b-3xl pt-5 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
+                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[64px] xl:top-[80px] 2xl:top-[88px] rounded-2xl lg:rounded-b-3xl pt-5 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
                   onMouseLeave={() => { if (window.innerWidth >= 1024) setOpenDropdown(null); }}
                 >
                   {/* Responsive grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1440px] mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 max-w-7xl mx-auto px-4 lg:px-6 xl:px-12 2xl:px-16">
                     {/* Mobile Development */}
                     <div className="rounded-lg bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 lg:h-[291px]">
                       <h6 className="mb-4 text-base font-bold text-[#d30d31]">Mobile Development</h6>
@@ -137,7 +138,7 @@ export default function Navbar() {
                           ["Java Development", "/service/app"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
+                            <Link href={href} className="block text-sm xl:text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -161,7 +162,7 @@ export default function Navbar() {
                           ["Vue.js Development", "/service/web"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
+                            <Link href={href} className="block text-sm xl:text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -179,7 +180,7 @@ export default function Navbar() {
                           ["Responsive Design", "/service/ui-ux"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
+                            <Link href={href} className="block text-sm xl:text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -196,7 +197,7 @@ export default function Navbar() {
                           ["Social Media Marketing", "/service/digital-marketing"],
                         ].map(([label, href]) => (
                           <li key={label}>
-                            <Link href={href} className="block text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
+                            <Link href={href} className="block text-sm xl:text-base font-medium text-white transition duration-200 hover:text-[#e52e42]" onClick={closeAll}>
                               {label}
                             </Link>
                           </li>
@@ -211,7 +212,7 @@ export default function Navbar() {
             {/* ── INDUSTRIES ── */}
             <li className="relative">
               <button
-                className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
+                className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 dropdown-toggle block py-2 lg:py-0 bg-transparent border-0 cursor-pointer whitespace-nowrap"
                 onClick={() => toggleDropdown("industries")}
                 onMouseEnter={() => { if (window.innerWidth >= 1024) setOpenDropdown("industries"); }}
               >
@@ -221,14 +222,14 @@ export default function Navbar() {
               {/* Industries mega-dropdown */}
               {openDropdown === "industries" && (
                 <div
-                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[72px] rounded-2xl lg:rounded-b-3xl pt-4 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
+                  className="lg:fixed lg:left-0 lg:right-0 lg:top-[64px] xl:top-[80px] 2xl:top-[88px] rounded-2xl lg:rounded-b-3xl pt-4 pb-10 px-6 bg-[#111]/95 backdrop-blur-2xl border-t border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.9)] z-50"
                   onMouseLeave={() => { if (window.innerWidth >= 1024) setOpenDropdown(null); }}
                 >
                   {/* Responsive grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1440px] mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 max-w-7xl mx-auto px-4 lg:px-6 xl:px-12 2xl:px-16">
                     {industries.map((item) => (
                       <Link key={item.name} href={item.href} className="no-underline" onClick={closeAll}>
-                        <div className="h-[99px] rounded-md border border-white/5 bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 hover:-translate-y-1">
+                        <div className="min-h-[99px] h-auto rounded-md border border-white/5 bg-[#202020] p-4 text-white transition duration-300 hover:border-[#e52e42]/40 hover:-translate-y-1 flex flex-col justify-between">
                           <div>
                             <div className="mb-1 flex items-center gap-2">
                               <Image
@@ -238,9 +239,9 @@ export default function Navbar() {
                                 height={28}
                                 className="object-contain shrink-0"
                               />
-                              <span className="text-base font-bold leading-5 text-white">{item.name}</span>
+                              <span className="text-sm xl:text-base font-bold leading-5 text-white">{item.name}</span>
                             </div>
-                            <p className="text-sm leading-5 text-white">
+                            <p className="text-xs leading-5 text-white">
                               Innovative solutions for growing businesses in tech and services.
                             </p>
                           </div>
@@ -254,28 +255,28 @@ export default function Navbar() {
 
             {/* Portfolio */}
             <li>
-              <Link href="/portfolio" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/portfolio" className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Portfolio
               </Link>
             </li>
 
             {/* Testimonial */}
             <li>
-              <Link href="/testimonial" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/testimonial" className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Testimonial
               </Link>
             </li>
 
             {/* Blogs */}
             <li>
-              <Link href="/blog" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/blog" className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Blogs
               </Link>
             </li>
 
             {/* Careers */}
             <li>
-              <Link href="/careers" className="text-white text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
+              <Link href="/careers" className="text-white text-sm xl:text-base font-medium hover:text-[#b30d29] transition duration-200 block py-2 lg:py-0" onClick={closeAll}>
                 Careers
               </Link>
             </li>
@@ -284,7 +285,7 @@ export default function Navbar() {
             <li className="lg:hidden mt-2">
               <Link
                 href="/find-developer"
-                className="inline-flex items-center justify-center border border-white/20 bg-transparent px-4 py-2 text-white transition duration-200 hover:bg-white/10 w-full rounded"
+                className="inline-flex items-center justify-center border border-white/20 bg-transparent px-4 py-2 text-white transition duration-200 hover:bg-white/10 w-full rounded text-sm"
                 onClick={closeAll}
               >
                 Find a Developer
@@ -295,7 +296,7 @@ export default function Navbar() {
             <li className="lg:hidden mt-2">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white w-full rounded"
+                className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white w-full rounded text-sm"
                 onClick={closeAll}
               >
                 Contact Us
@@ -306,16 +307,16 @@ export default function Navbar() {
         </div>
 
         {/* ── Desktop Find a Developer + Contact ── */}
-        <div className="hidden lg:flex ml-3 gap-3">
+        <div className="hidden lg:flex ml-2 gap-2 xl:gap-3 2xl:gap-4">
           <Link
             href="/find-developer"
-            className="inline-flex items-center justify-center border border-white/20 bg-transparent px-4 py-2 text-white transition duration-200 hover:bg-white/10 rounded-[12px] no-underline whitespace-nowrap"
+            className="inline-flex items-center justify-center border border-white/20 bg-transparent px-2.5 py-1.5 xl:px-4 xl:py-2 2xl:px-5 2xl:py-2.5 text-white transition duration-200 hover:bg-white/10 rounded-[10px] xl:rounded-[12px] no-underline whitespace-nowrap text-xs xl:text-sm 2xl:text-base font-medium"
           >
             Find a Developer →
           </Link>
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-4 py-2 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white rounded-[12px] no-underline whitespace-nowrap"
+            className="inline-flex items-center justify-center border border-[#b30d29] bg-transparent px-2.5 py-1.5 xl:px-4 xl:py-2 2xl:px-5 2xl:py-2.5 text-[#b30d29] transition duration-200 hover:bg-[#b30d29] hover:text-white rounded-[10px] xl:rounded-[12px] no-underline whitespace-nowrap text-xs xl:text-sm 2xl:text-base font-medium"
           >
             Contact →
           </Link>

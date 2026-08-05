@@ -1,4 +1,5 @@
 import "./globals.css";
+import "swiper/css";
 import RootLayoutClient from "@/components/RootLayoutClient";
 
 export const metadata = {

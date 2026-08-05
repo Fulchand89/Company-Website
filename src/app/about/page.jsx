@@ -96,8 +96,6 @@ const teamMembers = [
   { id: 8, name: "Daniel Kim", designation: "DevOps Lead", img: "/assets/images/hero/team-demo.png" },
 ];
 
-// ─── Dynamic Events Slider Component ──────────────────────────────────────────
-
 const DEFAULT_EVENTS = [
   { id: 1, title: "Annual Tech Conference", img: "/assets/images/about/Event1.png" },
   { id: 2, title: "Office Hackathon", img: "/assets/images/about/Event2.png" },
@@ -155,35 +153,23 @@ function EventSlider() {
 }
 
 // ─── Team Swiper Component ────────────────────────────────────────────────────
+// Accepts `members` as a prop — data is fetched once by AboutPage and passed
+// down, eliminating the duplicate /api/teams call that used to happen here.
 
-function TeamSwiper() {
+function TeamSwiper({ members = teamMembers }) {
   const swiperRef = useRef(null);
   const swiperInstanceRef = useRef(null);
-  const [members, setMembers] = useState(teamMembers);
-
-  useEffect(() => {
-    async function fetchTeam() {
-      try {
-        const res = await fetch("/api/teams");
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.length > 0) {
-            setMembers(json.data);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch team members:", err);
-      }
-    }
-    fetchTeam();
-  }, []);
 
   useEffect(() => {
     let active = true;
 
     async function initSwiper() {
-      const { Swiper } = await import("swiper");
-      const { Autoplay } = await import("swiper/modules");
+      // Load Swiper JS + CSS on demand — not part of the initial page bundle
+      const [{ Swiper }, { Autoplay }] = await Promise.all([
+        import("swiper"),
+        import("swiper/modules"),
+        import("swiper/css"),
+      ]);
       if (!active || !swiperRef.current) return;
 
       if (swiperInstanceRef.current) {
@@ -252,206 +238,229 @@ function TeamSwiper() {
 
 export default function AboutPage() {
   const [activeWorkflow, setActiveWorkflow] = useState(0);
+  // Fetch teams once at the page level and pass down to TeamSwiper.
+  // This prevents TeamSwiper from making a duplicate /api/teams call
+  // that was already made on the homepage in the same session.
+  const [pageTeamMembers, setPageTeamMembers] = useState(teamMembers);
+
+  useEffect(() => {
+    fetch("/api/teams")
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data && json.data.length > 0) setPageTeamMembers(json.data);
+      })
+      .catch((err) => console.error("Failed to fetch team members:", err));
+  }, []);
 
   return (
     <>
       {/* ── HERO ── */}
-      <section className="hero-section py-8" >
+      <section className="hero-section py-8 xl:py-12 2xl:py-16">
         <div
-          className="p-5 flex items-center w-full text-white min-h-[260px py-35]"
+          className="p-5 flex items-center w-full text-white min-h-[260px] xl:min-h-[300px] 2xl:min-h-[360px]"
           style={{
             background: "url('/assets/images/about/aboutbg.png') center/cover no-repeat",
           }}
         >
-          <div className="text-center text-white w-full " style={{ paddingTop: "140px", paddingBottom: "80px" }}>
-            <h1 className="font-bold text-4xl md:text-5xl">About Us</h1>
-            <p className="text-2xl mt-2">Your Trusted Partner in Technology and Innovation</p>
+          <div className="text-center text-white w-full max-w-7xl mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-20 lg:pt-36 lg:pb-24 xl:pt-40 xl:pb-28 2xl:pt-48 2xl:pb-36">
+            <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">About Us</h1>
+            <p className="text-lg md:text-xl lg:text-2xl xl:text-2xl 2xl:text-3xl mt-2 xl:mt-4 2xl:mt-6 text-gray-200 max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-auto">Your Trusted Partner in Technology and Innovation</p>
           </div>
         </div>
       </section>
 
       {/* ── ABOUT INTRO ── */}
       <section className="bg-[#f4f4f6] rounded-[2rem] p-5">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
 
-          {/* Left: Image Stack */}
-          {/* Mobile: horizontal row */}
-          <div className="flex md:hidden gap-3 justify-center items-end w-full mb-5">
-            <Image
-              src="/assets/images/about/about1.png"
-              className="rounded-[16px] object-cover"
-              width={110}
-              height={130}
-              alt="Image 1"
-            />
-            <Image
-              src="/assets/images/about/about2.png"
-              className="rounded-[16px] object-cover -mt-2"
-              width={130}
-              height={160}
-              alt="Image 2"
-            />
-            <Image
-              src="/assets/images/about/about3.png"
-              className="rounded-[16px] object-cover"
-              width={110}
-              height={130}
-              alt="Image 3"
-            />
-          </div>
+            {/* Left: Image Stack */}
+            {/* Mobile: horizontal row */}
+            <div className="flex md:hidden gap-3 justify-center items-end w-full mb-5">
+              <Image
+                src="/assets/images/about/about1.png"
+                className="rounded-[16px] object-cover"
+                width={110}
+                height={130}
+                alt="Image 1"
+              />
+              <Image
+                src="/assets/images/about/about2.png"
+                className="rounded-[16px] object-cover -mt-2"
+                width={130}
+                height={160}
+                alt="Image 2"
+              />
+              <Image
+                src="/assets/images/about/about3.png"
+                className="rounded-[16px] object-cover"
+                width={110}
+                height={130}
+                alt="Image 3"
+              />
+            </div>
 
-          {/* Desktop: absolute positioned stack */}
-          <div className="h-[260px] w-full md:w-1/2 relative hidden md:block mb-5">
-            <Image
-              src="/assets/images/about/about1.png"
-              className="absolute rounded-[16px] object-cover left-0 top-[20px] z-10 scale-90"
-              width={250}
-              height={250}
-              alt="Image 1"
-            />
-            <Image
-              src="/assets/images/about/about2.png"
-              className="absolute rounded-[16px] object-cover left-1/2 top-[2px] -translate-x-1/2 z-20"
-              width={270}
-              height={270}
-              style={{ height: "300px" }}
-              alt="Image 2"
-            />
-            <Image
-              src="/assets/images/about/about3.png"
-              className="absolute rounded-[16px] object-cover right-0 top-[20px] z-10 scale-90"
-              width={250}
-              height={250}
-              alt="Image 3"
-            />
-          </div>
+            {/* Desktop: absolute positioned stack */}
+            <div className="h-[260px] w-full md:w-1/2 relative hidden md:block mb-5">
+              <Image
+                src="/assets/images/about/about1.png"
+                className="absolute rounded-[16px] object-cover left-0 top-[20px] z-10 scale-90"
+                width={250}
+                height={250}
+                alt="Image 1"
+              />
+              <Image
+                src="/assets/images/about/about2.png"
+                className="absolute rounded-[16px] object-cover left-1/2 top-[2px] -translate-x-1/2 z-20"
+                width={270}
+                height={270}
+                style={{ height: "300px" }}
+                alt="Image 2"
+              />
+              <Image
+                src="/assets/images/about/about3.png"
+                className="absolute rounded-[16px] object-cover right-0 top-[20px] z-10 scale-90"
+                width={250}
+                height={250}
+                alt="Image 3"
+              />
+            </div>
 
-          {/* Right: Content */}
-          <div className="w-full md:w-1/2 md:ps-5 text-center md:text-left">
-            <h2 className="font-bold text-[#0f172a] mb-3 text-3xl leading-snug">
-              Smart <span className="text-[#B30D29]">Digital Solutions for <br /> Real Business</span> Growth
-            </h2>
-            <p className="text-[#6D758F] font-semibold mb-3">
-              We are a boutique digital transformation consultancy and development company.
-            </p>
-            <p className="text-[#6D758F] text-sm mb-3">
-              Since 2007 we have been a visionary and a reliable software engineering partner for
-              world-class brands. We are a boutique digital transformation consultancy and software
-              development company that provides cutting edge engineering solutions.
-            </p>
-            <Link href="#" className="text-[#B30D29] no-underline">
-              See more Informations →
-            </Link>
+            {/* Right: Content */}
+            <div className="w-full md:w-1/2 md:ps-5 text-center md:text-left">
+              <h2 className="font-bold text-[#0f172a] mb-3 text-3xl leading-snug">
+                Smart <span className="text-[#B30D29]">Digital Solutions for <br /> Real Business</span> Growth
+              </h2>
+              <p className="text-[#6D758F] font-semibold mb-3">
+                We are a boutique digital transformation consultancy and development company.
+              </p>
+              <p className="text-[#6D758F] text-sm mb-3">
+                Since 2007 we have been a visionary and a reliable software engineering partner for
+                world-class brands. We are a boutique digital transformation consultancy and software
+                development company that provides cutting edge engineering solutions.
+              </p>
+              <Link href="#" className="text-[#B30D29] no-underline">
+                See more Informations →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── OUR VISION ── */}
       <section className="p-5 text-white text-center md:text-left">
-        <h2 className="font-semibold mb-3 text-3xl">Our Vision</h2>
-        <p className="mb-5">
-          Our team of dedicated experts brings vision and innovation together to turn your <br /> concepts into reality. We
-          combine aesthetic excellence with meticulous execution to <br /> create impactful results.
-        </p>
+        <div className="max-w-7xl mx-auto w-full">
+          <h2 className="font-semibold mb-3 text-3xl">Our Vision</h2>
+          <p className="mb-5">
+            Our team of dedicated experts brings vision and innovation together to turn your <br /> concepts into reality. We
+            combine aesthetic excellence with meticulous execution to <br /> create impactful results.
+          </p>
 
-        <div className="flex flex-wrap gap-4 justify-center">
-          {visionCards.map((card, i) => (
-            <div key={i} className="w-full lg:w-[calc(25%-12px)] md:w-[calc(50%-8px)] sm:w-[calc(50%-8px)]">
-              <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] text-white transition-all duration-300 rounded-[0.75rem] text-center p-4 h-full flex flex-col items-center">
-                <div className="mb-3">
-                  <Image src={card.img} alt={card.alt} height={40} width={40} />
+          <div className="flex flex-wrap gap-4 justify-center">
+            {visionCards.map((card, i) => (
+              <div key={i} className="w-full lg:w-[calc(25%-12px)] md:w-[calc(50%-8px)] sm:w-[calc(50%-8px)]">
+                <div className="bg-gradient-to-t from-[#232324] to-[#1b1b1b] text-white transition-all duration-300 rounded-[0.75rem] text-center p-4 h-full flex flex-col items-center">
+                  <div className="mb-3">
+                    <Image src={card.img} alt={card.alt} height={40} width={40} />
+                  </div>
+                  <h5 className="font-semibold">{card.title}</h5>
+                  <p className="text-sm">{card.text}</p>
                 </div>
-                <h5 className="font-semibold">{card.title}</h5>
-                <p className="text-sm">{card.text}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── WORKFLOW ── */}
       <section className="p-5 bg-white rounded-[2rem] text-[#0f172a]">
-        <div className="flex flex-col lg:flex-row gap-5 items-center justify-between">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="flex flex-col lg:flex-row gap-5 items-center justify-between">
 
-          {/* Left Menu */}
-          <div className="w-full lg:w-auto">
-            <ul className="list-none p-0 m-0">
-              {workflowItems.map((item, i) => (
-                <li
-                  key={i}
-                  className={[
-                    "py-4 px-5 mb-2 cursor-pointer font-semibold transition-all duration-300 text-lg",
-                    "border-l-[3px] hover:text-[#B30D29] hover:border-l-[#B30D29]",
-                    activeWorkflow === i
-                      ? "text-[#B30D29] border-l-[#B30D29]"
-                      : "text-[#0f172a] border-l-transparent",
-                  ].join(" ")}
-                  onClick={() => setActiveWorkflow(i)}
-                  onMouseEnter={() => setActiveWorkflow(i)}
-                >
-                  {item.title}
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Left Menu */}
+            <div className="w-full lg:w-auto">
+              <ul className="list-none p-0 m-0">
+                {workflowItems.map((item, i) => (
+                  <li
+                    key={i}
+                    className={[
+                      "py-4 px-5 mb-2 cursor-pointer font-semibold transition-all duration-300 text-lg",
+                      "border-l-[3px] hover:text-[#B30D29] hover:border-l-[#B30D29]",
+                      activeWorkflow === i
+                        ? "text-[#B30D29] border-l-[#B30D29]"
+                        : "text-[#0f172a] border-l-transparent",
+                    ].join(" ")}
+                    onClick={() => setActiveWorkflow(i)}
+                    onMouseEnter={() => setActiveWorkflow(i)}
+                  >
+                    {item.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Right Content */}
-          <div className="flex-[1.5] text-center w-full lg:w-auto">
-            <Image
-              src={workflowItems[activeWorkflow].img}
-              alt="workflow"
-              width={520}
-              height={400}
-              className="w-full max-w-[520px] rounded-[18px] transition-all duration-300 mx-auto"
-            />
-            <p className="mt-4 text-base text-black leading-relaxed">
-              {workflowItems[activeWorkflow].text}
-            </p>
+            {/* Right Content */}
+            <div className="flex-[1.5] text-center w-full lg:w-auto">
+              <Image
+                src={workflowItems[activeWorkflow].img}
+                alt="workflow"
+                width={520}
+                height={400}
+                className="w-full max-w-[520px] rounded-[18px] transition-all duration-300 mx-auto"
+              />
+              <p className="mt-4 text-base text-black leading-relaxed">
+                {workflowItems[activeWorkflow].text}
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── EVENTS (auto-slider) ── */}
       <section className="p-5 text-white">
-        <h2 className="font-semibold mb-3 text-3xl">Events</h2>
-        <p className="mb-5">
-          Beyond tech events, we host interactive office sessions, workshops, <br /> and team activities that encourage
-          creativity, knowledge sharing, and stronger collaboration.
-        </p>
+        <div className="max-w-7xl mx-auto w-full">
+          <h2 className="font-semibold mb-3 text-3xl">Events</h2>
+          <p className="mb-5">
+            Beyond tech events, we host interactive office sessions, workshops, <br /> and team activities that encourage
+            creativity, knowledge sharing, and stronger collaboration.
+          </p>
 
-        <EventSlider />
+          <EventSlider />
+        </div>
       </section>
 
       {/* ── HOW WE WORK ── */}
       <section className="rounded-[2rem] bg-white p-8 text-[#0f172a] lg:p-12">
-        <div className="grid min-h-[424px] grid-cols-1 items-center gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-12">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid min-h-[424px] grid-cols-1 items-center gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-12">
 
-          {/* Left Content */}
-          <div className="max-w-[510px]">
-            <p className="mb-3 text-base font-semibold text-[#b30d29]">How We Work</p>
-            <h2 className="mb-5 text-3xl font-bold leading-[1.2] lg:text-[32px]">
-              Gupta Tech Web: <span className="text-[#B30D29]">Crafting Success</span><br />
-              Through Collaboration.
-            </h2>
-            <p className="text-base leading-6 text-[#525b6b]">
-              We believe in a structured, transparent, and collaborative approach. From initial ideation to final deployment, our agile methodology ensures that every project is delivered on time, within budget, and exceeds expectations.
-            </p>
-          </div>
+            {/* Left Content */}
+            <div className="max-w-[510px]">
+              <p className="mb-3 text-base font-semibold text-[#b30d29]">How We Work</p>
+              <h2 className="mb-5 text-3xl font-bold leading-[1.2] lg:text-[32px]">
+                Gupta Tech Web: <span className="text-[#B30D29]">Crafting Success</span><br />
+                Through Collaboration.
+              </h2>
+              <p className="text-base leading-6 text-[#525b6b]">
+                We believe in a structured, transparent, and collaborative approach. From initial ideation to final deployment, our agile methodology ensures that every project is delivered on time, within budget, and exceeds expectations.
+              </p>
+            </div>
 
-          {/* Right Cards */}
-          <div className="w-full">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {workCards.map((card, i) => (
-                <div key={i}>
-                  <div className="min-h-[196px] rounded-lg border border-[#f1f1f1] bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
-                    <div className="relative mb-5 inline-block">
-                      <Image src={card.img} alt={card.title} width={36} height={36} />
+            {/* Right Cards */}
+            <div className="w-full">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {workCards.map((card, i) => (
+                  <div key={i}>
+                    <div className="min-h-[196px] rounded-lg border border-[#f1f1f1] bg-white p-6 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+                      <div className="relative mb-5 inline-block">
+                        <Image src={card.img} alt={card.title} width={36} height={36} />
+                      </div>
+                      <h5 className="mb-2 text-xl font-bold leading-6">{card.title}</h5>
+                      <p className="mb-0 text-[14px] leading-[21px] text-[#525b6b]">{card.text}</p>
                     </div>
-                    <h5 className="mb-2 text-xl font-bold leading-6">{card.title}</h5>
-                    <p className="mb-0 text-[14px] leading-[21px] text-[#525b6b]">{card.text}</p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -459,11 +468,13 @@ export default function AboutPage() {
 
       {/* ── OUR TEAMS ── */}
       <section className="p-5 text-white">
-        <h2 className="font-semibold mb-3 text-3xl">Our Teams</h2>
-        <p className="mb-4">
-          Showcasing innovation, creativity, and results through impactful digital solutions.
-        </p>
-        <TeamSwiper />
+        <div className="max-w-7xl mx-auto w-full">
+          <h2 className="font-semibold mb-3 text-3xl">Our Teams</h2>
+          <p className="mb-4">
+            Showcasing innovation, creativity, and results through impactful digital solutions.
+          </p>
+          <TeamSwiper members={pageTeamMembers} />
+        </div>
       </section>
 
       {/* ── JOIN OUR TEAM CTA ── */}
@@ -477,7 +488,7 @@ export default function AboutPage() {
           }}
         />
 
-        <div className="relative z-10">
+        <div className="relative z-10 max-w-7xl mx-auto w-full">
           <div className="flex flex-wrap items-center gap-5">
 
             {/* Text Column */}

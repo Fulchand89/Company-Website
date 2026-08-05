@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -21,6 +22,11 @@ import {
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const menuItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -63,7 +69,7 @@ export default function Sidebar() {
       </div>
 
       {/* Nav Menu */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className={`flex-1 p-4 space-y-1 overflow-y-auto${mounted ? " scrollbar-hide" : ""}`}>
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (

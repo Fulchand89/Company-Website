@@ -1,22 +1,16 @@
 import { NextResponse } from "next/server";
 import { executeQuery } from "@/lib/db";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 let cacheData = null;
 let cacheTime = 0;
 const CACHE_TTL = 60 * 1000;
 
-const STATIC_TEAM_MEMBERS = [
-  { id: 1, name: "Jennifer", designation: "CEO & Founder", img: "/assets/images/hero/team-demo.png", role: "CEO & Founder" },
-  { id: 2, name: "Alexander Reed", designation: "Chief Technology Officer", img: "/assets/images/hero/team-demo.png", role: "Chief Technology Officer" },
-  { id: 3, name: "Sophia Chen", designation: "VP of Product & Design", img: "/assets/images/hero/team-demo.png", role: "VP of Product & Design" },
-  { id: 4, name: "Marcus Vance", designation: "Head of AI & Engineering", img: "/assets/images/hero/team-demo.png", role: "Head of AI & Engineering" },
-  { id: 5, name: "Emily Watson", designation: "Lead UI/UX Designer", img: "/assets/images/hero/team-demo.png", role: "Lead UI/UX Designer" },
-  { id: 6, name: "David Miller", designation: "Senior Full Stack Dev", img: "/assets/images/hero/team-demo.png", role: "Senior Full Stack Dev" },
-  { id: 7, name: "Rachel Adams", designation: "Marketing Director", img: "/assets/images/hero/team-demo.png", role: "Marketing Director" },
-  { id: 8, name: "Daniel Kim", designation: "DevOps Lead", img: "/assets/images/hero/team-demo.png", role: "DevOps Lead" },
-];
+export function clearTeamsCache() {
+  cacheData = null;
+  cacheTime = 0;
+}
 
 export async function GET() {
   try {
@@ -52,7 +46,7 @@ export async function GET() {
       });
 
       const responsePayload = {
-        data: formattedMembers.length > 0 ? formattedMembers : STATIC_TEAM_MEMBERS
+        data: formattedMembers
       };
 
       cacheData = responsePayload;
@@ -62,9 +56,9 @@ export async function GET() {
         headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
       });
     } catch (dbError) {
-      console.warn("Teams DB query error, using static fallback:", dbError.message);
-      return NextResponse.json({ data: STATIC_TEAM_MEMBERS }, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" }
+      console.warn("Teams DB query error:", dbError.message);
+      return NextResponse.json({ data: [] }, {
+        headers: { "Cache-Control": "no-store" }
       });
     }
   } catch (error) {
@@ -75,3 +69,4 @@ export async function GET() {
     );
   }
 }
+

@@ -12,9 +12,9 @@ function TestimonialCard({ img, name, project, text, rating = 5 }) {
   const starsString = "★".repeat(rating || 5);
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full pt-10">
       {/* extra top margin on the wrapper to make space for the floating avatar */}
-      <div className="relative flex h-[296px] flex-col rounded-[16px] bg-white px-6 pb-5 pt-[66px] shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
+      <div className="relative flex flex-col rounded-[16px] bg-white px-6 pb-5 pt-[66px] shadow-[0_8px_24px_rgba(15,23,42,0.08)] h-full">
         {/* Floating avatar */}
         <div className="absolute left-[27px] top-[-38px]">
           <Image
@@ -97,62 +97,66 @@ export default function TestimonialPage() {
             background:
               "url('/assets/images/testnomail/testnomial-bg.png') center/cover no-repeat",
           }} >
-          <div className="text-center text-white" style={{ paddingTop: "140px", paddingBottom: "80px" }}>
-            <h1 className="font-bold text-4xl md:text-5xl">Testnomials</h1>
+          <div className="text-center text-white max-w-7xl mx-auto w-full px-4" style={{ paddingTop: "140px", paddingBottom: "80px" }}>
+            <h1 className="font-bold text-4xl md:text-5xl">Testimonials</h1>
             <p className="text-2xl mt-2">Partnerships Built on Performance and Reliability</p>
           </div>
         </div>
       </section>
 
       {/* ── TESTIMONIAL CARDS ── */}
-      <section className="bg-white rounded-[2rem] p-6 lg:p-10">
-        <div className="grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3 min-h-[300px]">
-          {loading ? (
-            <TestimonialSkeleton count={6} />
-          ) : (
-            displayList.map((item, i) => (
-              <TestimonialCard key={item.id || i} {...item} />
-            ))
+      <section className="bg-white rounded-[2rem] p-6 lg:p-10" suppressHydrationWarning>
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 gap-x-5 gap-y-16 pt-6 md:grid-cols-2 lg:grid-cols-3 min-h-[350px]" suppressHydrationWarning>
+            {loading ? (
+              <TestimonialSkeleton count={6} />
+            ) : (
+              displayList.map((item, i) => (
+                <TestimonialCard key={item.id || i} {...item} />
+              ))
+            )}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="pt-10">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(p) => setPage(p)}
+              />
+            </div>
           )}
         </div>
-
-        {totalPages > 1 && (
-          <div className="pt-10">
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={(p) => setPage(p)}
-            />
-          </div>
-        )}
       </section>
 
       {/* ── CTA BANNER ── */}
       <section
-        className="relative text-white p-5 m-4 rounded-[1rem] overflow-hidden"
+        className="relative text-white p-5 m-4 rounded-[1rem] overflow-hidden max-w-7xl lg:mx-auto"
         style={{
           background:
             "url('/assets/images/testnomail/testnomial-bottom.png') center/cover no-repeat",
         }}
       >
-        <div className="flex flex-wrap items-center">
-          {/* Left Text */}
-          <div className="w-full md:w-2/3">
-            <h3 className="font-bold text-2xl">Want to know about us</h3>
-            <p className="mt-1">
-              Get to know the team shaping innovative technology solutions.
-            </p>
-          </div>
+        <div className="max-w-7xl mx-auto w-full px-4 lg:px-8">
+          <div className="flex flex-wrap items-center">
+            {/* Left Text */}
+            <div className="w-full md:w-2/3">
+              <h3 className="font-bold text-2xl">Want to know about us</h3>
+              <p className="mt-1">
+                Get to know the team shaping innovative technology solutions.
+              </p>
+            </div>
 
-          {/* Right Button */}
-          <div className="w-full md:w-1/3 md:text-right text-left mt-3 md:mt-0">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 border border-white text-white hover:bg-white hover:text-[#0f172a] transition-colors duration-200 px-5 py-2 rounded-[0.5rem] no-underline"
-            >
-              <span>Contact Us</span>
-              <span>→</span>
-            </Link>
+            {/* Right Button */}
+            <div className="w-full md:w-1/3 md:text-right text-left mt-3 md:mt-0">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 border border-white text-white hover:bg-white hover:text-[#0f172a] transition-colors duration-200 px-5 py-2 rounded-[0.5rem] no-underline"
+              >
+                <span>Contact Us</span>
+                <span>→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

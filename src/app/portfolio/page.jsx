@@ -22,7 +22,6 @@ function PortfolioCard({ num, title, img, text, href }) {
             width={400}
             height={280}
             className="w-full h-auto max-h-[280px] rounded object-contain mx-auto"
-            unoptimized
           />
         </div>
         {/* Content */}
@@ -65,12 +64,10 @@ export default function PortfolioPage() {
     async function loadPortfolioData() {
       setLoading(true);
       try {
-        const res = await fetch("/api/portfolio?limit=100", {
-          cache: "no-store",
-          headers: {
-            "Pragma": "no-cache"
-          }
-        });
+        // No explicit cache override — let the browser use the s-maxage=60
+        // Cache-Control header the API now returns. This avoids a full round-trip
+        // on every tab visit / back-navigation within the same 60-second window.
+        const res = await fetch("/api/portfolio?limit=100");
         if (!res.ok) throw new Error("Failed to fetch portfolio projects");
         const data = await res.json();
 
@@ -150,7 +147,7 @@ export default function PortfolioPage() {
             padding: "80px 0",
           }}
         >
-          <div className="w-full px-6 lg:px-20">
+          <div className="max-w-7xl mx-auto w-full px-6 lg:px-8">
             <div className="flex flex-wrap items-center">
               {/* Text Column */}
               <div className="w-full lg:w-1/2 mb-4 mt-5 lg:mb-0 text-center lg:text-left">
@@ -201,9 +198,30 @@ export default function PortfolioPage() {
         {/* Project Cards */}
         <div id="portfolio-projects-section">
           {loading ? (
-            <div className="text-center text-gray-400 py-16">
-              <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#B30D29] border-t-transparent mb-4"></div>
-              <p className="text-lg">Loading dynamic projects...</p>
+            // Skeleton cards that match the real PortfolioCard layout —
+            // prevents layout shift (CLS) when real data loads in.
+            <div aria-busy="true" aria-label="Loading projects">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-[#212529] rounded-2xl mb-8 overflow-hidden p-4 min-h-[380px] animate-pulse"
+                >
+                  <div className="flex flex-wrap items-center">
+                    {/* image placeholder */}
+                    <div className="w-full md:w-1/3 p-3">
+                      <div className="w-full h-[200px] rounded bg-[#2e3338]" />
+                    </div>
+                    {/* text placeholders */}
+                    <div className="w-full md:w-2/3 p-3 space-y-4">
+                      <div className="h-6 w-1/3 rounded bg-[#2e3338]" />
+                      <div className="h-8 w-2/3 rounded bg-[#2e3338]" />
+                      <div className="h-4 w-full rounded bg-[#2e3338]" />
+                      <div className="h-4 w-5/6 rounded bg-[#2e3338]" />
+                      <div className="h-4 w-4/6 rounded bg-[#2e3338]" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filtered.length === 0 ? (
             <p className="text-center text-gray-400 py-16 text-lg">

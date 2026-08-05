@@ -91,7 +91,7 @@ export default function FindDeveloperPage() {
 
       return matchesSearch && matchesTech && matchesLevel;
     });
-  }, [search, selectedTech, selectedLevel]);
+  }, [search, selectedTech, selectedLevel, developersData]);
 
   return (
     <>

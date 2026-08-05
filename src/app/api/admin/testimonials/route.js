@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { testimonialService } from "@/services/testimonialService";
+import { clearTestimonialsCache } from "@/app/api/testimonials/route";
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +74,14 @@ export async function POST(request) {
     }
 
     const newTestimonial = await testimonialService.createTestimonial(body);
+
+    try {
+      clearTestimonialsCache();
+      revalidatePath("/");
+      revalidatePath("/testimonial");
+    } catch (rErr) {
+      console.warn("Revalidate error:", rErr);
+    }
 
     return NextResponse.json(
       { message: "Testimonial created successfully", data: newTestimonial },
