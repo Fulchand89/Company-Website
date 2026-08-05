@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import TeamSkeleton from "@/components/TeamSkeleton";
+import EventSkeleton from "@/components/EventSkeleton";
 
 // ─── Workflow Section ────────────────────────────────────────────────────────
 
@@ -105,7 +107,8 @@ const DEFAULT_EVENTS = [
 ];
 
 function EventSlider() {
-  const [events, setEvents] = useState(DEFAULT_EVENTS);
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -115,14 +118,25 @@ function EventSlider() {
           const json = await res.json();
           if (Array.isArray(json) && json.length > 0) {
             setEvents(json);
+          } else {
+            setEvents(DEFAULT_EVENTS);
           }
+        } else {
+          setEvents(DEFAULT_EVENTS);
         }
       } catch (err) {
         console.error("Failed to fetch events:", err);
+        setEvents(DEFAULT_EVENTS);
+      } finally {
+        setEventsLoading(false);
       }
     }
     fetchEvents();
   }, []);
+
+  if (eventsLoading) {
+    return <EventSkeleton count={5} />;
+  }
 
   const displayList = events.length > 0 ? events : DEFAULT_EVENTS;
   const sliderItems = [...displayList, ...displayList, ...displayList];
@@ -241,15 +255,29 @@ export default function AboutPage() {
   // Fetch teams once at the page level and pass down to TeamSwiper.
   // This prevents TeamSwiper from making a duplicate /api/teams call
   // that was already made on the homepage in the same session.
-  const [pageTeamMembers, setPageTeamMembers] = useState(teamMembers);
+  const [pageTeamMembers, setPageTeamMembers] = useState([]);
+  const [teamLoading, setTeamLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/teams")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.data && json.data.length > 0) setPageTeamMembers(json.data);
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to fetch team members");
+        return r.json();
       })
-      .catch((err) => console.error("Failed to fetch team members:", err));
+      .then((json) => {
+        if (json.data && json.data.length > 0) {
+          setPageTeamMembers(json.data);
+        } else {
+          setPageTeamMembers(teamMembers);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch team members:", err);
+        setPageTeamMembers(teamMembers);
+      })
+      .finally(() => {
+        setTeamLoading(false);
+      });
   }, []);
 
   return (
@@ -473,7 +501,11 @@ export default function AboutPage() {
           <p className="mb-4">
             Showcasing innovation, creativity, and results through impactful digital solutions.
           </p>
-          <TeamSwiper members={pageTeamMembers} />
+          {teamLoading ? (
+            <TeamSkeleton count={4} />
+          ) : (
+            <TeamSwiper members={pageTeamMembers} />
+          )}
         </div>
       </section>
 
