@@ -60,19 +60,19 @@ const expertiseCards = [
 const industryGroups = [
   [
     { img: "/assets/images/hero/h1.png", label: "Healthcare" },
-    { img: "/assets/images/hero/h2.png", label: "Healthcare" },
+    { img: "/assets/images/hero/h2.png", label: "Heart" },
   ],
-  [{ img: "/assets/images/hero/h9.png", label: "Healthcare" }],
+  [{ img: "/assets/images/hero/h9.png", label: "NatureCare" }],
   [
-    { img: "/assets/images/hero/h10.png", label: "Healthcare" },
-    { img: "/assets/images/hero/h7.png", label: "Healthcare" },
+    { img: "/assets/images/hero/h10.png", label: "Monitoring" },
+    { img: "/assets/images/hero/h7.png", label: "Hospital" },
   ],
-  [{ img: "/assets/images/hero/h5.png", label: "Healthcare" }],
+  [{ img: "/assets/images/hero/h5.png", label: "Medicine" }],
   [
-    { img: "/assets/images/hero/h6.png", label: "Healthcare" },
-    { img: "/assets/images/hero/h3.png", label: "Healthcare" },
+    { img: "/assets/images/hero/h6.png", label: "Medical" },
+    { img: "/assets/images/hero/h3.png", label: "Emergency" },
   ],
-  [{ img: "/assets/images/hero/h8.png", label: "Healthcare" }],
+  [{ img: "/assets/images/hero/h8.png", label: "Brain" }],
 ];
 
 const portfolioItems = [
