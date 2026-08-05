@@ -12,6 +12,7 @@ export default function BlogPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTag, setSelectedTag] = useState("");
+  const [clickedBlogSlug, setClickedBlogSlug] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([
     { name: "All Posts", slug: "" }
@@ -212,8 +213,22 @@ export default function BlogPage() {
                       <h6 className="font-semibold text-[#0f172a] text-base leading-snug">{post.title}</h6>
                       <p className="text-[#6c757d] text-sm mt-2 line-clamp-3">{post.excerpt}</p>
                       <div className="mt-auto pt-3">
-                        <Link href={`/blog/${post.slug || post.id}`} className="text-[#dc3545] no-underline text-sm font-medium hover:underline inline-flex items-center gap-1">
-                          Read More →
+                        <Link
+                          href={`/blog/${post.slug || post.id}`}
+                          className="text-[#dc3545] no-underline text-sm font-medium hover:underline inline-flex items-center gap-1.5"
+                          onClick={() => setClickedBlogSlug(post.slug || post.id)}
+                        >
+                          {clickedBlogSlug === (post.slug || post.id) ? (
+                            <>
+                              Loading
+                              <svg className="animate-spin h-3.5 w-3.5 text-[#dc3545]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            </>
+                          ) : (
+                            "Read More →"
+                          )}
                         </Link>
                       </div>
                     </div>
