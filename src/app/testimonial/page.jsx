@@ -36,10 +36,10 @@ function TestimonialCard({ img, name, project, text, rating = 5 }) {
         <p className="text-[14px] leading-[21px] text-[#757575]">{text}</p>
 
         {/* Name + project */}
-        <div className="mt-auto">
+        <div className="mt-auto pt-5">
           <h5 className="mb-1 text-[18px] font-bold leading-5 text-[#bd1232]">{name}</h5>
           <p className="mb-0 text-[13px] leading-4">
-            <span className="text-[#757575]">Project : </span>
+            <span className="text-[#757575] pt-2">Project : </span>
             <span className="font-semibold text-[#f05263]">{project}</span>
           </p>
         </div>
