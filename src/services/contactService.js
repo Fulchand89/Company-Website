@@ -23,6 +23,27 @@ export async function ensureContactsSchema() {
         INDEX idx_contacts_created_at (created_at)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+
+    // Dynamically add 'service' column if it does not exist
+    try {
+      await executeQuery("ALTER TABLE contacts ADD COLUMN service VARCHAR(255) DEFAULT NULL");
+      console.log("Added 'service' column to contacts table.");
+    } catch (err) {
+      if (!err.message.includes("Duplicate column name")) {
+        console.warn("Could not add 'service' column:", err.message);
+      }
+    }
+
+    // Dynamically add 'details' column if it does not exist
+    try {
+      await executeQuery("ALTER TABLE contacts ADD COLUMN details TEXT DEFAULT NULL");
+      console.log("Added 'details' column to contacts table.");
+    } catch (err) {
+      if (!err.message.includes("Duplicate column name")) {
+        console.warn("Could not add 'details' column:", err.message);
+      }
+    }
+
     schemaChecked = true;
   } catch (err) {
     console.error("Contacts schema auto-verification failed:", err);
@@ -34,13 +55,13 @@ export async function ensureContactsSchema() {
  */
 export const contactService = {
   // CREATE: Insert new contact form submission into MySQL
-  async createContact({ name, email, phone, message }) {
+  async createContact({ name, email, phone, message, service, details }) {
     await ensureContactsSchema();
     const result = await executeQuery(
-      "INSERT INTO contacts (name, email, phone, message) VALUES (?, ?, ?, ?)",
-      [name, email, phone || null, message]
+      "INSERT INTO contacts (name, email, phone, message, service, details) VALUES (?, ?, ?, ?, ?, ?)",
+      [name, email, phone || null, message, service || null, details || null]
     );
-    return { id: result.insertId, name, email, phone, message };
+    return { id: result.insertId, name, email, phone, message, service, details };
   },
 
   // READ: Fetch all contact submissions sorted by creation date

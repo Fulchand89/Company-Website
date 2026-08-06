@@ -33,12 +33,14 @@ body {
   color: #fff;
 }
 
-.scrollbar-hide {
+.scrollbar-hide,
+aside nav {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar,
+aside nav::-webkit-scrollbar {
   display: none;
 }
 

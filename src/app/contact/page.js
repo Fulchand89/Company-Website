@@ -7,6 +7,9 @@ import { useSearchParams } from "next/navigation";
 function ContactPageContent() {
   const searchParams = useSearchParams();
   const jobTitle = searchParams.get("job");
+  const devName = searchParams.get("developer");
+  const serviceParam = searchParams.get("service");
+  const roleParam = searchParams.get("role");
 
   // General contact states
   const [formData, setFormData] = useState({
@@ -14,9 +17,15 @@ function ContactPageContent() {
     lastName: "",
     email: "",
     phone: "",
-    service: "",
+    service: serviceParam || "",
     country: "",
-    message: ""
+    message: devName
+      ? `I am interested in hiring ${devName} as a ${roleParam || "Developer"} for ${serviceParam || "Development"}. Please contact me with more details.`
+      : "",
+    developerName: devName || "",
+    details: devName
+      ? `Developer Name: ${devName}\nTechnology/Role: ${roleParam || "Developer"}`
+      : ""
   });
 
   // Application form states
@@ -56,6 +65,12 @@ function ContactPageContent() {
 
     const fullName = `${formData.firstName} ${formData.lastName}`.trim();
     let finalMessage = formData.message;
+
+    if (formData.developerName) {
+      finalMessage += `\n\n--- Hired Developer Details ---`;
+      finalMessage += `\nDeveloper Name: ${formData.developerName}`;
+    }
+
     if (formData.service || formData.country) {
       finalMessage += `\n\n--- Additional Info ---\nService: ${formData.service || "N/A"}\nCountry: ${formData.country || "N/A"}`;
     }
@@ -68,7 +83,9 @@ function ContactPageContent() {
           name: fullName,
           email: formData.email,
           phone: formData.phone,
-          message: finalMessage
+          message: finalMessage,
+          service: formData.service || null,
+          details: formData.details || null
         }),
       });
       const data = await res.json();
@@ -81,7 +98,9 @@ function ContactPageContent() {
           phone: "",
           service: "",
           country: "",
-          message: ""
+          message: "",
+          developerName: "",
+          details: ""
         });
       } else {
         setStatus({ type: "error", message: data.error || "Failed to submit request." });

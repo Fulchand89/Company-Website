@@ -8,7 +8,7 @@ const techLogos = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
 
 // ─── Portfolio Card ───────────────────────────────────────────────────────────
 
-function PortfolioCard({ num, title, img, text, href }) {
+function PortfolioCard({ num, title, img, text, href, onClick }) {
   const imageSrc = img || "/assets/images/protfolio/protfolio1.png";
 
   const inner = (
@@ -37,7 +37,7 @@ function PortfolioCard({ num, title, img, text, href }) {
 
   if (href) {
     return (
-      <Link href={href} className="no-underline block">
+      <Link href={href} onClick={onClick} className="no-underline block">
         {inner}
       </Link>
     );
@@ -57,6 +57,7 @@ export default function PortfolioPage() {
     { id: "digitalmarketing", label: "Digital Marketing" },
   ]);
   const [loading, setLoading] = useState(true);
+  const [navigatingProject, setNavigatingProject] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
@@ -239,6 +240,12 @@ export default function PortfolioPage() {
                     img={item.img}
                     text={item.text}
                     href={item.href || `/portfolio/${item.slug || item.id}`}
+                    onClick={(e) => {
+                      if (e.metaKey || e.ctrlKey || e.shiftKey || (e.button && e.button !== 0)) {
+                        return;
+                      }
+                      setNavigatingProject(true);
+                    }}
                   />
                 );
               })}
@@ -305,6 +312,21 @@ export default function PortfolioPage() {
           ))}
         </div>
       </div>
+
+      {/* Full-screen loader overlay when navigating to a project */}
+      {navigatingProject && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-zinc-800" />
+              <div className="absolute inset-0 rounded-full border-4 border-[#B30D29] border-t-transparent animate-spin" />
+            </div>
+            <p className="text-gray-300 text-lg font-semibold animate-pulse mt-2">
+              Loading Project Details...
+            </p>
+          </div>
+        </div>
+      )}
     </>
   );
 }

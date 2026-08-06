@@ -12,7 +12,7 @@ export async function POST(request) {
       );
     }
 
-    const { name, email, phone, message } = body;
+    const { name, email, phone, message, service, details } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -21,7 +21,7 @@ export async function POST(request) {
       );
     }
 
-    const contact = await contactService.createContact({ name, email, phone, message });
+    const contact = await contactService.createContact({ name, email, phone, message, service, details });
 
     // Send email notifications. We wrap this in a try/catch block so that
     // SMTP connection errors do not fail the database submission.

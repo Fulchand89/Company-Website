@@ -295,7 +295,7 @@ export default function FindDeveloperPage() {
 
                     {/* Hire Button */}
                     <Link
-                      href="/contact"
+                      href={`/contact?developer=${encodeURIComponent(dev.name)}&role=${encodeURIComponent(dev.role)}&service=${encodeURIComponent(dev.role)}`}
                       className={`w-full inline-flex items-center justify-center py-2.5 rounded-lg font-semibold text-sm no-underline transition-all duration-300 ${
                         dev.available
                           ? "bg-[#B30D29] text-white hover:bg-[#9a0b23] shadow-md hover:shadow-lg hover:shadow-[#B30D29]/25"

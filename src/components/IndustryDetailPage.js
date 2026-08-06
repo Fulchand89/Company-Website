@@ -118,7 +118,7 @@ export default function IndustryDetailPage({
                   Get Consultant <span className="ml-2">→</span>
                 </Link>
                 <Link
-                  href="/portfolio"
+                  href="/blog"
                   className="inline-flex items-center border border-white hover:border-[#b30d29] hover:text-[#b30d29] transition px-6 py-3 rounded-lg font-semibold"
                 >
                   View Case Study
