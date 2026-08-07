@@ -545,7 +545,7 @@ export default async function BlogDetailPage({ params }) {
 
           {/* Table of Contents Sticky Sidebar - Desktop Only */}
           {toc.length > 0 && (
-            <aside className="hidden lg:block lg:w-1/4 order-1 lg:order-2 sticky top-24 bg-slate-950 border border-slate-900 rounded-xl p-5 w-full">
+            <aside className="hidden lg:block lg:w-1/4 order-1 lg:order-2 sticky top-24 bg-slate-950 border border-slate-900 rounded-xl p-5 w-full ">
               <h5 className="font-semibold text-white text-base mb-4 pb-2 border-b border-slate-900">
                 Table of Contents
               </h5>

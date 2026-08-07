@@ -133,7 +133,7 @@ export default function BlogPage() {
               }}
               className="px-3 py-1 text-xs font-semibold text-white bg-slate-600 hover:bg-slate-700 rounded-full transition-colors cursor-pointer border-none"
             >
-              Clear Filter ✕
+              ✕
             </button>
           </div>
         )}
@@ -239,11 +239,12 @@ export default function BlogPage() {
 
           </div>
 
-          <div className="pt-6 border-t border-gray-100">
+          <div className="pt-6  border-t border-gray-100">
             <Pagination
               currentPage={page}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              variant="light"
             />
           </div>
         </div>

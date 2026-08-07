@@ -16,8 +16,19 @@ function FaqItem({ faq }) {
         className="w-full flex items-center justify-between px-6 py-4 text-left font-semibold text-gray-900 hover:bg-gray-100/70 transition"
       >
         <span>{faq.q}</span>
-        <span className="text-gray-500 text-xl ml-4 flex-shrink-0">
-          {open ? "∧" : "∨"}
+        <span className="ml-4 flex-shrink-0 w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center transition-transform duration-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`w-4 h-4 text-gray-700 transition-transform duration-300 ${open ? "-rotate-180" : "rotate-0"}`}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </span>
       </button>
       {open && (

@@ -23,8 +23,7 @@ export async function POST(request) {
 
     const contact = await contactService.createContact({ name, email, phone, message, service, details });
 
-    // Send email notifications. We wrap this in a try/catch block so that
-    // SMTP connection errors do not fail the database submission.
+    // Send email notifications. Wrapped in try/catch so SMTP errors don't fail the DB submission.
     try {
       await emailService.sendContactEmails({ name, email, phone, message });
     } catch (emailError) {
@@ -44,17 +43,18 @@ export async function POST(request) {
   }
 }
 
-// Optional GET handler to view submissions (with optional pagination)
+// GET handler with optional pagination and status filter
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page");
     const limit = searchParams.get("limit");
+    const status = searchParams.get("status"); // e.g. "New", "In Review", "All"
 
     if (page || limit) {
       const p = parseInt(page || "1", 10);
       const l = parseInt(limit || "10", 10);
-      const result = await contactService.getPaginatedContacts(p, l);
+      const result = await contactService.getPaginatedContacts(p, l, status);
       return NextResponse.json(result);
     }
 
