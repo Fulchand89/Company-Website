@@ -175,7 +175,7 @@ export default function ContactsInboxPage() {
                 onClick={() => setSelectedContact(null)}
                 className="text-gray-400 hover:text-white text-sm px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
               >
-                ✕ Close
+                ✕
               </button>
             </h2>
 
@@ -212,7 +212,7 @@ export default function ContactsInboxPage() {
 
               <div>
                 <span className="text-gray-500 block">Inquiry Message</span>
-                <div className="bg-zinc-900 border border-gray-800 rounded-xl p-3 text-gray-300 whitespace-pre-wrap max-h-40 overflow-y-auto mt-1">
+                <div className="bg-zinc-900 border border-gray-800 rounded-xl p-3 text-gray-300 whitespace-pre-wrap  mt-1">
                   {selectedContact.message}
                 </div>
               </div>

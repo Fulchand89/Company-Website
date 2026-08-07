@@ -104,7 +104,7 @@ export default function BlogPage() {
   return (
     <>
       <section className="hero-section">
-        <div className="hero-content w-full h-[400px] text-white bg-[url('/assets/images/blog/blog-bg.png')] bg-center bg-cover bg-no-repeat py-35">
+        <div className="hero-content w-full h-[440px] text-white bg-[url('/assets/images/blog/blog-bg.png')] bg-center bg-cover bg-no-repeat  py-35">
           <div className="text-center text-white my-5" style={{ paddingTop: "70px", paddingBottom: "0px" }}>
             <h1 className="font-bold text-4xl md:text-5xl">Our Blog</h1>
             <p className="text-xl mt-2">Insights, ideas, and stories from our team.</p>
@@ -149,7 +149,7 @@ export default function BlogPage() {
         </div>
 
         {/* Dynamic Category Filter Pills */}
-        <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center gap-3 md:gap-4 mb-10 px-3">
+        <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center gap-3 md:gap-35 mb-10 px-3">
           {categories.map((category) => {
             const isActive =
               (!selectedCategory && category.slug === "") ||

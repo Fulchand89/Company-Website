@@ -302,11 +302,15 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
 
+
             {/* Left: Image Stack */}
             {/* Mobile: horizontal row */}
             <div className="flex md:hidden gap-3 justify-center items-end w-full mb-5">
               <Image
-                src="/assets/images/about/about1.png"
+                src="/assets/images/about/a
+                
+                
+                bout1.png"
                 className="rounded-[16px] object-cover"
                 width={110}
                 height={130}

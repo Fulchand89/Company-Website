@@ -178,7 +178,7 @@ export default function PortfolioPage() {
       {/* ── TABS + PROJECTS ── */}
       <section className="p-5 max-w-7xl mx-auto">
         {/* Dynamic Tab Pills */}
-        <ul className="flex flex-col md:flex-row md:flex-wrap justify-center items-stretch md:items-center gap-3 md:gap-5 mb-8 list-none p-0 m-0">
+        <ul className="flex flex-col md:flex-row md:flex-wrap justify-center items-stretch md:items-center gap-3 md:gap-35 mb-8 list-none p-0 m-0">
           {categories.map((tab) => (
             <li key={tab.id} className="w-full md:w-auto">
               <button

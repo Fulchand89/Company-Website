@@ -50,10 +50,26 @@ const stats = [
 ];
 
 const expertiseCards = [
-  "Web Development",
-  "App Development",
-  "Digital Marketing",
-  "AI / ML",
+  {
+    title: "Web Development",
+    href: "/service/web",
+    desc: "Developing smart, secure, and future-ready websites.",
+  },
+  {
+    title: "App Development",
+    href: "/service/app",
+    desc: "Building powerful mobile apps for iOS and Android.",
+  },
+  {
+    title: "Digital Marketing",
+    href: "/service/digital-marketing",
+    desc: "Growing your brand with data-driven marketing strategies.",
+  },
+  {
+    title: "AI / ML",
+    href: "/service",
+    desc: "Leveraging AI and machine learning for smart solutions.",
+  },
 ];
 
 // Industries: col1=[2 items], col2=[1], col3=[2], col4=[1], col5=[2], col6=[1]
@@ -310,7 +326,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── OUR EXPERTISE ── */}
       {/* ─────────────── OUR EXPERTISE ─────────────── */}
       <section className="py-12 px-6 lg:px-10 text-white">
         <div className="max-w-7xl mx-auto w-full">
@@ -363,9 +378,10 @@ export default function HomePage() {
             {/* ================= RIGHT SERVICE CARDS ================= */}
             <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-              {expertiseCards.map((title, index) => (
-                <div
+              {expertiseCards.map((card, index) => (
+                <Link
                   key={index}
+                  href={card.href}
                   className="group
                        border border-white/10
                        rounded-2xl
@@ -376,7 +392,9 @@ export default function HomePage() {
                        transition-all duration-300
                        hover:border-white
                        hover:-translate-y-1
-                       shadow-lg"
+                       shadow-lg
+                       no-underline
+                       cursor-pointer"
                   style={{
                     background:
                       "url('/assets/images/hero/card-bg.png') center/cover no-repeat",
@@ -384,11 +402,11 @@ export default function HomePage() {
                 >
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-4">
-                      {title}
+                      {card.title}
                     </h3>
 
                     <p className="text-base text-gray-200 leading-7">
-                      Developing smart, secure, and future-ready websites.
+                      {card.desc}
                     </p>
                   </div>
 
@@ -399,7 +417,7 @@ export default function HomePage() {
                   >
                     →
                   </button>
-                </div>
+                </Link>
               ))}
 
             </div>
