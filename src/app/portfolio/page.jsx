@@ -297,7 +297,7 @@ export default function PortfolioPage() {
 
       {/* ── TECH LOGO AUTO-SCROLL ── */}
       <div className="py-8 overflow-hidden">
-        <div className="flex gap-8 animate-[slide_12s_linear_infinite]">
+        <div className="flex gap-8 animate-[slide_4s_linear_infinite]">
           {techLogos.map((n, i) => (
             <div key={i} className="shrink-0">
               <Image

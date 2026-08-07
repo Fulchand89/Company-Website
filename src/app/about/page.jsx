@@ -307,24 +307,21 @@ export default function AboutPage() {
             {/* Mobile: horizontal row */}
             <div className="flex md:hidden gap-3 justify-center items-end w-full mb-5">
               <Image
-                src="/assets/images/about/a
-                
-                
-                bout1.png"
+                src="/assets/images/about/a1.png"
                 className="rounded-[16px] object-cover"
                 width={110}
                 height={130}
                 alt="Image 1"
               />
               <Image
-                src="/assets/images/about/about2.png"
+                src="/assets/images/about/a2.png"
                 className="rounded-[16px] object-cover -mt-2"
                 width={130}
                 height={160}
                 alt="Image 2"
               />
               <Image
-                src="/assets/images/about/about3.png"
+                src="/assets/images/about/a3.png"
                 className="rounded-[16px] object-cover"
                 width={110}
                 height={130}
@@ -335,14 +332,14 @@ export default function AboutPage() {
             {/* Desktop: absolute positioned stack */}
             <div className="h-[260px] w-full md:w-1/2 relative hidden md:block mb-5">
               <Image
-                src="/assets/images/about/about1.png"
+                src="/assets/images/about/a1.png"
                 className="absolute rounded-[16px] object-cover left-0 top-[20px] z-10 scale-90"
                 width={250}
                 height={250}
                 alt="Image 1"
               />
               <Image
-                src="/assets/images/about/about2.png"
+                src="/assets/images/about/a2.png"
                 className="absolute rounded-[16px] object-cover left-1/2 top-[2px] -translate-x-1/2 z-20"
                 width={270}
                 height={270}
@@ -350,7 +347,7 @@ export default function AboutPage() {
                 alt="Image 2"
               />
               <Image
-                src="/assets/images/about/about3.png"
+                src="/assets/images/about/a3.png"
                 className="absolute rounded-[16px] object-cover right-0 top-[20px] z-10 scale-90"
                 width={250}
                 height={250}
